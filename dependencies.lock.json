@@ -1,5 +1,13 @@
 {
   "$schema": "./schemas/dependencies-lock.schema.json",
   "schemaVersion": 1,
-  "dependencies": []
+  "dependencies": [
+    {
+      "id": "jsquash-webp",
+      "package": "@jsquash/webp",
+      "version": "1.5.0",
+      "tarballSha256": "b543cb1fc17e99c31e992a71d70da570d1bc1871ce3a88440df067e5b2e6ee9e",
+      "integrity": "sha512-KggLoj2MnRSfIqTeKe1EmbljTX2vuV7mh79k89PCL1pyqiDULcPM1L47twxXt0hkb68F70bXiL31MxsuoZtKFw=="
+    }
+  ]
 }
