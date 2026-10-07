@@ -119,6 +119,24 @@
     .preview-transport{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
     .preview-transport .button{min-width:0;padding:8px}.preview-transport svg{width:17px;height:17px}
     .preview-help{margin:0;color:var(--muted);font-size:11px}
+    .gif-layout{display:grid;grid-template-columns:minmax(280px,.72fr) minmax(0,1.28fr);gap:16px}
+    .gif-settings{display:grid;gap:12px}
+    .gif-option-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+    .gif-switch{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:40px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+    .gif-switch span{font-size:12px;font-weight:720}.gif-switch input{width:18px;height:18px;accent-color:var(--accent)}
+    .filename-control{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;overflow:hidden;border:1px solid var(--line);border-radius:9px;background:var(--surface)}
+    .filename-control:focus-within{border-color:var(--focus);box-shadow:0 0 0 3px color-mix(in srgb,var(--focus) 18%,transparent)}
+    .filename-input{width:100%;min-width:0;min-height:40px;padding:8px 9px;border:0;outline:0;background:transparent;color:var(--text);font:inherit}
+    .filename-extension{padding:0 10px;color:var(--muted);font-size:11px;user-select:none}
+    .gif-create-row{display:flex;gap:8px;align-items:center}.gif-create-row .button.primary{flex:1 1 auto}
+    .gif-progress-wrap{display:grid;gap:6px;padding:11px;border:1px solid var(--line);border-radius:10px;background:var(--surface-muted)}
+    .gif-progress-wrap[hidden]{display:none}.gif-progress{width:100%;height:9px;accent-color:var(--accent)}.gif-progress-text{color:var(--muted);font-size:11px}
+    .gif-result{display:grid;gap:12px;min-height:100%}.gif-result-empty{display:grid;place-items:center;min-height:280px;padding:24px;border:1px dashed var(--line);border-radius:12px;color:var(--muted);text-align:center;font-size:12px}
+    .gif-result-card{display:grid;gap:12px}.gif-result-card[hidden]{display:none}
+    .gif-result-preview{display:grid;place-items:center;min-height:280px;overflow:hidden;padding:12px;border:1px solid var(--line);border-radius:12px;background-color:#fff;background-image:linear-gradient(45deg,#d8dad6 25%,transparent 25%),linear-gradient(-45deg,#d8dad6 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#d8dad6 75%),linear-gradient(-45deg,transparent 75%,#d8dad6 75%);background-size:20px 20px;background-position:0 0,0 10px,10px -10px,-10px 0}
+    .gif-result-preview img{display:block;max-width:100%;max-height:480px;width:auto;height:auto}
+    .gif-result-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.gif-result-stat{padding:9px;border-radius:9px;background:var(--surface-muted)}.gif-result-stat span{display:block;color:var(--muted);font-size:10px}.gif-result-stat strong{display:block;margin-top:2px;font-size:12px;overflow-wrap:anywhere}
+    .gif-result-actions{display:flex;justify-content:flex-end;gap:8px}.gif-note{margin:0;color:var(--muted);font-size:11px}
     .import-report{margin-top:14px;padding:12px;border:1px solid #ead18e;border-radius:11px;background:var(--warning-soft)}
     .import-report h4{margin:0 0 5px;color:#674400;font-size:13px}.import-report p{margin:0;color:#674400;font-size:11px}
     .failure-list{margin:9px 0 0;padding-left:18px;color:#674400;font-size:11px}.failure-list li+li{margin-top:3px}
@@ -146,6 +164,7 @@
       .main{padding:16px 12px 38px}.page-intro{display:block}.local-badge{margin-top:11px}.panel-body{padding:13px}.drop-zone{min-height:190px;padding:22px 14px}
       .frame-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.summary-bar{align-items:flex-start}.summary-actions{width:100%}.summary-actions .button{flex:1 1 auto}.summary-actions .sort-select{flex:1 1 150px;max-width:none}
       .timing-toolbar{grid-template-columns:1fr}.timing-controls{justify-content:flex-start}.preview-layout{grid-template-columns:1fr}.preview-stage{min-height:260px;padding:10px}.preview-canvas-wrap,.preview-canvas{max-height:48vh}
+      .gif-layout{grid-template-columns:1fr}.gif-option-grid{grid-template-columns:1fr 1fr}.gif-result-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.gif-result-preview{min-height:220px}.gif-create-row{align-items:stretch}.gif-create-row .button{min-height:44px}
       .next-panel{grid-template-columns:1fr}.future-button{width:100%}.build-grid{grid-template-columns:1fr}
       dialog{width:calc(100vw - 16px);max-height:calc(100dvh - 16px);border-radius:16px}.dialog-shell{max-height:calc(100dvh - 16px)}.dialog-head{position:sticky;top:0;background:var(--surface);z-index:1}
       .dialog-body{padding-bottom:calc(20px + env(safe-area-inset-bottom))}.app-toast{right:10px;bottom:calc(10px + env(safe-area-inset-bottom));max-width:calc(100vw - 20px)}
@@ -363,12 +382,80 @@
           </div>
         </div>
       </div>
+    </section>
+
+    <section class="panel" aria-labelledby="gifHeading">
+      <div class="panel-head">
+        <div>
+          <h3 id="gifHeading" data-i18n="gifHeading">Animated GIFを書き出す</h3>
+          <p data-i18n="gifHeadingNote">Canvas設定とフレーム時間を使い、GIFをこのブラウザ内で生成します。</p>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="gif-layout">
+          <div class="gif-settings">
+            <div class="gif-option-grid">
+              <label class="output-field">
+                <span class="output-label" data-i18n="gifColorsLabel">色数</span>
+                <select class="output-select" id="gifColorCount">
+                  <option value="64">64</option>
+                  <option value="128">128</option>
+                  <option value="256" selected>256</option>
+                </select>
+              </label>
+              <label class="output-field">
+                <span class="output-label" data-i18n="gifLoopLabel">ループ</span>
+                <select class="output-select" id="gifLoopMode">
+                  <option value="infinite" data-i18n="gifLoopInfinite">繰り返す</option>
+                  <option value="once" data-i18n="gifLoopOnce">1回だけ</option>
+                </select>
+              </label>
+            </div>
+            <label class="gif-switch">
+              <span data-i18n="gifDitherLabel">Dithering</span>
+              <input id="gifDither" type="checkbox" checked>
+            </label>
+            <label class="output-field">
+              <span class="output-label" data-i18n="outputFilenameLabel">出力ファイル名</span>
+              <span class="filename-control">
+                <input class="filename-input" id="outputFilename" type="text" value="frame-animation" maxlength="120" autocomplete="off" spellcheck="false">
+                <span class="filename-extension">.gif</span>
+              </span>
+            </label>
+            <p class="gif-note" data-i18n="gifLimitNote">GIFは最大256色・1bit透明です。写真ではDitheringを有効にすると階調が自然になる場合があります。</p>
+            <div class="gif-create-row">
+              <button class="button primary" id="createGifButton" type="button" disabled data-i18n="createGif">GIFを作成</button>
+              <button class="button" id="cancelGifButton" type="button" hidden data-i18n="cancelGif">キャンセル</button>
+            </div>
+            <div class="gif-progress-wrap" id="gifProgressWrap" hidden aria-live="polite">
+              <progress class="gif-progress" id="gifProgress" max="1" value="0"></progress>
+              <span class="gif-progress-text" id="gifProgressText"></span>
+            </div>
+          </div>
+
+          <div class="gif-result">
+            <div class="gif-result-empty" id="gifResultEmpty" data-i18n="gifResultEmpty">GIFを作成すると、ここで実際の生成ファイルを確認できます。</div>
+            <div class="gif-result-card" id="gifResultCard" hidden>
+              <div class="gif-result-preview"><img id="gifResultImage" alt="" data-i18n-aria-label="gifResultPreviewLabel"></div>
+              <div class="gif-result-stats">
+                <div class="gif-result-stat"><span data-i18n="gifResultSizeLabel">Canvas</span><strong id="gifResultDimensions">—</strong></div>
+                <div class="gif-result-stat"><span data-i18n="gifResultFramesLabel">フレーム</span><strong id="gifResultFrames">—</strong></div>
+                <div class="gif-result-stat"><span data-i18n="gifResultDurationLabel">再生時間</span><strong id="gifResultDuration">—</strong></div>
+                <div class="gif-result-stat"><span data-i18n="gifResultBytesLabel">ファイル容量</span><strong id="gifResultBytes">—</strong></div>
+              </div>
+              <div class="gif-result-actions">
+                <button class="button primary" id="saveGifButton" type="button" disabled data-i18n="saveGif">GIFを保存</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="next-panel">
         <div>
-          <strong data-i18n="nextTitle">次の段階: Animated GIF出力</strong>
-          <span data-i18n="nextBody">v0.5.0で、このCanvas正規化結果を使ってGIFを書き出します。</span>
+          <strong data-i18n="nextTitle">次の段階: Animated WebP出力</strong>
+          <span data-i18n="nextBody">v0.6.0で写真向けのAnimated WebPを書き出せるようにします。</span>
         </div>
-        <button class="button future-button" type="button" disabled data-i18n="createAnimation">アニメーションを作成</button>
+        <button class="button future-button" type="button" disabled data-i18n="webpFuture">WebPは次の段階</button>
       </div>
     </section>
 
@@ -380,7 +467,6 @@
         <div class="build-item"><span data-i18n="dependencies">内包依存</span><strong id="dependencyCount">0</strong></div>
       </div>
     </details>
-    <input id="outputFilename" value="frame-animation" hidden aria-hidden="true">
   </main>
   <!-- APP:END -->
 
@@ -400,7 +486,7 @@
         <ol>
           <li data-i18n="helpHow1">JPEG・PNG・静止WebPを複数選択するか、画面へドロップします。</li>
           <li data-i18n="helpHow2">順番を整え、各カードの表示時間または全フレーム一括設定を調整します。</li>
-          <li data-i18n="helpHow3">Canvasサイズ、収める／切り抜く、背景を設定し、同じ正規化結果でアニメーションをプレビューします。</li>
+          <li data-i18n="helpHow3">Canvas設定を確認し、色数・Dithering・ループを選んでGIFを作成します。生成後は実ファイルを確認して保存します。</li>
         </ol>
         <h3 data-i18n="helpFormatsTitle">対応形式</h3>
         <p data-i18n="helpFormatsBody">JPEG / JPG、PNG、静止WebPに対応します。Animated WebP、GIF、動画、HEIC等は現在対象外です。</p>
@@ -501,9 +587,10 @@
           timingTitle:'全フレームの表示時間', timingBody:'プリセットまたは入力値を全フレームへ適用します。個別の時間は各カードで変更できます。', globalDurationLabel:'全フレームの表示時間', applyAll:'すべてに適用', frameDuration:'表示時間', timingApplied:'全フレームの表示時間を変更しました', timingChanged:'表示時間を変更しました',
           previewHeading:'アニメーションプレビュー', previewNote:'出力CanvasへFit / Fillした状態で、各フレームの表示時間どおりに確認します。', previewEmpty:'画像を追加すると、ここで出力Canvasとアニメーションを確認できます。', previewFrameLabel:'フレーム', previewTimeLabel:'再生位置', previewRestart:'最初から', previewPrevious:'前のフレーム', previewPlay:'再生 / 一時停止', previewNext:'次のフレーム', previewHelp:'プレビューは軽量画像を使いますが、Canvasサイズ・Fit / Fill・背景は最終出力と同じ計算を使います。',
           outputSettingsTitle:'出力Canvas', outputSettingsBody:'1枚目の縦横比を基準にサイズをそろえます。カスタムでは幅・高さを個別指定できます。', canvasSizeLabel:'Canvasサイズ', canvasAuto:'自動（長辺最大720px）', canvas480:'長辺480px', canvas720:'長辺720px', canvas1080:'長辺1080px', canvasOriginal:'1枚目の元サイズ相当', canvasCustom:'カスタム', canvasWidthLabel:'Canvas幅', canvasHeightLabel:'Canvas高さ', placementLabel:'画像の配置', fit:'収める', fill:'切り抜く', backgroundLabel:'背景', backgroundTransparent:'透明', backgroundWhite:'白', backgroundBlack:'黒', backgroundCustom:'カスタム色', backgroundColorLabel:'背景色', previewCanvasLabel:'正規化されたアニメーションプレビュー', resolvedCanvas:'実際のCanvas',
-          nextTitle:'次の段階: Animated GIF出力', nextBody:'v0.5.0で、このCanvas正規化結果を使ってGIFを書き出します。', createAnimation:'アニメーションを作成',
+          gifHeading:'Animated GIFを書き出す', gifHeadingNote:'Canvas設定とフレーム時間を使い、GIFをこのブラウザ内で生成します。', gifColorsLabel:'色数', gifLoopLabel:'ループ', gifLoopInfinite:'繰り返す', gifLoopOnce:'1回だけ', gifDitherLabel:'Dithering', outputFilenameLabel:'出力ファイル名', gifLimitNote:'GIFは最大256色・1bit透明です。写真ではDitheringを有効にすると階調が自然になる場合があります。', createGif:'GIFを作成', cancelGif:'キャンセル', gifResultEmpty:'GIFを作成すると、ここで実際の生成ファイルを確認できます。', gifResultPreviewLabel:'生成したGIFのプレビュー', gifResultSizeLabel:'Canvas', gifResultFramesLabel:'フレーム', gifResultDurationLabel:'再生時間', gifResultBytesLabel:'ファイル容量', saveGif:'GIFを保存', gifPreparing:'フレーム {current} / {total} を準備しています…', gifEncoding:'フレーム {current} / {total} をGIFへ変換しています…', gifFinishing:'GIFを仕上げています…', gifDone:'GIFを作成しました', gifCancelled:'GIF作成をキャンセルしました', gifFailed:'GIFを作成できませんでした', gifStale:'設定が変更されました。もう一度GIFを作成してください。',
+          nextTitle:'次の段階: Animated WebP出力', nextBody:'v0.6.0で写真向けのAnimated WebPを書き出せるようにします。', webpFuture:'WebPは次の段階', createAnimation:'アニメーションを作成',
           buildInfo:'ビルド情報', appVersion:'アプリバージョン', builtAt:'生成日時', dependencies:'内包依存', footer:'画像はこの端末内で処理されます',
-          help:'ヘルプ', close:'閉じる', helpTitle:'使い方と注意事項', helpHowTitle:'基本操作', helpHow1:'JPEG・PNG・静止WebPを複数選択するか、画面へドロップします。', helpHow2:'順番と表示時間を整えます。', helpHow3:'Canvasサイズ、収める／切り抜く、背景を設定し、同じ正規化結果でアニメーションをプレビューします。',
+          help:'ヘルプ', close:'閉じる', helpTitle:'使い方と注意事項', helpHowTitle:'基本操作', helpHow1:'JPEG・PNG・静止WebPを複数選択するか、画面へドロップします。', helpHow2:'順番と表示時間を整えます。', helpHow3:'Canvas設定を確認し、色数・Dithering・ループを選んでGIFを作成します。生成後は実ファイルを確認して保存します。',
           helpFormatsTitle:'対応形式', helpFormatsBody:'JPEG / JPG、PNG、静止WebPに対応します。Animated WebP、GIF、動画、HEIC等は現在対象外です。', helpLimitsTitle:'上限', helpLimitsBody:'最大200枚、1ファイル50 MiB、読み込み済み元ファイル合計500 MiB、1画像50メガピクセルです。表示時間は1フレーム20〜10,000 ms、Canvasは16〜4096pxです。',
           helpPrivacyTitle:'プライバシー', helpPrivacyBody:'選択した画像はブラウザ内だけで読み込みます。このアプリは画像を外部サーバーへ送信せず、Analyticsや外部APIも使用しません。', helpStorageTitle:'データ保持', helpStorageBody:'画像自体はブラウザストレージへ自動保存しません。ページを閉じると作業画像は破棄されます。',
           confirmTitle:'確認', cancel:'キャンセル', clearConfirmTitle:'すべての画像を消去しますか？', clearConfirmBody:'追加した画像とサムネイルをこのページから消去します。元ファイルは変更されません。', clearConfirmAction:'すべて消去',
@@ -522,9 +609,10 @@
           timingTitle:'All frame durations', timingBody:'Apply a preset or custom duration to every frame. Individual durations can be changed on each card.', globalDurationLabel:'Duration for all frames', applyAll:'Apply to all', frameDuration:'Duration', timingApplied:'Updated all frame durations', timingChanged:'Frame duration updated',
           previewHeading:'Animation preview', previewNote:'Preview each frame after applying the output canvas, Fit / Fill, and background settings.', previewEmpty:'Add images to preview the normalized output canvas here.', previewFrameLabel:'Frame', previewTimeLabel:'Playback position', previewRestart:'Restart', previewPrevious:'Previous frame', previewPlay:'Play / pause', previewNext:'Next frame', previewHelp:'The preview uses lightweight image data, but canvas size, Fit / Fill, and background use the same geometry as final output.',
           outputSettingsTitle:'Output canvas', outputSettingsBody:'Preset sizes keep the first frame aspect ratio. Custom size lets you set width and height independently.', canvasSizeLabel:'Canvas size', canvasAuto:'Auto (long edge up to 720px)', canvas480:'480px long edge', canvas720:'720px long edge', canvas1080:'1080px long edge', canvasOriginal:'First frame original equivalent', canvasCustom:'Custom', canvasWidthLabel:'Canvas width', canvasHeightLabel:'Canvas height', placementLabel:'Image placement', fit:'Fit', fill:'Fill', backgroundLabel:'Background', backgroundTransparent:'Transparent', backgroundWhite:'White', backgroundBlack:'Black', backgroundCustom:'Custom color', backgroundColorLabel:'Background color', previewCanvasLabel:'Normalized animation preview', resolvedCanvas:'Resolved canvas',
-          nextTitle:'Next: Animated GIF export', nextBody:'v0.5.0 will use this normalized canvas to encode GIF output.', createAnimation:'Create animation',
+          gifHeading:'Export Animated GIF', gifHeadingNote:'Create a GIF locally using the current canvas settings and frame timing.', gifColorsLabel:'Colors', gifLoopLabel:'Loop', gifLoopInfinite:'Repeat', gifLoopOnce:'Play once', gifDitherLabel:'Dithering', outputFilenameLabel:'Output filename', gifLimitNote:'GIF is limited to 256 colors and 1-bit transparency. Dithering can make gradients look more natural in photographs.', createGif:'Create GIF', cancelGif:'Cancel', gifResultEmpty:'Create a GIF to review the actual generated file here.', gifResultPreviewLabel:'Generated GIF preview', gifResultSizeLabel:'Canvas', gifResultFramesLabel:'Frames', gifResultDurationLabel:'Duration', gifResultBytesLabel:'File size', saveGif:'Save GIF', gifPreparing:'Preparing frame {current} / {total}…', gifEncoding:'Encoding frame {current} / {total}…', gifFinishing:'Finishing GIF…', gifDone:'GIF created', gifCancelled:'GIF creation cancelled', gifFailed:'Could not create GIF', gifStale:'Settings changed. Create the GIF again.',
+          nextTitle:'Next: Animated WebP export', nextBody:'v0.6.0 will add Animated WebP for full-color photographic output.', webpFuture:'WebP comes next', createAnimation:'Create animation',
           buildInfo:'Build information', appVersion:'App version', builtAt:'Built at', dependencies:'Embedded dependencies', footer:'Images are processed on this device',
-          help:'Help', close:'Close', helpTitle:'How to use & notes', helpHowTitle:'Basic workflow', helpHow1:'Choose multiple JPEG, PNG, or still WebP images, or drop them onto the page.', helpHow2:'Arrange the sequence and adjust timing.', helpHow3:'Choose the canvas size, Fit / Fill placement, and background, then preview the animation using the same normalization geometry.',
+          help:'Help', close:'Close', helpTitle:'How to use & notes', helpHowTitle:'Basic workflow', helpHow1:'Choose multiple JPEG, PNG, or still WebP images, or drop them onto the page.', helpHow2:'Arrange the sequence and adjust timing.', helpHow3:'Review the canvas, choose colors, dithering, and loop behavior, then create the GIF and inspect the actual generated file before saving.',
           helpFormatsTitle:'Supported formats', helpFormatsBody:'JPEG / JPG, PNG, and still WebP are supported. Animated WebP, GIF, video, HEIC, and other formats are not supported yet.', helpLimitsTitle:'Limits', helpLimitsBody:'Up to 200 images, 50 MiB per file, 500 MiB total source files, 50 megapixels per image, 20–10,000 ms per frame, and a 16–4096 px output canvas.',
           helpPrivacyTitle:'Privacy', helpPrivacyBody:'Selected images are read only in your browser. This app does not upload images or use analytics or external APIs.', helpStorageTitle:'Data retention', helpStorageBody:'Images are not automatically stored in browser storage. Closing the page discards the working images.',
           confirmTitle:'Confirm', cancel:'Cancel', clearConfirmTitle:'Clear all images?', clearConfirmBody:'This removes the imported images and thumbnails from this page. Your original files are not changed.', clearConfirmAction:'Clear all',
