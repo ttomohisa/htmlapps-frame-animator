@@ -825,7 +825,6 @@
           generation: 0,
           worker: null,
           workerUrl: '',
-          moduleUrl: '',
           requestId: 0,
           pending: new Set(),
           resultBlob: null,
@@ -1845,9 +1844,10 @@
           const id = message.id;
           try {
             if (message.type === 'init') {
-              const imported = await import(message.moduleUrl);
               const wasmBinary = new Uint8Array(message.wasmBuffer);
-              webpModule = await imported.default({
+              const factory = self.__FrameAnimatorWebpModuleFactory;
+              if (typeof factory !== 'function') throw new Error('Embedded WebP module factory is unavailable');
+              webpModule = await factory({
                 wasmBinary,
                 noInitialRun: true,
                 locateFile: path => path
@@ -1893,23 +1893,26 @@
       }
 
       async function createWebpWorker() {
-        const moduleUrl = await StandaloneAssets.blobUrlAsync('jsquash-webp', 'encoder-js');
-        state.webp.moduleUrl = moduleUrl;
         let workerUrl = '';
         try {
-          const wasmBytes = await StandaloneAssets.bytesAsync('jsquash-webp', 'encoder-wasm');
-          const workerSource = `(${webpWorkerMain.toString()})();`;
+          const [moduleSource, wasmBytes] = await Promise.all([
+            StandaloneAssets.textAsync('jsquash-webp', 'encoder-js'),
+            StandaloneAssets.bytesAsync('jsquash-webp', 'encoder-wasm')
+          ]);
+          const classicModuleSource = moduleSource
+            .replaceAll('import.meta.url', '__embeddedImportMetaUrl')
+            .replace(/export\s+default\s+Module\s*;?\s*$/, 'self.__FrameAnimatorWebpModuleFactory = Module;');
+          if (!classicModuleSource.includes('self.__FrameAnimatorWebpModuleFactory = Module;')) {
+            throw new Error('Embedded WebP module transform failed');
+          }
+          const workerSource = `var __embeddedImportMetaUrl = "https://localhost/frame-animator-webp.js";\n${classicModuleSource}\n(${webpWorkerMain.toString()})();`;
           workerUrl = URL.createObjectURL(new Blob([workerSource], { type: 'text/javascript' }));
           state.webp.workerUrl = workerUrl;
-          // Use a classic Blob Worker so direct file:// standalone use does not depend on module-worker origin handling.
-          // The dedicated worker can still dynamically import the embedded Emscripten module from its Blob URL.
           const worker = new Worker(workerUrl);
-          return { worker, moduleUrl, wasmBuffer: wasmBytes.slice().buffer };
+          return { worker, wasmBuffer: wasmBytes.slice().buffer };
         } catch (error) {
           if (workerUrl) URL.revokeObjectURL(workerUrl);
           state.webp.workerUrl = '';
-          StandaloneAssets.revoke(moduleUrl);
-          state.webp.moduleUrl = '';
           throw error;
         }
       }
@@ -1919,10 +1922,6 @@
         if (state.webp.workerUrl) {
           URL.revokeObjectURL(state.webp.workerUrl);
           state.webp.workerUrl = '';
-        }
-        if (state.webp.moduleUrl) {
-          StandaloneAssets.revoke(state.webp.moduleUrl);
-          state.webp.moduleUrl = '';
         }
       }
 
@@ -2090,7 +2089,6 @@
           worker = created.worker;
           state.webp.worker = worker;
           await webpWorkerCall(worker, 'init', {
-            moduleUrl: created.moduleUrl,
             wasmBuffer: created.wasmBuffer,
             width: snapshot.width,
             height: snapshot.height,
@@ -2149,7 +2147,7 @@
           if (worker && state.webp.worker === worker) {
             disposeWebpWorker(worker);
             state.webp.worker = null;
-          } else if (!worker && (state.webp.workerUrl || state.webp.moduleUrl)) {
+          } else if (!worker && state.webp.workerUrl) {
             disposeWebpWorker(null);
           }
           if (generation === state.webp.generation) {
