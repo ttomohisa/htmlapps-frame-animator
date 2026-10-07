@@ -146,6 +146,10 @@ async function loadFiles(page, files) {
   await page.locator('#fileInput').setInputFiles(files);
 }
 
+async function waitToastGone(page) {
+  await page.waitForFunction(() => !document.querySelector('#appToast')?.classList.contains('show'), null, { timeout: 10_000 });
+}
+
 async function saveDownload(page, buttonSelector, destination) {
   const [download] = await Promise.all([
     page.waitForEvent('download', { timeout: 30_000 }),
@@ -173,6 +177,7 @@ async function exerciseDesktop(browser, baseUrl) {
   await waitFrames(page, 4);
   assert(await page.locator('#dropZone').evaluate(el => el.classList.contains('is-compact')), 'Drop zone did not compact after import');
   assert(!(await visible(page.locator('#emptyState'))), 'Frames empty state remained visible after importing frames');
+  await waitToastGone(page);
 
   await page.evaluate(() => scrollTo(0, 0));
   await page.screenshot({ path: join(assetsDir, 'screenshot.png'), fullPage: false });
@@ -262,6 +267,7 @@ async function exerciseMobile(browser, baseUrl) {
 
   await page.setViewportSize({ width: 390, height: 844 });
   await page.locator('#mobileTabPreview').click();
+  await waitToastGone(page);
   await page.screenshot({ path: join(assetsDir, 'screenshot-mobile.png'), fullPage: false });
 
   assert(external.length === 0, `External runtime requests detected on mobile: ${external.join(', ')}`);
