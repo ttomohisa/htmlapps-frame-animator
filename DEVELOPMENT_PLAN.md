@@ -111,7 +111,7 @@ v0.8 implementation notes: smartphone staged navigation is enabled only at <=640
 
 v0.8 verification notes: source JavaScript parsed successfully; mobile empty-state/tab reset, safe-area/touch-target CSS, lazy thumbnail decoding, result/Worker Blob URL cleanup, and retryable encoder failure paths were audited; the authoritative standalone build succeeded before the generated root HTML was synchronized.
 
-## v0.9.0 — Release candidate
+## v0.9.0 — Release candidate ✅
 
 Stop feature work.
 
@@ -134,6 +134,29 @@ Regression matrix:
 - runtime network audit
 
 Prepare final README, Japanese README, favicon, screenshots, changelog, license/notices, and green CI.
+
+
+v0.9 RC browser audit completed in Chromium against the generated standalone HTML:
+
+- mixed JPEG/PNG/WebP-compatible import path, partial failure, long/Unicode filenames, natural filename sort, and 20 / 10,000 ms timing boundaries
+- Forward / Reverse / Ping-pong plus custom finite loop metadata
+- generated GIF preview/download and Netscape loop-extension validation
+- generated Animated WebP preview/download plus RIFF / ANIM / ANMF structural validation
+- 390 / 360 / 320 px staged smartphone workflow with no horizontal overflow
+- 200-frame import and single-frame timing update
+- GIF cancellation followed by successful retry
+- forced GIF/WebP Worker failure followed by retryable recovery without losing frames
+- direct `file://` standalone operation for both GIF and Animated WebP
+- no external HTTP(S) runtime request during the tested local workflows
+- fresh Japanese desktop, English desktop, and smartphone screenshots captured from the RC build
+
+RC regression findings fixed before sign-off:
+
+1. **Controls remained disabled after import completion.** `updateBusy(false)` did not restore all canvas/playback/export controls after `importBusy` cleared. The busy-state synchronizer now restores the full control set.
+2. **Animated WebP failed from direct `file://` use.** Chromium rejected the Emscripten encoder's dynamic import from a `blob:null/...` module URL. The embedded WebP encoder JS is now transformed and concatenated into the classic Worker source, with WASM bytes still supplied directly from the standalone asset bundle and no runtime fetch.
+3. **The Frames empty state could remain visible after import.** Author CSS overrode the HTML `hidden` attribute. A global `[hidden]{display:none!important}` rule now makes hidden state authoritative.
+
+Final RC screenshot audit confirmed the supplied icon/favicon, clean populated frame list, English/Japanese UI, and smartphone Preview stage without transient toast overlays.
 
 ## v1.0.0 — Stable
 
