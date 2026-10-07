@@ -14,7 +14,7 @@ Include the affected commit/version, reproduction steps, expected and actual beh
 
 Frame Animator is a static, local-first browser application with no conversion backend.
 
-v0.7.0 protections include:
+v0.8.0 protections include:
 
 - `connect-src 'none'` at runtime.
 - No runtime CDN, external font, analytics, telemetry, or API.
@@ -42,7 +42,7 @@ Imported files are untrusted input. The application must:
 - release ImageBitmap and other large temporary resources
 - invalidate stale asynchronous work when the source set is cleared or replaced
 
-Animated WebP is outside the v0.7.0 input contract and is rejected when detectable from WebP animation metadata.
+Animated WebP is outside the v0.8.0 input contract and is rejected when detectable from WebP animation metadata.
 
 ## Encoder review
 
@@ -67,5 +67,6 @@ The WebP path must:
 - allow only the minimum CSP WebAssembly capability required for local instantiation
 - encode source frames sequentially rather than storing the whole animation as RGBA
 - terminate the Worker and revoke module/Worker Blob URLs after completion, cancellation, failure, or page exit
+- restore a clean non-busy state after encoder failure so the user can retry without reloading or losing source files
 - validate the static WebP RIFF/chunk structure before adding frame data to the animated container
 - reject malformed/truncated encoder output instead of muxing it
