@@ -186,7 +186,7 @@
       dialog{width:calc(100vw - 16px);max-height:calc(100dvh - 16px);border-radius:16px}.dialog-shell{max-height:calc(100dvh - 16px)}.dialog-head{position:sticky;top:0;background:var(--surface);z-index:1}
       .dialog-body{padding-bottom:calc(20px + env(safe-area-inset-bottom))}.app-toast{right:10px;bottom:calc(10px + env(safe-area-inset-bottom));max-width:calc(100vw - 20px)}
     }
-    @media(max-width:360px){.header-inner{padding-left:10px;padding-right:10px}.brand-mark{width:34px;height:34px}.brand-name{font-size:15px}.brand-meta{font-size:10px}.frame-grid{grid-template-columns:1fr}}
+    @media(max-width:360px){.header-inner{padding-left:max(8px,env(safe-area-inset-left));padding-right:max(8px,env(safe-area-inset-right))}.brand-mark{width:34px;height:34px}.brand-name{font-size:15px}.brand-meta{display:none}.frame-grid{grid-template-columns:1fr}.gif-option-grid{grid-template-columns:1fr}.mobile-workflow-nav{gap:3px;padding:4px}.mobile-workflow-tab{font-size:10px}.preview-transport{grid-template-columns:repeat(4,minmax(44px,1fr))}}
     @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
   </style>
 </head>
