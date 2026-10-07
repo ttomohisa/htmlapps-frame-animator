@@ -15,6 +15,7 @@ The project uses Semantic Versioning.
 - Quality 1–100, Lossless, Effort 0–6, infinite-loop, and play-once WebP settings.
 - Local RIFF/WebP animation muxing with `VP8X`, `ANIM`, and full-canvas `ANMF` chunks.
 - Generated Animated WebP preview, dimensions, frame count, duration, file size, cancellation, and local save.
+- Exact generated-worker validation for lossy/alpha and lossless WebP, including RIFF loop and per-frame duration fields.
 - User-supplied Frame Animator SVG as the canonical app icon and favicon.
 
 ### Changed
