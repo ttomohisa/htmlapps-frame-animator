@@ -3,7 +3,7 @@
   "name": "Frame Animator",
   "nameJa": "Frame Animator",
   "slug": "frame-animator",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Build animated GIF and WebP files from multiple local images entirely in your browser.",
   "descriptionJa": "複数のローカル画像からGIF / WebPアニメーションをブラウザー内だけで作成します。",
   "defaultLanguage": "auto",

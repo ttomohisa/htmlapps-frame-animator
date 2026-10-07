@@ -2,7 +2,7 @@
 
 Frame Animatorは、複数のローカル画像からAnimated GIF / WebPを作るためのBrowser Kittyツールです。選択した画像を変換サーバーへアップロードせず、ブラウザ内で処理する構成を目指します。
 
-> 現在の開発版は **v0.1.0** です。この段階では画像読み込みの基盤まで実装しています。並べ替え、表示時間、アニメーションプレビュー、GIF / WebP生成は後続マイルストーンで追加する予定で、未実装機能を完成済みとして表示しません。
+> 現在の開発版は **v0.2.0** です。画像読み込みとフレーム順編集まで実装しています。表示時間、アニメーションプレビュー、GIF / WebP生成は後続マイルストーンで追加する予定で、未実装機能を完成済みとして表示しません。
 
 ## 現在できること
 
@@ -13,7 +13,12 @@ Frame Animatorは、複数のローカル画像からAnimated GIF / WebPを作�
 - 最大200枚、1ファイル50 MiB、合計500 MiB、1画像50 MPの安全ガード
 - 一部の画像だけ失敗した場合、正常画像を残したまま失敗理由を分離表示
 - 全画像消去前の確認
-- 日本語 / 英語を同じHTMLに内包
+- 専用ハンドルによるマウス / タッチのドラッグ並べ替え
+- ドラッグを使わなくても操作できる前へ / 後ろへボタン
+- フレームの複製・削除
+- 読み込みや順序変更を対象にしたUndo / Redoとキーボードショートカット
+- ファイル名の自然順による昇順 / 降順ソート
+- 日本語 / 英語を同じHTMLに内包し、言語切替はEN / JAの短い表示
 - PC / スマートフォン対応のレスポンシブUI
 - 実行時CDN、Analytics、Telemetry、外部APIなし
 
@@ -39,7 +44,7 @@ CSPは `connect-src 'none'` を使用し、Analytics、Telemetry、実行時CDN�
 
 読み込んだ画像そのものをlocalStorageやIndexedDBへ自動保存しません。ページを閉じると作業中の画像セットは破棄されます。
 
-## v0.1.0の対応入力
+## v0.2.0の対応入力
 
 対応:
 
@@ -59,7 +64,7 @@ CSPは `connect-src 'none'` を使用し、Analytics、Telemetry、実行時CDN�
 - PSD
 - PDF
 
-## v0.1.0の上限
+## v0.2.0の上限
 
 - 最大200枚
 - 1ファイル50 MiB
@@ -101,4 +106,4 @@ powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File .\scripts\check-
 
 MIT。詳細は [LICENSE](LICENSE) を参照してください。
 
-第三者ライブラリの情報は [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) に記載します。v0.1.0ではランタイム第三者依存を宣言していません。
+第三者ライブラリの情報は [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) に記載します。v0.2.0ではランタイム第三者依存を宣言していません。

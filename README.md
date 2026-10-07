@@ -2,7 +2,7 @@
 
 Frame Animator is a Browser Kitty utility for turning multiple local still images into an animated GIF or WebP without uploading the source images.
 
-> Current development version: **v0.1.0**. This milestone implements the image-import foundation. Reordering, timing, preview, and GIF/WebP encoding are planned in the following milestones and are not presented as finished features yet.
+> Current development version: **v0.2.0**. Image import and frame-sequence editing are implemented. Timing, animation preview, and GIF/WebP encoding are planned in later milestones and are not presented as finished features yet.
 
 ## Current features
 
@@ -13,7 +13,12 @@ Frame Animator is a Browser Kitty utility for turning multiple local still image
 - Safety guards: 200 frames, 50 MiB per file, 500 MiB source total, 50 MP per image
 - Partial failure reporting: valid images remain usable when another image fails
 - Explicit confirmation before clearing all imported images
-- Japanese and English in the same HTML
+- Reorder frames by mouse/touch drag from a dedicated handle
+- Earlier/later buttons as a non-drag reordering path
+- Duplicate and delete individual frames
+- Undo / Redo for imports and sequence edits, including keyboard shortcuts
+- Natural filename sorting in ascending or descending order
+- Japanese and English in the same HTML; the language switch uses compact EN / JA labels
 - Responsive desktop and smartphone layout
 - No runtime CDN, analytics, telemetry, or external API
 
@@ -39,7 +44,7 @@ The app uses a restrictive Content Security Policy with `connect-src 'none'`. It
 
 Imported image bytes are not automatically persisted to localStorage or IndexedDB. Closing the page discards the working image set.
 
-## Input support in v0.1.0
+## Input support in v0.2.0
 
 Supported:
 
@@ -59,7 +64,7 @@ Not supported yet:
 - PSD
 - PDF
 
-## Limits in v0.1.0
+## Limits in v0.2.0
 
 - 200 images
 - 50 MiB per source file
@@ -101,4 +106,4 @@ Product behavior and acceptance criteria live in [APP_SPEC.md](APP_SPEC.md). The
 
 MIT. See [LICENSE](LICENSE).
 
-Third-party notices are recorded in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). v0.1.0 declares no runtime third-party dependency.
+Third-party notices are recorded in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). v0.2.0 declares no runtime third-party dependency.

@@ -1,6 +1,6 @@
 # Frame Animator development plan
 
-## v0.1.0 — Foundation / image import
+## v0.1.0 — Foundation / image import ✅
 
 - Current `htmlapps-template` structure
 - JPEG / PNG / still WebP import
@@ -16,7 +16,7 @@
 
 Exit: importing a mixed valid/invalid batch leaves valid frames usable and explains rejected items.
 
-## v0.2.0 — Frame sequence editor
+## v0.2.0 — Frame sequence editor ✅
 
 - Drag/touch reorder
 - Move previous / next controls
