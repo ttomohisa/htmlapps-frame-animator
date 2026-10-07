@@ -1430,7 +1430,7 @@
 
       function sanitizeFilenameBase(value) {
         const cleaned = String(value || '').trim().replace(/[\\/:*?"<>|\u0000-\u001f]/g, '-').replace(/\.+$/g, '').trim();
-        let base = cleaned.replace(/\.gif$/i, '') || 'frame-animation';
+        let base = cleaned.replace(/\.(gif|webp)$/i, '') || 'frame-animation';
         if (/^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/i.test(base)) base = `${base}-file`;
         return base.slice(0, 120);
       }
@@ -1603,6 +1603,462 @@
         AppToast.show({ message: t('gifSaved'), tone: 'success' });
       }
 
+      function webpWorkerMain() {
+        'use strict';
+
+        let webpModule = null;
+        let animation = null;
+
+        function ascii(bytes, offset, length) {
+          let value = '';
+          for (let index = 0; index < length; index += 1) value += String.fromCharCode(bytes[offset + index]);
+          return value;
+        }
+
+        function u32le(bytes, offset) {
+          return (bytes[offset] | (bytes[offset + 1] << 8) | (bytes[offset + 2] << 16) | (bytes[offset + 3] << 24)) >>> 0;
+        }
+
+        function putU16(bytes, offset, value) {
+          bytes[offset] = value & 255;
+          bytes[offset + 1] = (value >>> 8) & 255;
+        }
+
+        function putU24(bytes, offset, value) {
+          bytes[offset] = value & 255;
+          bytes[offset + 1] = (value >>> 8) & 255;
+          bytes[offset + 2] = (value >>> 16) & 255;
+        }
+
+        function putU32(bytes, offset, value) {
+          bytes[offset] = value & 255;
+          bytes[offset + 1] = (value >>> 8) & 255;
+          bytes[offset + 2] = (value >>> 16) & 255;
+          bytes[offset + 3] = (value >>> 24) & 255;
+        }
+
+        function tagBytes(tag) {
+          return Uint8Array.from([tag.charCodeAt(0), tag.charCodeAt(1), tag.charCodeAt(2), tag.charCodeAt(3)]);
+        }
+
+        function concat(parts) {
+          let length = 0;
+          for (const part of parts) length += part.byteLength;
+          const output = new Uint8Array(length);
+          let offset = 0;
+          for (const part of parts) {
+            output.set(part, offset);
+            offset += part.byteLength;
+          }
+          return output;
+        }
+
+        function makeChunk(tag, payload) {
+          const padded = payload.byteLength + (payload.byteLength & 1);
+          const output = new Uint8Array(8 + padded);
+          output.set(tagBytes(tag), 0);
+          putU32(output, 4, payload.byteLength);
+          output.set(payload, 8);
+          return output;
+        }
+
+        function extractWebpFrameChunks(input) {
+          const bytes = input instanceof Uint8Array ? input : new Uint8Array(input);
+          if (bytes.byteLength < 20 || ascii(bytes, 0, 4) !== 'RIFF' || ascii(bytes, 8, 4) !== 'WEBP') {
+            throw new Error('Static WebP encoder returned an invalid RIFF/WebP file');
+          }
+          const chunks = [];
+          let offset = 12;
+          while (offset + 8 <= bytes.byteLength) {
+            const tag = ascii(bytes, offset, 4);
+            const size = u32le(bytes, offset + 4);
+            const total = 8 + size + (size & 1);
+            if (offset + total > bytes.byteLength) throw new Error('Static WebP chunk is truncated');
+            if (tag === 'ALPH' || tag === 'VP8 ' || tag === 'VP8L') chunks.push(bytes.slice(offset, offset + total));
+            offset += total;
+          }
+          if (!chunks.some(chunk => {
+            const tag = ascii(chunk, 0, 4);
+            return tag === 'VP8 ' || tag === 'VP8L';
+          })) throw new Error('Static WebP frame has no image payload');
+          return concat(chunks);
+        }
+
+        function defaultConfig(options) {
+          return {
+            lossless: options.lossless ? 1 : 0,
+            quality: options.quality,
+            method: options.method,
+            image_hint: 0,
+            target_size: 0,
+            target_PSNR: 0,
+            segments: 4,
+            sns_strength: 50,
+            filter_strength: 60,
+            filter_sharpness: 0,
+            filter_type: 1,
+            autofilter: 0,
+            alpha_compression: 1,
+            alpha_filtering: 1,
+            alpha_quality: 100,
+            pass: 1,
+            show_compressed: 0,
+            preprocessing: 0,
+            partitions: 0,
+            partition_limit: 0,
+            emulate_jpeg_size: 0,
+            low_memory: 0,
+            near_lossless: 100,
+            exact: 1,
+            use_delta_palette: 0,
+            use_sharp_yuv: 0
+          };
+        }
+
+        function makeAnimatedWebp() {
+          if (!animation || !animation.frames.length) throw new Error('No WebP frames were encoded');
+          const vp8x = new Uint8Array(10);
+          vp8x[0] = 0x02 | (animation.alpha ? 0x10 : 0);
+          putU24(vp8x, 4, animation.width - 1);
+          putU24(vp8x, 7, animation.height - 1);
+
+          const anim = new Uint8Array(6);
+          putU32(anim, 0, animation.background >>> 0);
+          putU16(anim, 4, animation.repeat);
+
+          const body = [makeChunk('VP8X', vp8x), makeChunk('ANIM', anim)];
+          for (const frame of animation.frames) {
+            const payload = new Uint8Array(16 + frame.data.byteLength);
+            putU24(payload, 0, 0);
+            putU24(payload, 3, 0);
+            putU24(payload, 6, animation.width - 1);
+            putU24(payload, 9, animation.height - 1);
+            putU24(payload, 12, Math.max(1, Math.min(0xffffff, Math.round(frame.duration))));
+            payload[15] = 0x02;
+            payload.set(frame.data, 16);
+            body.push(makeChunk('ANMF', payload));
+          }
+
+          const riffPayload = concat([tagBytes('WEBP'), ...body]);
+          if (riffPayload.byteLength > 0xffffffff) throw new Error('Animated WebP is too large for RIFF');
+          const output = new Uint8Array(8 + riffPayload.byteLength);
+          output.set(tagBytes('RIFF'), 0);
+          putU32(output, 4, riffPayload.byteLength);
+          output.set(riffPayload, 8);
+          return output;
+        }
+
+        self.onmessage = async event => {
+          const message = event.data || {};
+          const id = message.id;
+          try {
+            if (message.type === 'init') {
+              const imported = await import(message.moduleUrl);
+              const wasmBinary = new Uint8Array(message.wasmBuffer);
+              webpModule = await imported.default({ wasmBinary, noInitialRun: true });
+              animation = {
+                width: message.width,
+                height: message.height,
+                alpha: Boolean(message.options.alpha),
+                background: message.options.background >>> 0,
+                repeat: message.options.repeat,
+                config: defaultConfig(message.options),
+                frames: []
+              };
+              self.postMessage({ id, ok: true });
+              return;
+            }
+
+            if (!webpModule || !animation) throw new Error('WebP encoder is not initialized');
+
+            if (message.type === 'frame') {
+              const rgba = new Uint8Array(message.buffer);
+              const result = webpModule.encode(rgba, animation.width, animation.height, animation.config);
+              if (!result) throw new Error('Static WebP encoding failed');
+              const frameData = extractWebpFrameChunks(result);
+              animation.frames.push({ duration: message.duration, data: frameData });
+              self.postMessage({ id, ok: true, encodedBytes: frameData.byteLength });
+              return;
+            }
+
+            if (message.type === 'finish') {
+              const output = makeAnimatedWebp();
+              webpModule = null;
+              animation = null;
+              self.postMessage({ id, ok: true, buffer: output.buffer }, [output.buffer]);
+              return;
+            }
+
+            throw new Error('Unknown WebP worker message');
+          } catch (error) {
+            self.postMessage({ id, ok: false, error: error?.message || String(error) });
+          }
+        };
+      }
+
+      async function createWebpWorker() {
+        const moduleUrl = await StandaloneAssets.blobUrlAsync('jsquash-webp', 'encoder-js');
+        const wasmBytes = await StandaloneAssets.bytesAsync('jsquash-webp', 'encoder-wasm');
+        const workerSource = `(${webpWorkerMain.toString()})();`;
+        const workerUrl = URL.createObjectURL(new Blob([workerSource], { type: 'text/javascript' }));
+        const worker = new Worker(workerUrl, { type: 'module' });
+        state.webp.workerUrl = workerUrl;
+        state.webp.moduleUrl = moduleUrl;
+        return { worker, moduleUrl, wasmBuffer: wasmBytes.slice().buffer };
+      }
+
+      function disposeWebpWorker(worker) {
+        worker?.terminate();
+        if (state.webp.workerUrl) {
+          URL.revokeObjectURL(state.webp.workerUrl);
+          state.webp.workerUrl = '';
+        }
+        if (state.webp.moduleUrl) {
+          StandaloneAssets.revoke(state.webp.moduleUrl);
+          state.webp.moduleUrl = '';
+        }
+      }
+
+      function webpWorkerCall(worker, type, payload = {}, transfer = []) {
+        const id = ++state.webp.requestId;
+        return new Promise((resolve, reject) => {
+          let settled = false;
+          const pending = {
+            reject(error) {
+              if (settled) return;
+              settled = true;
+              cleanup();
+              reject(error);
+            }
+          };
+
+          function cleanup() {
+            worker.removeEventListener('message', onMessage);
+            worker.removeEventListener('error', onError);
+            state.webp.pending.delete(pending);
+          }
+
+          function onMessage(event) {
+            if (event.data?.id !== id || settled) return;
+            settled = true;
+            cleanup();
+            if (event.data.ok === false) reject(new Error(event.data.error || 'WebP worker failed'));
+            else resolve(event.data);
+          }
+
+          function onError(event) {
+            if (settled) return;
+            settled = true;
+            cleanup();
+            reject(new Error(event.message || 'WebP worker failed'));
+          }
+
+          state.webp.pending.add(pending);
+          worker.addEventListener('message', onMessage);
+          worker.addEventListener('error', onError);
+          worker.postMessage({ id, type, ...payload }, transfer);
+        });
+      }
+
+      function webpBackgroundBgra() {
+        const color = resolvedBackgroundColor();
+        if (!color) return 0;
+        const match = /^#([0-9a-f]{6})$/i.exec(color);
+        if (!match) return 0;
+        const value = Number.parseInt(match[1], 16);
+        const r = (value >>> 16) & 255;
+        const g = (value >>> 8) & 255;
+        const b = value & 255;
+        const a = 255;
+        return ((a << 24) | (r << 16) | (g << 8) | b) >>> 0;
+      }
+
+      function normalizeWebpQuality(value) {
+        const numeric = Math.round(Number(value));
+        if (!Number.isFinite(numeric)) return 80;
+        return Math.min(100, Math.max(1, numeric));
+      }
+
+      function clearWebpResult({ stale = false } = {}) {
+        const hadResult = Boolean(state.webp.resultUrl);
+        if (state.webp.resultUrl) URL.revokeObjectURL(state.webp.resultUrl);
+        state.webp.resultBlob = null;
+        state.webp.resultUrl = '';
+        state.webp.resultMeta = null;
+        state.webp.stale = Boolean(stale && hadResult);
+        webpResultImage.removeAttribute('src');
+        $('#webpResultCard').hidden = true;
+        $('#webpResultEmpty').hidden = false;
+        $('#saveWebpButton').disabled = true;
+      }
+
+      function invalidateWebpResult(options = {}) {
+        state.webp.generation += 1;
+        clearWebpResult(options);
+      }
+
+      function invalidateAnimationResults(options = {}) {
+        invalidateGifResult(options);
+        invalidateWebpResult(options);
+      }
+
+      function renderWebpResult() {
+        const meta = state.webp.resultMeta;
+        if (!state.webp.resultUrl || !meta) {
+          $('#webpResultCard').hidden = true;
+          $('#webpResultEmpty').hidden = false;
+          $('#webpResultEmpty').textContent = state.webp.stale ? t('webpStale') : t('webpResultEmpty');
+          $('#saveWebpButton').disabled = true;
+          return;
+        }
+        $('#webpResultEmpty').hidden = true;
+        $('#webpResultCard').hidden = false;
+        webpResultImage.src = state.webp.resultUrl;
+        $('#webpResultDimensions').textContent = `${meta.width} × ${meta.height} px`;
+        $('#webpResultFrames').textContent = String(meta.frames);
+        $('#webpResultDuration').textContent = formatSeconds(meta.duration);
+        $('#webpResultBytes').textContent = formatBytes(meta.bytes);
+        $('#saveWebpButton').disabled = false;
+      }
+
+      function setWebpBusy(busy) {
+        state.webp.busy = busy;
+        if (busy) {
+          pausePreview({ resetElapsed: true });
+          webpProgress.max = 1;
+          webpProgress.value = 0;
+          webpProgressText.textContent = '';
+        }
+        render();
+      }
+
+      function cancelWebp({ announce = true } = {}) {
+        if (!state.webp.busy) return;
+        state.webp.generation += 1;
+        const error = Object.assign(new Error('cancelled'), { code: 'cancelled' });
+        for (const pending of [...state.webp.pending]) pending.reject(error);
+        state.webp.pending.clear();
+        disposeWebpWorker(state.webp.worker);
+        state.webp.worker = null;
+        state.webp.busy = false;
+        webpProgressWrap.hidden = true;
+        webpProgress.value = 0;
+        webpProgressText.textContent = '';
+        render();
+        if (announce) AppToast.show({ message: t('webpCancelled') });
+      }
+
+      async function createWebp() {
+        if (isBusy() || !state.frames.length) return;
+        clearWebpResult();
+        pausePreview({ resetElapsed: true });
+
+        const generation = ++state.webp.generation;
+        const frames = state.frames.slice();
+        const size = resolvedCanvasSize();
+        const snapshot = {
+          width: size.width,
+          height: size.height,
+          placement: state.canvas.placement,
+          background: resolvedBackgroundColor()
+        };
+        const quality = normalizeWebpQuality(webpQuality.value);
+        webpQuality.value = String(quality);
+        const method = Math.min(6, Math.max(0, Number(webpEffort.value) || 0));
+        const lossless = webpLossless.checked;
+        const repeat = webpLoopMode.value === 'once' ? 1 : 0;
+        const total = frames.length;
+        const totalDuration = frames.reduce((sum, frame) => sum + (frame.duration || DEFAULT_FRAME_DURATION), 0);
+
+        let worker = null;
+        setWebpBusy(true);
+
+        try {
+          const created = await createWebpWorker();
+          worker = created.worker;
+          state.webp.worker = worker;
+          await webpWorkerCall(worker, 'init', {
+            moduleUrl: created.moduleUrl,
+            wasmBuffer: created.wasmBuffer,
+            width: snapshot.width,
+            height: snapshot.height,
+            options: {
+              quality,
+              method,
+              lossless,
+              alpha: state.canvas.backgroundMode === 'transparent',
+              background: webpBackgroundBgra(),
+              repeat
+            }
+          }, [created.wasmBuffer]);
+
+          for (let index = 0; index < frames.length; index += 1) {
+            if (generation !== state.webp.generation) throw Object.assign(new Error('cancelled'), { code: 'cancelled' });
+            webpProgress.value = index / Math.max(1, total);
+            webpProgressText.textContent = t('webpPreparing', { current: index + 1, total });
+            const imageData = await renderSourceFrameImageData(frames[index], snapshot);
+            if (generation !== state.webp.generation) throw Object.assign(new Error('cancelled'), { code: 'cancelled' });
+            webpProgressText.textContent = t('webpEncoding', { current: index + 1, total });
+            const buffer = imageData.data.buffer;
+            await webpWorkerCall(worker, 'frame', { buffer, duration: frames[index].duration || DEFAULT_FRAME_DURATION }, [buffer]);
+            webpProgress.value = (index + 1) / total;
+            await new Promise(resolve => setTimeout(resolve, 0));
+          }
+
+          webpProgressText.textContent = t('webpFinishing');
+          const result = await webpWorkerCall(worker, 'finish');
+          if (generation !== state.webp.generation) throw Object.assign(new Error('cancelled'), { code: 'cancelled' });
+
+          const blob = new Blob([result.buffer], { type: 'image/webp' });
+          const url = URL.createObjectURL(blob);
+          state.webp.resultBlob = blob;
+          state.webp.resultUrl = url;
+          state.webp.stale = false;
+          state.webp.resultMeta = {
+            width: snapshot.width,
+            height: snapshot.height,
+            frames: total,
+            duration: totalDuration,
+            bytes: blob.size,
+            quality,
+            lossless,
+            method
+          };
+          renderWebpResult();
+          AppToast.show({ message: t('webpDone'), tone: 'success' });
+        } catch (error) {
+          if (error?.code !== 'cancelled' && generation === state.webp.generation) {
+            console.error(error);
+            AppToast.show({ message: t('webpFailed'), tone: 'warning' });
+          }
+        } finally {
+          if (worker && state.webp.worker === worker) {
+            disposeWebpWorker(worker);
+            state.webp.worker = null;
+          } else if (!worker && (state.webp.workerUrl || state.webp.moduleUrl)) {
+            disposeWebpWorker(null);
+          }
+          if (generation === state.webp.generation) {
+            state.webp.busy = false;
+            webpProgressWrap.hidden = true;
+            render();
+          }
+        }
+      }
+
+      function saveWebp() {
+        if (!state.webp.resultBlob || !state.webp.resultUrl) return;
+        const base = sanitizeFilenameBase(webpOutputFilename.value);
+        webpOutputFilename.value = base;
+        const anchor = document.createElement('a');
+        anchor.href = state.webp.resultUrl;
+        anchor.download = `${base}.webp`;
+        document.body.append(anchor);
+        anchor.click();
+        anchor.remove();
+        AppToast.show({ message: t('webpSaved'), tone: 'success' });
+      }
+
       function elapsedBeforeFrame(index) {
         let elapsed = 0;
         for (let i = 0; i < Math.min(index, state.frames.length); i += 1) elapsed += state.frames[i].duration || DEFAULT_FRAME_DURATION;
@@ -1708,7 +2164,7 @@
       }
       function recordHistory(before, after, label) {
         if (sameSequence(before, after)) return false;
-        invalidateGifResult({ stale: true });
+        invalidateAnimationResults({ stale: true });
         pausePreview({ resetElapsed: true });
         pushHistory({ type: 'sequence', before: before.slice(), after: after.slice(), label });
         return true;
@@ -1721,7 +2177,7 @@
       }
       function recordTimingHistory(before, after, label) {
         if (sameTiming(before, after)) return false;
-        invalidateGifResult({ stale: true });
+        invalidateAnimationResults({ stale: true });
         pausePreview({ resetElapsed: true });
         pushHistory({ type: 'timing', before, after, label });
         return true;
@@ -1733,7 +2189,7 @@
         }
       }
       function applyHistorySide(entry, side) {
-        invalidateGifResult({ stale: true });
+        invalidateAnimationResults({ stale: true });
         pausePreview({ resetElapsed: true });
         if (entry.type === 'timing') applyTimingSnapshot(entry[side]);
         else state.frames = entry[side].slice();
@@ -1899,7 +2355,8 @@
       }
       function clearAllImmediately() {
         if (state.gif.busy) cancelGif({ announce: false });
-        invalidateGifResult();
+        if (state.webp.busy) cancelWebp({ announce: false });
+        invalidateAnimationResults();
         state.generation += 1;
         releaseAllFrameResources();
         state.frames = [];
@@ -2389,7 +2846,7 @@
       canvasSizeMode.addEventListener('change', () => {
         state.canvas.sizeMode = canvasSizeMode.value;
         customSizeRow.hidden = state.canvas.sizeMode !== 'custom';
-        invalidateGifResult({ stale: true });
+        invalidateAnimationResults({ stale: true });
         renderPreviewFrame();
       });
       function commitCustomCanvasSize() {
@@ -2397,7 +2854,7 @@
         state.canvas.customHeight = normalizeCanvasDimension(canvasHeightInput.value, state.canvas.customHeight);
         canvasWidthInput.value = String(state.canvas.customWidth);
         canvasHeightInput.value = String(state.canvas.customHeight);
-        invalidateGifResult({ stale: true });
+        invalidateAnimationResults({ stale: true });
         renderPreviewFrame();
       }
       canvasWidthInput.addEventListener('change', commitCustomCanvasSize);
@@ -2405,20 +2862,20 @@
       document.querySelectorAll('[data-placement]').forEach(button => {
         button.addEventListener('click', () => {
           state.canvas.placement = button.dataset.placement === 'fill' ? 'fill' : 'fit';
-          invalidateGifResult({ stale: true });
+          invalidateAnimationResults({ stale: true });
           renderPreviewFrame();
         });
       });
       backgroundMode.addEventListener('change', () => {
         state.canvas.backgroundMode = backgroundMode.value;
         backgroundColor.disabled = state.canvas.backgroundMode !== 'custom';
-        invalidateGifResult({ stale: true });
+        invalidateAnimationResults({ stale: true });
         renderPreviewFrame();
       });
       backgroundColor.addEventListener('input', () => {
         state.canvas.customColor = backgroundColor.value;
         if (state.canvas.backgroundMode === 'custom') {
-          invalidateGifResult({ stale: true });
+          invalidateAnimationResults({ stale: true });
           renderPreviewFrame();
         }
       });
@@ -2430,6 +2887,17 @@
       $('#createGifButton').addEventListener('click', createGif);
       $('#cancelGifButton').addEventListener('click', () => cancelGif());
       $('#saveGifButton').addEventListener('click', saveGif);
+
+      for (const control of [webpQuality, webpEffort, webpLossless, webpLoopMode]) {
+        control.addEventListener('change', () => {
+          if (control === webpQuality) webpQuality.value = String(normalizeWebpQuality(webpQuality.value));
+          invalidateWebpResult({ stale: true });
+        });
+      }
+      webpOutputFilename.addEventListener('blur', () => { webpOutputFilename.value = sanitizeFilenameBase(webpOutputFilename.value); });
+      $('#createWebpButton').addEventListener('click', createWebp);
+      $('#cancelWebpButton').addEventListener('click', () => cancelWebp());
+      $('#saveWebpButton').addEventListener('click', saveWebp);
 
       sortSelect.addEventListener('change', () => {
         const direction = sortSelect.value;
@@ -2499,11 +2967,15 @@
         state.generation += 1;
         pausePreview({ resetElapsed: true });
         cancelGif({ announce: false });
+        cancelWebp({ announce: false });
         if (state.gif.workerUrl) {
           URL.revokeObjectURL(state.gif.workerUrl);
           state.gif.workerUrl = '';
         }
+        disposeWebpWorker(state.webp.worker);
+        state.webp.worker = null;
         clearGifResult();
+        clearWebpResult();
         releaseAllFrameResources();
         StandaloneAssets.revokeAll();
       }, { once:true });
@@ -2513,6 +2985,7 @@
       $('#builtAt').textContent = BUILD_MANIFEST.generatedAtUtc || '—';
       $('#dependencyCount').textContent = String(BUILD_MANIFEST.dependencies?.length || 0);
       outputFilename.value = 'frame-animation';
+      webpOutputFilename.value = 'frame-animation';
       applyLanguage();
     })();
   </script>
