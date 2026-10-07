@@ -18,6 +18,11 @@ Frame Animator is a Browser Kitty utility for turning multiple local still image
 - Duplicate and delete individual frames
 - Undo / Redo for imports and sequence edits, including keyboard shortcuts
 - Natural filename sorting in ascending or descending order
+- Per-frame duration from 20–10,000 ms in 10 ms steps, defaulting to 500 ms
+- Apply 100 / 200 / 500 / 1000 ms presets or a custom duration to every frame
+- Total animation duration based on the current sequence
+- Live variable-duration preview with Play / Pause, Restart, Previous, and Next
+- Timing edits participate in Undo / Redo and resume playback when edited during playback
 - Japanese and English in the same HTML; the language switch uses compact EN / JA labels
 - Responsive desktop and smartphone layout
 - No runtime CDN, analytics, telemetry, or external API
@@ -70,6 +75,7 @@ Not supported yet:
 - 50 MiB per source file
 - 500 MiB total imported source bytes
 - 50 megapixels per source image
+- 20–10,000 ms per frame in 10 ms steps
 
 These are application safety guards and do not describe the absolute limits of every browser or device.
 
