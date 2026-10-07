@@ -1,15 +1,15 @@
 {
   "$schema": "./schemas/app-config.schema.json",
-  "name": "Single HTML App Starter",
-  "nameJa": "単一HTMLアプリ スターター",
-  "slug": "single-html-app-starter",
-  "version": "1.3.0",
-  "description": "A reusable starter for privacy-friendly, fully self-contained browser apps.",
-  "descriptionJa": "プライバシーに配慮した完全内包型ブラウザーアプリの再利用テンプレートです。",
+  "name": "Frame Animator",
+  "nameJa": "Frame Animator",
+  "slug": "frame-animator",
+  "version": "0.1.0",
+  "description": "Build animated GIF and WebP files from multiple local images entirely in your browser.",
+  "descriptionJa": "複数のローカル画像からGIF / WebPアニメーションをブラウザー内だけで作成します。",
   "defaultLanguage": "auto",
   "repository": {
-    "owner": "OWNER",
-    "name": "single-html-app-template"
+    "owner": "ttomohisa",
+    "name": "htmlapps-frame-animator"
   },
   "build": {
     "output": "dist/index.html",

@@ -1,15 +1,15 @@
 # Third-Party Notices
 
-The default generated starter application contains no bundled third-party library code.
+Frame Animator v0.1.0 declares no runtime third-party package dependency in `dependencies.json`.
 
-Browser APIs and system fonts are used directly. The GitHub Actions workflows reference their respective GitHub-maintained actions under the terms published by those projects.
+The app uses browser APIs and system fonts directly. GitHub Actions workflows reference their respective GitHub-maintained actions under the terms published by those projects.
 
-When adding a package to `dependencies.json`:
+When a future milestone adds an encoder or other package:
 
-1. Add its name, exact version, license, and homepage to this file.
-2. Sync and commit the corresponding `dependencies.lock.json` entry.
-3. Include every copyright notice and license text required for redistribution.
-4. Update both README files when the dependency materially affects privacy, size, or capability.
-5. Commit the regenerated `dist/dependency-manifest.json` only if the repository policy chooses to track generated artifacts.
+1. Pin the exact dependency version in `dependencies.json`.
+2. Synchronize and commit `dependencies.lock.json` with the real SHA-256.
+3. Record the license, homepage, copyright, and redistribution notices here.
+4. Embed every required runtime asset in the standalone build.
+5. Re-run the offline/network and license review before merging.
 
-Do not assume that a package being available from npm makes it compatible with MIT redistribution.
+Do not assume that package availability alone makes a dependency compatible with redistribution.
