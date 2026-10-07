@@ -96,7 +96,7 @@ Validation completed against the exact `webpWorkerMain` extracted from the CI-ge
 - heavy-job warning
 - format-aware filename extension
 
-## v0.8.0 — Mobile, performance, recovery
+## v0.8.0 — Mobile, performance, recovery ✅
 
 - Frames / Preview / Export smartphone page model if appropriate
 - safe areas
@@ -106,6 +106,8 @@ Validation completed against the exact `webpWorkerMain` extracted from the CI-ge
 - Blob URL / ImageBitmap / Worker lifecycle audit
 - keyboard/accessibility pass
 - failure recovery without reload
+
+v0.8 implementation notes: smartphone staged navigation is enabled only at <=640 px; safe-area padding and 44 px touch targets were added; 360 px and below uses one-column frame/export layouts; thumbnail images lazy-decode; single-frame timing edits avoid a full frame-card rerender; GIF/WebP failures leave a persistent retryable state while preserving source frames and settings; existing Worker/Blob cleanup paths remain active on success, cancel, invalidation, retry, and page exit.
 
 ## v0.9.0 — Release candidate
 
