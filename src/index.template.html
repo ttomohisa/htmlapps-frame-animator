@@ -1755,7 +1755,11 @@
             if (message.type === 'init') {
               const imported = await import(message.moduleUrl);
               const wasmBinary = new Uint8Array(message.wasmBuffer);
-              webpModule = await imported.default({ wasmBinary, noInitialRun: true });
+              webpModule = await imported.default({
+                wasmBinary,
+                noInitialRun: true,
+                locateFile: path => path
+              });
               animation = {
                 width: message.width,
                 height: message.height,
