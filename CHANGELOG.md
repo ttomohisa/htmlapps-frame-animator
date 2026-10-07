@@ -6,6 +6,26 @@ The project uses Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-10-07
+
+### Added
+
+- Default 500 ms duration for newly imported frames.
+- Per-frame duration editing from 20 to 10,000 ms in 10 ms steps.
+- Apply-to-all timing presets for 100 / 200 / 500 / 1000 ms plus a custom duration.
+- Total animation duration display.
+- Live motion preview driven by each frame's actual duration rather than a fixed FPS.
+- Play / Pause, Restart, Previous, and Next preview controls.
+- Current frame, elapsed playback position, total duration, and progress display.
+- Timing changes integrated with the bounded Undo / Redo history.
+
+### Changed
+
+- Duplicated frames now inherit the source frame duration.
+- Timing edits made during playback reset the active frame timing and resume playback.
+- Sequence edits and history actions stop stale preview schedules before rendering the new sequence.
+- In-app help and milestone copy now describe timing and preview behavior.
+
 ## [0.2.0] - 2026-10-07
 
 ### Added
