@@ -63,7 +63,7 @@ Exit: preview geometry matches normalization output for mixed aspect ratios.
 - generated-Blob preview
 - editable filename
 
-Mandatory checkpoint completed: the built-in encoder was independently exercised with gradient/photo-like data, transparency, 20–10,000 ms delays, one-frame and multi-frame files, infinite and once-only playback. A 720 × 540, 8-frame, 256-color+dithering synthetic photographic workload encoded in about 0.52 s in the local Node validation environment, and Pillow decoded every generated frame successfully.
+Mandatory checkpoint completed: the built-in encoder was independently exercised with gradient/photo-like data, transparency, 20–10,000 ms delays, one-frame and multi-frame files, infinite and once-only playback. The exact Worker code extracted from the generated standalone HTML encoded a synthetic 720 × 540, 8-frame, 256-color+dithering workload in about 4.0 s in the local Node validation environment with roughly 80 MB peak RSS, and Pillow decoded every generated frame successfully.
 
 ## v0.6.0 — Animated WebP export
 
