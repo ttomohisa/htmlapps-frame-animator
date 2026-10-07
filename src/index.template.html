@@ -365,6 +365,36 @@
               <div class="canvas-size-readout"><span data-i18n="resolvedCanvas">実際のCanvas</span>: <strong id="resolvedCanvasSize">—</strong></div>
             </div>
 
+            <div class="output-settings">
+              <div class="output-settings-head">
+                <strong data-i18n="playbackSettingsTitle">再生設定</strong>
+                <span data-i18n="playbackSettingsBody">プレビュー・GIF・WebPで同じ再生順とループ設定を使います。</span>
+              </div>
+              <div class="gif-option-grid">
+                <label class="output-field">
+                  <span class="output-label" data-i18n="playbackOrderLabel">再生順</span>
+                  <select class="output-select" id="playbackOrder">
+                    <option value="forward" data-i18n="playbackForward">Forward</option>
+                    <option value="reverse" data-i18n="playbackReverse">Reverse</option>
+                    <option value="pingpong" data-i18n="playbackPingpong">Ping-pong</option>
+                  </select>
+                </label>
+                <label class="output-field">
+                  <span class="output-label" data-i18n="playbackLoopLabel">ループ</span>
+                  <select class="output-select" id="playbackLoopMode">
+                    <option value="infinite" data-i18n="playbackLoopInfinite">繰り返す</option>
+                    <option value="once" data-i18n="playbackLoopOnce">1回だけ</option>
+                    <option value="custom" data-i18n="playbackLoopCustom">回数指定</option>
+                  </select>
+                </label>
+              </div>
+              <label class="output-field" id="playbackLoopCountField" hidden>
+                <span class="output-label" data-i18n="playbackLoopCountLabel">再生回数</span>
+                <input class="size-input" id="playbackLoopCount" type="number" min="2" max="100" step="1" value="2" inputmode="numeric">
+              </label>
+              <div class="canvas-size-readout"><span data-i18n="playbackPassSummary">1回分</span>: <strong id="playbackSummary">—</strong></div>
+            </div>
+
             <div class="preview-stats">
               <div class="preview-stat"><span data-i18n="previewFrameLabel">フレーム</span><strong id="previewFrame">—</strong></div>
               <div class="preview-stat"><span data-i18n="previewTimeLabel">再生位置</span><strong id="previewTime">0.0 / 0.0 s</strong></div>
@@ -408,13 +438,6 @@
                   <option value="64">64</option>
                   <option value="128">128</option>
                   <option value="256" selected>256</option>
-                </select>
-              </label>
-              <label class="output-field">
-                <span class="output-label" data-i18n="gifLoopLabel">ループ</span>
-                <select class="output-select" id="gifLoopMode">
-                  <option value="infinite" data-i18n="gifLoopInfinite">繰り返す</option>
-                  <option value="once" data-i18n="gifLoopOnce">1回だけ</option>
                 </select>
               </label>
             </div>
@@ -486,13 +509,6 @@
               <label class="gif-switch">
                 <span data-i18n="webpLosslessLabel">Lossless</span>
                 <input id="webpLossless" type="checkbox">
-              </label>
-              <label class="output-field">
-                <span class="output-label" data-i18n="webpLoopLabel">ループ</span>
-                <select class="output-select" id="webpLoopMode">
-                  <option value="infinite" data-i18n="webpLoopInfinite">繰り返す</option>
-                  <option value="once" data-i18n="webpLoopOnce">1回だけ</option>
-                </select>
               </label>
             </div>
             <label class="output-field">
@@ -692,12 +708,12 @@
           brandMeta:'複数画像からGIF / WebPを作成', introTitle:'画像を並べて、同じCanvasへそろえる', introBody:'順番と表示時間を整え、異なるサイズや縦横比の画像を同じ出力Canvasへ収める／切り抜く設定で確認できます。',
           localProcessing:'完全ローカル処理', addHeading:'画像を追加', addNote:'複数選択またはドラッグ＆ドロップに対応しています。', dropTitle:'JPEG / PNG / WebPをここにドロップ', dropNote:'または端末から画像を選択します', chooseImages:'画像を選択',
           limitFrames:'最大200枚', limitFile:'1枚50 MiBまで', limitPixels:'1枚50 MPまで', framesHeading:'フレーム', framesNote:'順番を整え、各フレームの表示時間を設定します。',
-          images:'画像', totalDurationLabel:'合計時間', sourceSize:'元ファイル合計', addMore:'画像を追加', clearAll:'すべて消去', emptyTitle:'まだ画像がありません', emptyBody:'画像を追加すると、ここにサムネイル一覧が表示されます。',
+          images:'画像', totalDurationLabel:'1回分', sourceSize:'元ファイル合計', addMore:'画像を追加', clearAll:'すべて消去', emptyTitle:'まだ画像がありません', emptyBody:'画像を追加すると、ここにサムネイル一覧が表示されます。',
           undo:'元に戻す', redo:'やり直す', sortLabel:'フレームを並べ替え', sortChoose:'並べ替え', sortAsc:'ファイル名 昇順', sortDesc:'ファイル名 降順',
           dragFrame:'ドラッグしてフレーム {number} を移動', movePrevious:'フレーム {number} を前へ移動', moveNext:'フレーム {number} を後ろへ移動', duplicate:'フレーム {number} を複製', deleteFrame:'フレーム {number} を削除',
           duplicated:'フレームを複製しました', deleted:'フレームを削除しました', reordered:'フレーム順を変更しました', sortedAsc:'ファイル名の昇順に並べ替えました', sortedDesc:'ファイル名の降順に並べ替えました', undone:'元に戻しました', redone:'やり直しました', duplicateLimit:'最大200枚までです',
           timingTitle:'全フレームの表示時間', timingBody:'プリセットまたは入力値を全フレームへ適用します。個別の時間は各カードで変更できます。', globalDurationLabel:'全フレームの表示時間', applyAll:'すべてに適用', frameDuration:'表示時間', timingApplied:'全フレームの表示時間を変更しました', timingChanged:'表示時間を変更しました',
-          previewHeading:'アニメーションプレビュー', previewNote:'出力CanvasへFit / Fillした状態で、各フレームの表示時間どおりに確認します。', previewEmpty:'画像を追加すると、ここで出力Canvasとアニメーションを確認できます。', previewFrameLabel:'フレーム', previewTimeLabel:'再生位置', previewRestart:'最初から', previewPrevious:'前のフレーム', previewPlay:'再生 / 一時停止', previewNext:'次のフレーム', previewHelp:'プレビューは軽量画像を使いますが、Canvasサイズ・Fit / Fill・背景は最終出力と同じ計算を使います。',
+          previewHeading:'アニメーションプレビュー', previewNote:'出力CanvasへFit / Fillした状態で、各フレームの表示時間どおりに確認します。', previewEmpty:'画像を追加すると、ここで出力Canvasとアニメーションを確認できます。', previewFrameLabel:'フレーム', previewTimeLabel:'再生位置', previewRestart:'最初から', previewPrevious:'前のフレーム', previewPlay:'再生 / 一時停止', previewNext:'次のフレーム', previewHelp:'プレビューは軽量画像を使いますが、Canvasサイズ・Fit / Fill・背景は最終出力と同じ計算を使います。', playbackSettingsTitle:'再生設定', playbackSettingsBody:'プレビュー・GIF・WebPで同じ再生順とループ設定を使います。', playbackOrderLabel:'再生順', playbackForward:'Forward', playbackReverse:'Reverse', playbackPingpong:'Ping-pong', playbackLoopLabel:'ループ', playbackLoopInfinite:'繰り返す', playbackLoopOnce:'1回だけ', playbackLoopCustom:'回数指定', playbackLoopCountLabel:'再生回数', playbackPassSummary:'1回分', framesUnit:'フレーム',
           outputSettingsTitle:'出力Canvas', outputSettingsBody:'1枚目の縦横比を基準にサイズをそろえます。カスタムでは幅・高さを個別指定できます。', canvasSizeLabel:'Canvasサイズ', canvasAuto:'自動（長辺最大720px）', canvas480:'長辺480px', canvas720:'長辺720px', canvas1080:'長辺1080px', canvasOriginal:'1枚目の元サイズ相当', canvasCustom:'カスタム', canvasWidthLabel:'Canvas幅', canvasHeightLabel:'Canvas高さ', placementLabel:'画像の配置', fit:'収める', fill:'切り抜く', backgroundLabel:'背景', backgroundTransparent:'透明', backgroundWhite:'白', backgroundBlack:'黒', backgroundCustom:'カスタム色', backgroundColorLabel:'背景色', previewCanvasLabel:'正規化されたアニメーションプレビュー', resolvedCanvas:'実際のCanvas',
           gifHeading:'Animated GIFを書き出す', gifHeadingNote:'Canvas設定とフレーム時間を使い、GIFをこのブラウザ内で生成します。', gifColorsLabel:'色数', gifLoopLabel:'ループ', gifLoopInfinite:'繰り返す', gifLoopOnce:'1回だけ', gifDitherLabel:'Dithering', outputFilenameLabel:'出力ファイル名', gifLimitNote:'GIFは最大256色・1bit透明です。写真ではDitheringを有効にすると階調が自然になる場合があります。', createGif:'GIFを作成', cancelGif:'キャンセル', gifResultEmpty:'GIFを作成すると、ここで実際の生成ファイルを確認できます。', gifResultPreviewLabel:'生成したGIFのプレビュー', gifResultSizeLabel:'Canvas', gifResultFramesLabel:'フレーム', gifResultDurationLabel:'再生時間', gifResultBytesLabel:'ファイル容量', saveGif:'GIFを保存', gifPreparing:'フレーム {current} / {total} を準備しています…', gifEncoding:'フレーム {current} / {total} をGIFへ変換しています…', gifFinishing:'GIFを仕上げています…', gifDone:'GIFを作成しました', gifSaved:'GIFを保存しました', gifCancelled:'GIF作成をキャンセルしました', gifFailed:'GIFを作成できませんでした', gifStale:'設定が変更されました。もう一度GIFを作成してください。',
           webpHeading:'Animated WebPを書き出す', webpHeadingNote:'写真や色数の多い画像を、品質・Lossless・Effortを指定してWebPへ変換します。', webpQualityLabel:'品質', webpEffortLabel:'Effort', webpLosslessLabel:'Lossless', webpLoopLabel:'ループ', webpLoopInfinite:'繰り返す', webpLoopOnce:'1回だけ', webpNote:'WebPはフルカラーとAlphaに対応します。Losslessや高いEffortは処理時間・ファイル容量が増える場合があります。', createWebp:'WebPを作成', cancelWebp:'キャンセル', webpResultEmpty:'WebPを作成すると、ここで実際の生成ファイルを確認できます。', webpResultPreviewLabel:'生成したAnimated WebPのプレビュー', saveWebp:'WebPを保存', webpPreparing:'フレーム {current} / {total} を準備しています…', webpEncoding:'フレーム {current} / {total} をWebPへ変換しています…', webpFinishing:'Animated WebPを仕上げています…', webpDone:'WebPを作成しました', webpSaved:'WebPを保存しました', webpCancelled:'WebP作成をキャンセルしました', webpFailed:'WebPを作成できませんでした', webpStale:'設定が変更されました。もう一度WebPを作成してください。',
@@ -715,12 +731,12 @@
           brandMeta:'Create GIF / WebP from multiple images', introTitle:'Arrange images on one output canvas', introBody:'Arrange the sequence and timing, then normalize mixed image sizes and aspect ratios onto one output canvas with Fit or Fill.',
           localProcessing:'Fully local processing', addHeading:'Add images', addNote:'Select multiple files or drag and drop them here.', dropTitle:'Drop JPEG / PNG / WebP images here', dropNote:'or choose images from your device', chooseImages:'Choose images',
           limitFrames:'Up to 200 images', limitFile:'50 MiB per image', limitPixels:'50 MP per image', framesHeading:'Frames', framesNote:'Arrange the sequence and set how long each frame stays visible.',
-          images:'Images', totalDurationLabel:'Total time', sourceSize:'Source total', addMore:'Add images', clearAll:'Clear all', emptyTitle:'No images yet', emptyBody:'Add images to see their thumbnails here.',
+          images:'Images', totalDurationLabel:'One pass', sourceSize:'Source total', addMore:'Add images', clearAll:'Clear all', emptyTitle:'No images yet', emptyBody:'Add images to see their thumbnails here.',
           undo:'Undo', redo:'Redo', sortLabel:'Sort frames', sortChoose:'Sort', sortAsc:'Filename ascending', sortDesc:'Filename descending',
           dragFrame:'Drag to move frame {number}', movePrevious:'Move frame {number} earlier', moveNext:'Move frame {number} later', duplicate:'Duplicate frame {number}', deleteFrame:'Delete frame {number}',
           duplicated:'Frame duplicated', deleted:'Frame deleted', reordered:'Frame order changed', sortedAsc:'Sorted by filename ascending', sortedDesc:'Sorted by filename descending', undone:'Undone', redone:'Redone', duplicateLimit:'Maximum of 200 frames reached',
           timingTitle:'All frame durations', timingBody:'Apply a preset or custom duration to every frame. Individual durations can be changed on each card.', globalDurationLabel:'Duration for all frames', applyAll:'Apply to all', frameDuration:'Duration', timingApplied:'Updated all frame durations', timingChanged:'Frame duration updated',
-          previewHeading:'Animation preview', previewNote:'Preview each frame after applying the output canvas, Fit / Fill, and background settings.', previewEmpty:'Add images to preview the normalized output canvas here.', previewFrameLabel:'Frame', previewTimeLabel:'Playback position', previewRestart:'Restart', previewPrevious:'Previous frame', previewPlay:'Play / pause', previewNext:'Next frame', previewHelp:'The preview uses lightweight image data, but canvas size, Fit / Fill, and background use the same geometry as final output.',
+          previewHeading:'Animation preview', previewNote:'Preview each frame after applying the output canvas, Fit / Fill, and background settings.', previewEmpty:'Add images to preview the normalized output canvas here.', previewFrameLabel:'Frame', previewTimeLabel:'Playback position', previewRestart:'Restart', previewPrevious:'Previous frame', previewPlay:'Play / pause', previewNext:'Next frame', previewHelp:'The preview uses lightweight image data, but canvas size, Fit / Fill, and background use the same geometry as final output.', playbackSettingsTitle:'Playback settings', playbackSettingsBody:'Preview, GIF, and WebP share the same playback order and loop settings.', playbackOrderLabel:'Playback order', playbackForward:'Forward', playbackReverse:'Reverse', playbackPingpong:'Ping-pong', playbackLoopLabel:'Loop', playbackLoopInfinite:'Repeat', playbackLoopOnce:'Play once', playbackLoopCustom:'Custom count', playbackLoopCountLabel:'Play count', playbackPassSummary:'One pass', framesUnit:'frames',
           outputSettingsTitle:'Output canvas', outputSettingsBody:'Preset sizes keep the first frame aspect ratio. Custom size lets you set width and height independently.', canvasSizeLabel:'Canvas size', canvasAuto:'Auto (long edge up to 720px)', canvas480:'480px long edge', canvas720:'720px long edge', canvas1080:'1080px long edge', canvasOriginal:'First frame original equivalent', canvasCustom:'Custom', canvasWidthLabel:'Canvas width', canvasHeightLabel:'Canvas height', placementLabel:'Image placement', fit:'Fit', fill:'Fill', backgroundLabel:'Background', backgroundTransparent:'Transparent', backgroundWhite:'White', backgroundBlack:'Black', backgroundCustom:'Custom color', backgroundColorLabel:'Background color', previewCanvasLabel:'Normalized animation preview', resolvedCanvas:'Resolved canvas',
           gifHeading:'Export Animated GIF', gifHeadingNote:'Create a GIF locally using the current canvas settings and frame timing.', gifColorsLabel:'Colors', gifLoopLabel:'Loop', gifLoopInfinite:'Repeat', gifLoopOnce:'Play once', gifDitherLabel:'Dithering', outputFilenameLabel:'Output filename', gifLimitNote:'GIF is limited to 256 colors and 1-bit transparency. Dithering can make gradients look more natural in photographs.', createGif:'Create GIF', cancelGif:'Cancel', gifResultEmpty:'Create a GIF to review the actual generated file here.', gifResultPreviewLabel:'Generated GIF preview', gifResultSizeLabel:'Canvas', gifResultFramesLabel:'Frames', gifResultDurationLabel:'Duration', gifResultBytesLabel:'File size', saveGif:'Save GIF', gifPreparing:'Preparing frame {current} / {total}…', gifEncoding:'Encoding frame {current} / {total}…', gifFinishing:'Finishing GIF…', gifDone:'GIF created', gifSaved:'GIF saved', gifCancelled:'GIF creation cancelled', gifFailed:'Could not create GIF', gifStale:'Settings changed. Create the GIF again.',
           webpHeading:'Export Animated WebP', webpHeadingNote:'Encode full-color photographic output with quality, Lossless, and Effort controls.', webpQualityLabel:'Quality', webpEffortLabel:'Effort', webpLosslessLabel:'Lossless', webpLoopLabel:'Loop', webpLoopInfinite:'Repeat', webpLoopOnce:'Play once', webpNote:'WebP supports full color and alpha. Lossless mode and higher Effort may take longer or produce larger files.', createWebp:'Create WebP', cancelWebp:'Cancel', webpResultEmpty:'Create a WebP to review the actual generated file here.', webpResultPreviewLabel:'Generated Animated WebP preview', saveWebp:'Save WebP', webpPreparing:'Preparing frame {current} / {total}…', webpEncoding:'Encoding frame {current} / {total}…', webpFinishing:'Finishing Animated WebP…', webpDone:'WebP created', webpSaved:'WebP saved', webpCancelled:'WebP creation cancelled', webpFailed:'Could not create WebP', webpStale:'Settings changed. Create the WebP again.',
@@ -758,8 +774,14 @@
           customColor: '#ffffff',
           renderToken: 0
         },
+        playback: {
+          order: 'forward',
+          loopMode: 'infinite',
+          loopCount: 2
+        },
         preview: {
           index: 0,
+          loopIteration: 0,
           playing: false,
           elapsedInFrame: 0,
           frameStartedAt: 0,
@@ -813,8 +835,11 @@
       const canvasHeightInput = $('#canvasHeightInput');
       const backgroundMode = $('#backgroundMode');
       const backgroundColor = $('#backgroundColor');
+      const playbackOrder = $('#playbackOrder');
+      const playbackLoopMode = $('#playbackLoopMode');
+      const playbackLoopCount = $('#playbackLoopCount');
+      const playbackLoopCountField = $('#playbackLoopCountField');
       const gifColorCount = $('#gifColorCount');
-      const gifLoopMode = $('#gifLoopMode');
       const gifDither = $('#gifDither');
       const gifProgress = $('#gifProgress');
       const gifProgressWrap = $('#gifProgressWrap');
@@ -824,7 +849,6 @@
       const webpQuality = $('#webpQuality');
       const webpEffort = $('#webpEffort');
       const webpLossless = $('#webpLossless');
-      const webpLoopMode = $('#webpLoopMode');
       const webpOutputFilename = $('#webpOutputFilename');
       const webpProgress = $('#webpProgress');
       const webpProgressWrap = $('#webpProgressWrap');
@@ -860,8 +884,20 @@
         for (const size of sources.values()) total += size;
         return total;
       }
+      function playbackSequence() {
+        if (state.frames.length <= 1 || state.playback.order === 'forward') return state.frames.slice();
+        if (state.playback.order === 'reverse') return state.frames.slice().reverse();
+        const forward = state.frames.slice();
+        if (forward.length <= 2) return forward;
+        return forward.concat(forward.slice(1, -1).reverse());
+      }
+      function playbackLoopTotal() {
+        if (state.playback.loopMode === 'infinite') return 0;
+        if (state.playback.loopMode === 'once') return 1;
+        return Math.min(100, Math.max(2, Math.round(Number(state.playback.loopCount) || 2)));
+      }
       function totalDurationMs() {
-        return state.frames.reduce((sum, frame) => sum + (frame.duration || DEFAULT_FRAME_DURATION), 0);
+        return playbackSequence().reduce((sum, frame) => sum + (frame.duration || DEFAULT_FRAME_DURATION), 0);
       }
       function normalizeDuration(value, fallback = DEFAULT_FRAME_DURATION) {
         const numeric = Number(value);
@@ -1512,7 +1548,7 @@
         pausePreview({ resetElapsed: true });
 
         const generation = ++state.gif.generation;
-        const frames = state.frames.slice();
+        const frames = playbackSequence();
         const size = resolvedCanvasSize();
         const snapshot = {
           width: size.width,
@@ -1523,9 +1559,11 @@
         };
         const colors = [64, 128, 256].includes(Number(gifColorCount.value)) ? Number(gifColorCount.value) : 256;
         const dither = gifDither.checked;
-        const repeat = gifLoopMode.value === 'once' ? -1 : 0;
+        const loopTotal = playbackLoopTotal();
+        const repeat = loopTotal === 0 ? 0 : loopTotal === 1 ? -1 : loopTotal - 1;
         const total = frames.length;
-        const totalDuration = frames.reduce((sum, frame) => sum + (frame.duration || DEFAULT_FRAME_DURATION), 0);
+        const passDuration = frames.reduce((sum, frame) => sum + (frame.duration || DEFAULT_FRAME_DURATION), 0);
+        const totalDuration = loopTotal > 0 ? passDuration * loopTotal : passDuration;
         let worker = null;
         setGifBusy(true);
 
@@ -1967,7 +2005,7 @@
         pausePreview({ resetElapsed: true });
 
         const generation = ++state.webp.generation;
-        const frames = state.frames.slice();
+        const frames = playbackSequence();
         const size = resolvedCanvasSize();
         const snapshot = {
           width: size.width,
@@ -1979,9 +2017,11 @@
         webpQuality.value = String(quality);
         const method = Math.min(6, Math.max(0, Number(webpEffort.value) || 0));
         const lossless = webpLossless.checked;
-        const repeat = webpLoopMode.value === 'once' ? 1 : 0;
+        const loopTotal = playbackLoopTotal();
+        const repeat = loopTotal === 0 ? 0 : loopTotal;
         const total = frames.length;
-        const totalDuration = frames.reduce((sum, frame) => sum + (frame.duration || DEFAULT_FRAME_DURATION), 0);
+        const passDuration = frames.reduce((sum, frame) => sum + (frame.duration || DEFAULT_FRAME_DURATION), 0);
+        const totalDuration = loopTotal > 0 ? passDuration * loopTotal : passDuration;
 
         let worker = null;
         setWebpBusy(true);
@@ -2073,8 +2113,9 @@
       }
 
       function elapsedBeforeFrame(index) {
+        const sequence = playbackSequence();
         let elapsed = 0;
-        for (let i = 0; i < Math.min(index, state.frames.length); i += 1) elapsed += state.frames[i].duration || DEFAULT_FRAME_DURATION;
+        for (let i = 0; i < Math.min(index, sequence.length); i += 1) elapsed += sequence[i].duration || DEFAULT_FRAME_DURATION;
         return elapsed;
       }
       function isSupportedFile(file) {
@@ -2485,7 +2526,7 @@
         state.preview.rafId = 0;
       }
       function currentFrameDuration() {
-        return state.frames[state.preview.index]?.duration || DEFAULT_FRAME_DURATION;
+        return playbackSequence()[state.preview.index]?.duration || DEFAULT_FRAME_DURATION;
       }
       function pausePreview({ resetElapsed = false } = {}) {
         if (state.preview.playing) {
@@ -2499,24 +2540,26 @@
         updatePreviewClock();
       }
       function normalizePreviewIndex() {
-        if (!state.frames.length) {
+        const sequence = playbackSequence();
+        if (!sequence.length) {
           state.preview.index = 0;
+          state.preview.loopIteration = 0;
           state.preview.elapsedInFrame = 0;
           return;
         }
-        state.preview.index = Math.max(0, Math.min(state.preview.index, state.frames.length - 1));
+        state.preview.index = Math.max(0, Math.min(state.preview.index, sequence.length - 1));
         state.preview.elapsedInFrame = Math.min(state.preview.elapsedInFrame, currentFrameDuration());
       }
       function updatePreviewClock() {
         normalizePreviewIndex();
-        const total = totalDurationMs();
+        const passDuration = totalDurationMs();
         let elapsedInFrame = state.preview.elapsedInFrame;
         if (state.preview.playing) elapsedInFrame += performance.now() - state.preview.frameStartedAt;
         elapsedInFrame = Math.min(currentFrameDuration(), elapsedInFrame);
-        const elapsed = state.frames.length ? elapsedBeforeFrame(state.preview.index) + elapsedInFrame : 0;
-        $('#previewTime').textContent = `${formatSeconds(elapsed)} / ${formatSeconds(total)}`;
-        previewProgress.max = Math.max(1, total);
-        previewProgress.value = Math.min(total, elapsed);
+        const elapsed = playbackSequence().length ? elapsedBeforeFrame(state.preview.index) + elapsedInFrame : 0;
+        $('#previewTime').textContent = `${formatSeconds(elapsed)} / ${formatSeconds(passDuration)}`;
+        previewProgress.max = Math.max(1, passDuration);
+        previewProgress.value = Math.min(passDuration, elapsed);
       }
       function previewTick() {
         if (!state.preview.playing) return;
@@ -2524,16 +2567,33 @@
         state.preview.rafId = requestAnimationFrame(previewTick);
       }
       function schedulePreviewFrame() {
-        if (!state.preview.playing || !state.frames.length) return;
+        const sequence = playbackSequence();
+        if (!state.preview.playing || !sequence.length) return;
         clearTimeout(state.preview.timeoutId);
         const remaining = Math.max(1, currentFrameDuration() - state.preview.elapsedInFrame);
         state.preview.frameStartedAt = performance.now();
         state.preview.timeoutId = window.setTimeout(() => {
-          if (!state.preview.playing || !state.frames.length) return;
+          const currentSequence = playbackSequence();
+          if (!state.preview.playing || !currentSequence.length) return;
           state.preview.elapsedInFrame = 0;
-          state.preview.index = (state.preview.index + 1) % state.frames.length;
+          if (state.preview.index < currentSequence.length - 1) {
+            state.preview.index += 1;
+            renderPreviewFrame();
+            schedulePreviewFrame();
+            return;
+          }
+          const loopTotal = playbackLoopTotal();
+          if (loopTotal === 0 || state.preview.loopIteration + 1 < loopTotal) {
+            state.preview.loopIteration += 1;
+            state.preview.index = 0;
+            renderPreviewFrame();
+            schedulePreviewFrame();
+            return;
+          }
+          state.preview.playing = false;
+          state.preview.elapsedInFrame = currentFrameDuration();
+          clearPreviewTimers();
           renderPreviewFrame();
-          schedulePreviewFrame();
         }, remaining);
       }
       function playPreview() {
@@ -2551,10 +2611,12 @@
         else playPreview();
       }
       function setPreviewIndex(index, { keepPlaying = true } = {}) {
-        if (!state.frames.length) return;
+        const sequence = playbackSequence();
+        if (!sequence.length) return;
         const wasPlaying = state.preview.playing && keepPlaying;
         pausePreview({ resetElapsed: true });
-        state.preview.index = (index + state.frames.length) % state.frames.length;
+        state.preview.index = (index + sequence.length) % sequence.length;
+        state.preview.loopIteration = 0;
         renderPreviewFrame();
         if (wasPlaying) playPreview();
       }
@@ -2562,12 +2624,14 @@
         const wasPlaying = state.preview.playing;
         pausePreview({ resetElapsed: true });
         state.preview.index = 0;
+        state.preview.loopIteration = 0;
         renderPreviewFrame();
         if (wasPlaying) playPreview();
       }
       function renderPreviewFrame() {
         normalizePreviewIndex();
-        const frame = state.frames[state.preview.index];
+        const sequence = playbackSequence();
+        const frame = sequence[state.preview.index];
         const size = resolvedCanvasSize();
         $('#resolvedCanvasSize').textContent = frame ? `${size.width} × ${size.height} px` : '—';
         customSizeRow.hidden = state.canvas.sizeMode !== 'custom';
@@ -2583,7 +2647,7 @@
         } else {
           previewPlaceholder.hidden = true;
           previewCanvasWrap.hidden = false;
-          $('#previewFrame').textContent = `${state.preview.index + 1} / ${state.frames.length}`;
+          $('#previewFrame').textContent = `${state.preview.index + 1} / ${sequence.length}`;
           const token = ++state.canvas.renderToken;
           renderNormalizedFrame(frame, previewCanvas, token).catch(() => {
             if (token !== state.canvas.renderToken) return;
@@ -2668,6 +2732,10 @@
         $('#frameCount').textContent = new Intl.NumberFormat(language).format(state.frames.length);
         $('#totalDuration').textContent = formatSeconds(totalDurationMs());
         $('#totalSize').textContent = formatBytes(totalSourceBytes());
+        const sequence = playbackSequence();
+        $('#playbackSummary').textContent = sequence.length ? `${sequence.length} ${t('framesUnit')} · ${formatSeconds(totalDurationMs())}` : '—';
+        playbackLoopCountField.hidden = state.playback.loopMode !== 'custom';
+        playbackLoopCount.value = String(state.playback.loopCount);
         $('#emptyState').hidden = state.frames.length > 0;
         frameGrid.hidden = state.frames.length === 0;
         dropZone.classList.toggle('is-compact', state.frames.length > 0);
@@ -2681,6 +2749,9 @@
         document.querySelectorAll('[data-duration-preset]').forEach(button => { button.disabled = busy || state.frames.length === 0; });
         sortSelect.disabled = busy || state.frames.length < 2;
         canvasSizeMode.disabled = busy;
+        playbackOrder.disabled = busy;
+        playbackLoopMode.disabled = busy;
+        playbackLoopCount.disabled = busy;
         canvasWidthInput.disabled = busy;
         canvasHeightInput.disabled = busy;
         backgroundMode.disabled = busy;
@@ -2690,7 +2761,6 @@
         $('#cancelGifButton').hidden = !state.gif.busy;
         gifProgressWrap.hidden = !state.gif.busy;
         gifColorCount.disabled = state.gif.busy;
-        gifLoopMode.disabled = state.gif.busy;
         gifDither.disabled = state.gif.busy;
         outputFilename.disabled = state.gif.busy;
         $('#createWebpButton').disabled = busy || state.frames.length === 0;
@@ -2699,7 +2769,6 @@
         webpQuality.disabled = state.webp.busy;
         webpEffort.disabled = state.webp.busy;
         webpLossless.disabled = state.webp.busy;
-        webpLoopMode.disabled = state.webp.busy;
         webpOutputFilename.disabled = state.webp.busy;
         renderFrames();
         renderFailures();
@@ -2856,6 +2925,30 @@
       $('#previewPreviousButton').addEventListener('click', () => setPreviewIndex(state.preview.index - 1));
       $('#previewNextButton').addEventListener('click', () => setPreviewIndex(state.preview.index + 1));
 
+      playbackOrder.addEventListener('change', () => {
+        state.playback.order = ['forward','reverse','pingpong'].includes(playbackOrder.value) ? playbackOrder.value : 'forward';
+        state.preview.index = 0;
+        state.preview.loopIteration = 0;
+        pausePreview({ resetElapsed: true });
+        invalidateAnimationResults({ stale: true });
+        render();
+      });
+      playbackLoopMode.addEventListener('change', () => {
+        state.playback.loopMode = ['infinite','once','custom'].includes(playbackLoopMode.value) ? playbackLoopMode.value : 'infinite';
+        state.preview.loopIteration = 0;
+        pausePreview({ resetElapsed: true });
+        invalidateAnimationResults({ stale: true });
+        render();
+      });
+      playbackLoopCount.addEventListener('change', () => {
+        state.playback.loopCount = Math.min(100, Math.max(2, Math.round(Number(playbackLoopCount.value) || 2)));
+        playbackLoopCount.value = String(state.playback.loopCount);
+        state.preview.loopIteration = 0;
+        pausePreview({ resetElapsed: true });
+        invalidateAnimationResults({ stale: true });
+        render();
+      });
+
       canvasSizeMode.addEventListener('change', () => {
         state.canvas.sizeMode = canvasSizeMode.value;
         customSizeRow.hidden = state.canvas.sizeMode !== 'custom';
@@ -2893,7 +2986,7 @@
         }
       });
 
-      for (const control of [gifColorCount, gifLoopMode, gifDither]) {
+      for (const control of [gifColorCount, gifDither]) {
         control.addEventListener('change', () => invalidateGifResult({ stale: true }));
       }
       outputFilename.addEventListener('blur', () => { outputFilename.value = sanitizeFilenameBase(outputFilename.value); });
@@ -2901,7 +2994,7 @@
       $('#cancelGifButton').addEventListener('click', () => cancelGif());
       $('#saveGifButton').addEventListener('click', saveGif);
 
-      for (const control of [webpQuality, webpEffort, webpLossless, webpLoopMode]) {
+      for (const control of [webpQuality, webpEffort, webpLossless]) {
         control.addEventListener('change', () => {
           if (control === webpQuality) webpQuality.value = String(normalizeWebpQuality(webpQuality.value));
           invalidateWebpResult({ stale: true });
