@@ -292,7 +292,7 @@
           <div class="preview-stage" id="previewStage">
             <p class="preview-placeholder" id="previewPlaceholder" data-i18n="previewEmpty">画像を追加すると、ここで出力Canvasとアニメーションを確認できます。</p>
             <div class="preview-canvas-wrap" id="previewCanvasWrap" hidden>
-              <canvas class="preview-canvas" id="previewCanvas" width="720" height="720" aria-label="Animation preview canvas"></canvas>
+              <canvas class="preview-canvas" id="previewCanvas" width="720" height="720" data-i18n-aria-label="previewCanvasLabel"></canvas>
             </div>
           </div>
           <div class="preview-side">
@@ -324,10 +324,10 @@
                   <button class="segment-button" id="fillButton" type="button" data-placement="fill" aria-pressed="false" data-i18n="fill">切り抜く</button>
                 </div>
               </div>
-              <label class="output-field">
+              <div class="output-field">
                 <span class="output-label" data-i18n="backgroundLabel">背景</span>
                 <span class="background-row">
-                  <select class="output-select" id="backgroundMode">
+                  <select class="output-select" id="backgroundMode" data-i18n-aria-label="backgroundLabel">
                     <option value="transparent" data-i18n="backgroundTransparent">透明</option>
                     <option value="white" data-i18n="backgroundWhite">白</option>
                     <option value="black" data-i18n="backgroundBlack">黒</option>
@@ -335,7 +335,7 @@
                   </select>
                   <input class="background-color" id="backgroundColor" type="color" value="#ffffff" disabled data-i18n-aria-label="backgroundColorLabel">
                 </span>
-              </label>
+              </div>
               <div class="canvas-size-readout"><span data-i18n="resolvedCanvas">実際のCanvas</span>: <strong id="resolvedCanvasSize">—</strong></div>
             </div>
 
@@ -438,7 +438,7 @@
   </div>
 
   <script id="app-config" type="application/json">{"$schema":"./schemas/app-config.schema.json","name":"Frame Animator","nameJa":"Frame Animator","slug":"frame-animator","version":"0.4.0","description":"Build animated GIF and WebP files from multiple local images entirely in your browser.","descriptionJa":"複数のローカル画像からGIF / WebPアニメーションをブラウザー内だけで作成します。","defaultLanguage":"auto","repository":{"owner":"ttomohisa","name":"htmlapps-frame-animator"},"build":{"output":"dist/index.html","blockRuntimeNetwork":true,"selfExtract":{"enabled":true,"output":"dist/index.self-extract.html"},"sizeBudget":{"readableWarningMb":25,"selfExtractWarningMb":12}}}</script>
-  <script id="build-manifest" type="application/json">{"schemaVersion":2,"builder":"single-html-app-template/1.3","generatedAtUtc":"2026-10-07T06:58:49.6616392Z","app":{"name":"Frame Animator","slug":"frame-animator","version":"0.4.0"},"dependencies":[]}</script>
+  <script id="build-manifest" type="application/json">{"schemaVersion":2,"builder":"single-html-app-template/1.3","generatedAtUtc":"2026-10-07T07:01:48.1169414Z","app":{"name":"Frame Animator","slug":"frame-animator","version":"0.4.0"},"dependencies":[]}</script>
   <script id="embedded-assets" type="application/json">{"schemaVersion":2,"dependencies":{}}</script>
   <script>
     (() => {
@@ -500,7 +500,7 @@
           duplicated:'フレームを複製しました', deleted:'フレームを削除しました', reordered:'フレーム順を変更しました', sortedAsc:'ファイル名の昇順に並べ替えました', sortedDesc:'ファイル名の降順に並べ替えました', undone:'元に戻しました', redone:'やり直しました', duplicateLimit:'最大200枚までです',
           timingTitle:'全フレームの表示時間', timingBody:'プリセットまたは入力値を全フレームへ適用します。個別の時間は各カードで変更できます。', globalDurationLabel:'全フレームの表示時間', applyAll:'すべてに適用', frameDuration:'表示時間', timingApplied:'全フレームの表示時間を変更しました', timingChanged:'表示時間を変更しました',
           previewHeading:'アニメーションプレビュー', previewNote:'出力CanvasへFit / Fillした状態で、各フレームの表示時間どおりに確認します。', previewEmpty:'画像を追加すると、ここで出力Canvasとアニメーションを確認できます。', previewFrameLabel:'フレーム', previewTimeLabel:'再生位置', previewRestart:'最初から', previewPrevious:'前のフレーム', previewPlay:'再生 / 一時停止', previewNext:'次のフレーム', previewHelp:'プレビューは軽量画像を使いますが、Canvasサイズ・Fit / Fill・背景は最終出力と同じ計算を使います。',
-          outputSettingsTitle:'出力Canvas', outputSettingsBody:'1枚目の縦横比を基準にサイズをそろえます。カスタムでは幅・高さを個別指定できます。', canvasSizeLabel:'Canvasサイズ', canvasAuto:'自動（長辺最大720px）', canvas480:'長辺480px', canvas720:'長辺720px', canvas1080:'長辺1080px', canvasOriginal:'1枚目の元サイズ相当', canvasCustom:'カスタム', canvasWidthLabel:'Canvas幅', canvasHeightLabel:'Canvas高さ', placementLabel:'画像の配置', fit:'収める', fill:'切り抜く', backgroundLabel:'背景', backgroundTransparent:'透明', backgroundWhite:'白', backgroundBlack:'黒', backgroundCustom:'カスタム色', backgroundColorLabel:'背景色', resolvedCanvas:'実際のCanvas',
+          outputSettingsTitle:'出力Canvas', outputSettingsBody:'1枚目の縦横比を基準にサイズをそろえます。カスタムでは幅・高さを個別指定できます。', canvasSizeLabel:'Canvasサイズ', canvasAuto:'自動（長辺最大720px）', canvas480:'長辺480px', canvas720:'長辺720px', canvas1080:'長辺1080px', canvasOriginal:'1枚目の元サイズ相当', canvasCustom:'カスタム', canvasWidthLabel:'Canvas幅', canvasHeightLabel:'Canvas高さ', placementLabel:'画像の配置', fit:'収める', fill:'切り抜く', backgroundLabel:'背景', backgroundTransparent:'透明', backgroundWhite:'白', backgroundBlack:'黒', backgroundCustom:'カスタム色', backgroundColorLabel:'背景色', previewCanvasLabel:'正規化されたアニメーションプレビュー', resolvedCanvas:'実際のCanvas',
           nextTitle:'次の段階: Animated GIF出力', nextBody:'v0.5.0で、このCanvas正規化結果を使ってGIFを書き出します。', createAnimation:'アニメーションを作成',
           buildInfo:'ビルド情報', appVersion:'アプリバージョン', builtAt:'生成日時', dependencies:'内包依存', footer:'画像はこの端末内で処理されます',
           help:'ヘルプ', close:'閉じる', helpTitle:'使い方と注意事項', helpHowTitle:'基本操作', helpHow1:'JPEG・PNG・静止WebPを複数選択するか、画面へドロップします。', helpHow2:'順番と表示時間を整えます。', helpHow3:'Canvasサイズ、収める／切り抜く、背景を設定し、同じ正規化結果でアニメーションをプレビューします。',
@@ -521,7 +521,7 @@
           duplicated:'Frame duplicated', deleted:'Frame deleted', reordered:'Frame order changed', sortedAsc:'Sorted by filename ascending', sortedDesc:'Sorted by filename descending', undone:'Undone', redone:'Redone', duplicateLimit:'Maximum of 200 frames reached',
           timingTitle:'All frame durations', timingBody:'Apply a preset or custom duration to every frame. Individual durations can be changed on each card.', globalDurationLabel:'Duration for all frames', applyAll:'Apply to all', frameDuration:'Duration', timingApplied:'Updated all frame durations', timingChanged:'Frame duration updated',
           previewHeading:'Animation preview', previewNote:'Preview each frame after applying the output canvas, Fit / Fill, and background settings.', previewEmpty:'Add images to preview the normalized output canvas here.', previewFrameLabel:'Frame', previewTimeLabel:'Playback position', previewRestart:'Restart', previewPrevious:'Previous frame', previewPlay:'Play / pause', previewNext:'Next frame', previewHelp:'The preview uses lightweight image data, but canvas size, Fit / Fill, and background use the same geometry as final output.',
-          outputSettingsTitle:'Output canvas', outputSettingsBody:'Preset sizes keep the first frame aspect ratio. Custom size lets you set width and height independently.', canvasSizeLabel:'Canvas size', canvasAuto:'Auto (long edge up to 720px)', canvas480:'480px long edge', canvas720:'720px long edge', canvas1080:'1080px long edge', canvasOriginal:'First frame original equivalent', canvasCustom:'Custom', canvasWidthLabel:'Canvas width', canvasHeightLabel:'Canvas height', placementLabel:'Image placement', fit:'Fit', fill:'Fill', backgroundLabel:'Background', backgroundTransparent:'Transparent', backgroundWhite:'White', backgroundBlack:'Black', backgroundCustom:'Custom color', backgroundColorLabel:'Background color', resolvedCanvas:'Resolved canvas',
+          outputSettingsTitle:'Output canvas', outputSettingsBody:'Preset sizes keep the first frame aspect ratio. Custom size lets you set width and height independently.', canvasSizeLabel:'Canvas size', canvasAuto:'Auto (long edge up to 720px)', canvas480:'480px long edge', canvas720:'720px long edge', canvas1080:'1080px long edge', canvasOriginal:'First frame original equivalent', canvasCustom:'Custom', canvasWidthLabel:'Canvas width', canvasHeightLabel:'Canvas height', placementLabel:'Image placement', fit:'Fit', fill:'Fill', backgroundLabel:'Background', backgroundTransparent:'Transparent', backgroundWhite:'White', backgroundBlack:'Black', backgroundCustom:'Custom color', backgroundColorLabel:'Background color', previewCanvasLabel:'Normalized animation preview', resolvedCanvas:'Resolved canvas',
           nextTitle:'Next: Animated GIF export', nextBody:'v0.5.0 will use this normalized canvas to encode GIF output.', createAnimation:'Create animation',
           buildInfo:'Build information', appVersion:'App version', builtAt:'Built at', dependencies:'Embedded dependencies', footer:'Images are processed on this device',
           help:'Help', close:'Close', helpTitle:'How to use & notes', helpHowTitle:'Basic workflow', helpHow1:'Choose multiple JPEG, PNG, or still WebP images, or drop them onto the page.', helpHow2:'Arrange the sequence and adjust timing.', helpHow3:'Choose the canvas size, Fit / Fill placement, and background, then preview the animation using the same normalization geometry.',
