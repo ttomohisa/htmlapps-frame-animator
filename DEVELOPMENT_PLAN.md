@@ -139,6 +139,9 @@ Prepare final README, Japanese README, favicon, screenshots, changelog, license/
 v0.9 RC browser audit completed in Chromium against the generated standalone HTML:
 
 - mixed JPEG/PNG/WebP-compatible import path, partial failure, long/Unicode filenames, natural filename sort, and 20 / 10,000 ms timing boundaries
+- zero-byte and non-zero corrupt PNG rejection with valid same-batch files retained
+- clipboard image paste through the standard import path and format-aware filename sanitization
+- generated GIF/WebP stale-result invalidation after playback settings change
 - Forward / Reverse / Ping-pong plus custom finite loop metadata
 - generated GIF preview/download and Netscape loop-extension validation
 - generated Animated WebP preview/download plus RIFF / ANIM / ANMF structural validation
