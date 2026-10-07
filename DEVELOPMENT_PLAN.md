@@ -65,7 +65,7 @@ Exit: preview geometry matches normalization output for mixed aspect ratios.
 
 Mandatory checkpoint completed: the built-in encoder was independently exercised with gradient/photo-like data, transparency, 20–10,000 ms delays, one-frame and multi-frame files, infinite and once-only playback. The exact Worker code extracted from the generated standalone HTML encoded a synthetic 720 × 540, 8-frame, 256-color+dithering workload in about 4.0 s in the local Node validation environment with roughly 80 MB peak RSS, and Pillow decoded every generated frame successfully.
 
-## v0.6.0 — Animated WebP export
+## v0.6.0 — Animated WebP export ✅
 
 - Focused local Animated WebP encoder
 - quality
@@ -77,7 +77,7 @@ Mandatory checkpoint completed: the built-in encoder was independently exercised
 - generated-Blob preview
 - Worker/progress/cancel
 
-Prefer a dedicated libwebp/WebPAnimEncoder WASM or equally narrow image-sequence build rather than the video decode/demux profile unchanged.
+Implemented with pinned `@jsquash/webp@1.5.0` static libwebp encoding plus a local RIFF animation muxer. The video decode/demux profile was deliberately not reused because it does not accept the still-image sequence/variable-duration workflow directly.
 
 ## v0.7.0 — Playback modes and workflow polish
 
