@@ -172,6 +172,16 @@ async function exerciseDesktop(browser, baseUrl) {
   await loadFiles(page, files);
   await waitFrames(page, 4);
   assert(await page.locator('#dropZone').evaluate(el => el.classList.contains('is-compact')), 'Drop zone did not compact after import');
+  assert(!(await visible(page.locator('#emptyState'))), 'Frames empty state remained visible after importing frames');
+
+  await page.evaluate(() => scrollTo(0, 0));
+  await page.screenshot({ path: join(assetsDir, 'screenshot.png'), fullPage: false });
+
+  await page.locator('#languageButton').click();
+  assert((await page.locator('#languageButton').textContent()).trim() === 'JA', 'English mode did not expose JA switch label');
+  await page.evaluate(() => scrollTo(0, 0));
+  await page.screenshot({ path: join(assetsDir, 'screenshot-en.png'), fullPage: false });
+  await page.locator('#languageButton').click();
 
   const broken = { name: 'broken-zero-byte.png', mimeType: 'image/png', buffer: Buffer.alloc(0) };
   await loadFiles(page, [broken, filePayload('追加画像.png', 80, 60, 5)]);
@@ -211,14 +221,6 @@ async function exerciseDesktop(browser, baseUrl) {
   const webp = parseWebP(webpBytes);
   assert(webp.frames === 8, `Expected 8 ANMF frames, got ${webp.frames}`);
   assert(webp.loop === 3, `Expected WebP loop count 3, got ${webp.loop}`);
-
-  await page.evaluate(() => scrollTo(0, 0));
-  await page.screenshot({ path: join(assetsDir, 'screenshot.png'), fullPage: false });
-
-  await page.locator('#languageButton').click();
-  assert((await page.locator('#languageButton').textContent()).trim() === 'JA', 'English mode did not expose JA switch label');
-  await page.evaluate(() => scrollTo(0, 0));
-  await page.screenshot({ path: join(assetsDir, 'screenshot-en.png'), fullPage: false });
 
   assert(external.length === 0, `External runtime requests detected: ${external.join(', ')}`);
   assert(errors.length === 0, `Desktop page errors: ${errors.join(' | ')}`);
