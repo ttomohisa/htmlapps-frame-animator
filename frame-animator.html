@@ -497,7 +497,8 @@
           images:'画像', totalDurationLabel:'合計時間', sourceSize:'元ファイル合計', addMore:'画像を追加', clearAll:'すべて消去', emptyTitle:'まだ画像がありません', emptyBody:'画像を追加すると、ここにサムネイル一覧が表示されます。',
           undo:'元に戻す', redo:'やり直す', sortLabel:'フレームを並べ替え', sortChoose:'並べ替え', sortAsc:'ファイル名 昇順', sortDesc:'ファイル名 降順',
           dragFrame:'ドラッグしてフレーム {number} を移動', movePrevious:'フレーム {number} を前へ移動', moveNext:'フレーム {number} を後ろへ移動', duplicate:'フレーム {number} を複製', deleteFrame:'フレーム {number} を削除',
-          duplicated:'フレームを複製しました', deleted:'フレームを削除しました', reordered:'フレーム順を変更しました', sortedAsc:'ファイル名の昇順に並べ替えました', sortedDesc:'ファイル名の降順に並べ替えました', undone:'元に戻しました', redone:'やり直しました', duplicateLimit:'最大200枚までです',          timingTitle:'全フレームの表示時間', timingBody:'プリセットまたは入力値を全フレームへ適用します。個別の時間は各カードで変更できます。', globalDurationLabel:'全フレームの表示時間', applyAll:'すべてに適用', frameDuration:'表示時間', timingApplied:'全フレームの表示時間を変更しました', timingChanged:'表示時間を変更しました',
+          duplicated:'フレームを複製しました', deleted:'フレームを削除しました', reordered:'フレーム順を変更しました', sortedAsc:'ファイル名の昇順に並べ替えました', sortedDesc:'ファイル名の降順に並べ替えました', undone:'元に戻しました', redone:'やり直しました', duplicateLimit:'最大200枚までです',
+          timingTitle:'全フレームの表示時間', timingBody:'プリセットまたは入力値を全フレームへ適用します。個別の時間は各カードで変更できます。', globalDurationLabel:'全フレームの表示時間', applyAll:'すべてに適用', frameDuration:'表示時間', timingApplied:'全フレームの表示時間を変更しました', timingChanged:'表示時間を変更しました',
           previewHeading:'アニメーションプレビュー', previewNote:'出力CanvasへFit / Fillした状態で、各フレームの表示時間どおりに確認します。', previewEmpty:'画像を追加すると、ここで出力Canvasとアニメーションを確認できます。', previewFrameLabel:'フレーム', previewTimeLabel:'再生位置', previewRestart:'最初から', previewPrevious:'前のフレーム', previewPlay:'再生 / 一時停止', previewNext:'次のフレーム', previewHelp:'プレビューは軽量画像を使いますが、Canvasサイズ・Fit / Fill・背景は最終出力と同じ計算を使います。',
           outputSettingsTitle:'出力Canvas', outputSettingsBody:'1枚目の縦横比を基準にサイズをそろえます。カスタムでは幅・高さを個別指定できます。', canvasSizeLabel:'Canvasサイズ', canvasAuto:'自動（長辺最大720px）', canvas480:'長辺480px', canvas720:'長辺720px', canvas1080:'長辺1080px', canvasOriginal:'1枚目の元サイズ相当', canvasCustom:'カスタム', canvasWidthLabel:'Canvas幅', canvasHeightLabel:'Canvas高さ', placementLabel:'画像の配置', fit:'収める', fill:'切り抜く', backgroundLabel:'背景', backgroundTransparent:'透明', backgroundWhite:'白', backgroundBlack:'黒', backgroundCustom:'カスタム色', backgroundColorLabel:'背景色', resolvedCanvas:'実際のCanvas',
           nextTitle:'次の段階: Animated GIF出力', nextBody:'v0.5.0で、このCanvas正規化結果を使ってGIFを書き出します。', createAnimation:'アニメーションを作成',
@@ -996,7 +997,8 @@
         fileInput.value = '';
       }
 
-      function releaseAllFrameResources() {        for (const frame of state.framePool.values()) releaseFrame(frame);
+      function releaseAllFrameResources() {
+        for (const frame of state.framePool.values()) releaseFrame(frame);
         state.framePool.clear();
       }
       function clearAllImmediately() {
@@ -1496,3 +1498,72 @@
         const card = button.closest('.frame-card');
         if (!card) return;
         const id = card.dataset.frameId;
+        if (button.dataset.action === 'previous') moveFrameById(id, -1);
+        else if (button.dataset.action === 'next') moveFrameById(id, 1);
+        else if (button.dataset.action === 'duplicate') duplicateFrame(id);
+        else if (button.dataset.action === 'delete') deleteFrame(id);
+      });
+      frameGrid.addEventListener('pointerdown', event => {
+        const handle = event.target.closest('button[data-action="drag"]');
+        if (handle) beginFrameDrag(event, handle);
+      });
+      window.addEventListener('pointermove', moveDraggedFrame, { passive: false });
+      window.addEventListener('pointerup', event => endFrameDrag(event, false));
+      window.addEventListener('pointercancel', event => endFrameDrag(event, true));
+
+      document.addEventListener('keydown', event => {
+        const target = event.target;
+        if (target instanceof HTMLElement && target.matches('input, textarea, select, [contenteditable="true"]')) return;
+        const modifier = event.ctrlKey || event.metaKey;
+        if (!modifier) return;
+        const key = event.key.toLowerCase();
+        if (key === 'z') {
+          event.preventDefault();
+          if (event.shiftKey) redoHistory();
+          else undoHistory();
+        } else if (key === 'y') {
+          event.preventDefault();
+          redoHistory();
+        }
+      });
+
+      $('#clearAllButton').addEventListener('click', async () => {
+        if (!state.frames.length || state.importBusy) return;
+        const ok = await AppConfirm.ask({ title:t('clearConfirmTitle'), message:t('clearConfirmBody'), confirmLabel:t('clearConfirmAction'), cancelLabel:t('cancel'), tone:'danger' });
+        if (!ok) return;
+        clearAllImmediately();
+        AppToast.show({ message:t('cleared'), tone:'success' });
+      });
+
+      const helpDialog = $('#helpDialog');
+      $('#helpButton').addEventListener('click', () => helpDialog.showModal());
+      $('#closeHelpButton').addEventListener('click', () => helpDialog.close());
+      $('#helpOkButton').addEventListener('click', () => helpDialog.close());
+      helpDialog.addEventListener('click', event => {
+        const rect = helpDialog.getBoundingClientRect();
+        if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) helpDialog.close();
+      });
+
+      $('#languageButton').addEventListener('click', () => {
+        language = language === 'ja' ? 'en' : 'ja';
+        writeStorage(storageKey, language);
+        applyLanguage();
+      });
+
+      window.addEventListener('pagehide', () => {
+        state.generation += 1;
+        pausePreview({ resetElapsed: true });
+        releaseAllFrameResources();
+        StandaloneAssets.revokeAll();
+      }, { once:true });
+
+      $('#versionBadge').textContent = `v${APP_CONFIG.version}`;
+      $('#buildVersion').textContent = APP_CONFIG.version;
+      $('#builtAt').textContent = BUILD_MANIFEST.generatedAtUtc || '—';
+      $('#dependencyCount').textContent = String(BUILD_MANIFEST.dependencies?.length || 0);
+      outputFilename.value = 'frame-animation';
+      applyLanguage();
+    })();
+  </script>
+</body>
+</html>
