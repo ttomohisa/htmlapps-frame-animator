@@ -43,9 +43,9 @@ Imported files are untrusted input. The application must:
 
 Animated WebP is outside the v0.5.0 input contract and is rejected when detectable from WebP animation metadata.
 
-## Future encoders
+## Encoder review
 
-Animated GIF export now uses a local Blob Worker for quantization, dithering, and LZW compression. Animated WebP export will add a separate binary-processing path in a later milestone. Before adding an encoder:
+Animated GIF export now uses a local Blob Worker for quantization, dithering, and LZW compression. Animated WebP export will add a separate binary-processing path in a later milestone. Before adding or materially changing an encoder:
 
 - review dependency identity, exact version, license, and notices
 - prefer the smallest focused local runtime that satisfies the product need
