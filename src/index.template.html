@@ -2931,7 +2931,33 @@
         $('#clearAllButton').disabled = blocked || state.frames.length === 0;
         sortSelect.disabled = blocked || state.frames.length < 2;
         $('#applyDurationButton').disabled = blocked || state.frames.length === 0;
+        globalDurationInput.disabled = blocked;
         document.querySelectorAll('[data-duration-preset]').forEach(button => { button.disabled = blocked || state.frames.length === 0; });
+        canvasSizeMode.disabled = blocked;
+        playbackOrder.disabled = blocked;
+        playbackLoopMode.disabled = blocked;
+        playbackLoopCount.disabled = blocked;
+        canvasWidthInput.disabled = blocked;
+        canvasHeightInput.disabled = blocked;
+        backgroundMode.disabled = blocked;
+        backgroundColor.disabled = blocked || state.canvas.backgroundMode !== 'custom';
+        document.querySelectorAll('[data-placement]').forEach(button => { button.disabled = blocked; });
+
+        $('#createGifButton').disabled = blocked || state.frames.length === 0;
+        $('#cancelGifButton').hidden = !state.gif.busy;
+        gifProgressWrap.hidden = !state.gif.busy;
+        gifColorCount.disabled = state.gif.busy;
+        gifDither.disabled = state.gif.busy;
+        outputFilename.disabled = state.gif.busy;
+
+        $('#createWebpButton').disabled = blocked || state.frames.length === 0;
+        $('#cancelWebpButton').hidden = !state.webp.busy;
+        webpProgressWrap.hidden = !state.webp.busy;
+        webpQuality.disabled = state.webp.busy;
+        webpEffort.disabled = state.webp.busy;
+        webpLossless.disabled = state.webp.busy;
+        webpOutputFilename.disabled = state.webp.busy;
+
         dropZone.setAttribute('aria-busy', String(blocked));
         if (busy) pausePreview({ resetElapsed: true });
         updateHistoryButtons();
