@@ -2,7 +2,7 @@
 
 Frame Animator is a Browser Kitty utility for turning multiple local still images into an animated GIF or WebP without uploading the source images.
 
-> Current development version: **v0.5.0**. Image import, sequence editing, timing, canvas normalization, live preview, and Animated GIF export are implemented. Animated WebP export is planned for the next milestone.
+> Current development version: **v0.6.0**. Image import, sequence editing, timing, canvas normalization, live preview, Animated GIF export, and Animated WebP export are implemented.
 
 ## Current features
 
@@ -39,6 +39,13 @@ Frame Animator is a Browser Kitty utility for turning multiple local still image
 - Actual generated GIF preview with dimensions, frame count, duration, and file size
 - Editable/sanitized output filename and local GIF download
 - Stale-result invalidation when an output-affecting setting changes
+- Animated WebP export using pinned @jsquash/webp 1.5.0 / libwebp WASM
+- Quality 1–100, Lossless, and Effort 0–6 controls
+- Variable per-frame millisecond timing preserved in the Animated WebP container
+- Infinite-loop and play-once Animated WebP
+- Actual generated WebP preview and local save
+- Large initial image drop zone that becomes compact after images are loaded while remaining clickable and droppable
+- User-supplied Frame Animator SVG used for both the app icon and favicon
 - Japanese and English in the same HTML; the language switch uses compact EN / JA labels
 - Responsive desktop and smartphone layout
 - No runtime CDN, analytics, telemetry, or external API
@@ -65,7 +72,7 @@ The app uses a restrictive Content Security Policy with `connect-src 'none'`. It
 
 Imported image bytes are not automatically persisted to localStorage or IndexedDB. Closing the page discards the working image set.
 
-## Input support in v0.5.0
+## Input support in v0.6.0
 
 Supported:
 
@@ -85,7 +92,7 @@ Not supported yet:
 - PSD
 - PDF
 
-## Limits in v0.5.0
+## Limits in v0.6.0
 
 - 200 images
 - 50 MiB per source file
@@ -129,4 +136,4 @@ Product behavior and acceptance criteria live in [APP_SPEC.md](APP_SPEC.md). The
 
 MIT. See [LICENSE](LICENSE).
 
-Third-party notices are recorded in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). v0.5.0 declares no runtime third-party dependency.
+Third-party notices are recorded in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). v0.6.0 embeds pinned `@jsquash/webp@1.5.0` and its libwebp encoder assets for local WebP generation.
