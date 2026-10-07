@@ -1388,11 +1388,12 @@
         const repeat = gifLoopMode.value === 'once' ? -1 : 0;
         const total = frames.length;
         const totalDuration = frames.reduce((sum, frame) => sum + (frame.duration || DEFAULT_FRAME_DURATION), 0);
-        const worker = createGifWorker();
-        state.gif.worker = worker;
+        let worker = null;
         setGifBusy(true);
 
         try {
+          worker = createGifWorker();
+          state.gif.worker = worker;
           await gifWorkerCall(worker, 'init', {
             width: snapshot.width,
             height: snapshot.height,
@@ -1436,9 +1437,12 @@
             AppToast.show({ message: t('gifFailed'), tone: 'warning' });
           }
         } finally {
-          if (state.gif.worker === worker) {
+          if (worker && state.gif.worker === worker) {
             disposeGifWorker(worker);
             state.gif.worker = null;
+          } else if (!worker && state.gif.workerUrl) {
+            URL.revokeObjectURL(state.gif.workerUrl);
+            state.gif.workerUrl = '';
           }
           if (generation === state.gif.generation) {
             state.gif.busy = false;
@@ -2073,6 +2077,8 @@
         backgroundColor.disabled = busy || state.canvas.backgroundMode !== 'custom';
         document.querySelectorAll('[data-placement]').forEach(button => { button.disabled = busy; });
         $('#createGifButton').disabled = busy || state.frames.length === 0;
+        $('#cancelGifButton').hidden = !state.gif.busy;
+        gifProgressWrap.hidden = !state.gif.busy;
         gifColorCount.disabled = state.gif.busy;
         gifLoopMode.disabled = state.gif.busy;
         gifDither.disabled = state.gif.busy;
