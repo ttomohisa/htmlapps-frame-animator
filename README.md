@@ -2,7 +2,7 @@
 
 Frame Animator is a Browser Kitty utility for turning multiple local still images into an animated GIF or WebP without uploading the source images.
 
-> Current development version: **v0.2.0**. Image import and frame-sequence editing are implemented. Timing, animation preview, and GIF/WebP encoding are planned in later milestones and are not presented as finished features yet.
+> Current development version: **v0.3.0**. Image import, frame-sequence editing, per-frame timing, and live motion preview are implemented. Canvas normalization and GIF/WebP encoding are planned in later milestones and are not presented as finished features yet.
 
 ## Current features
 
@@ -44,7 +44,7 @@ The app uses a restrictive Content Security Policy with `connect-src 'none'`. It
 
 Imported image bytes are not automatically persisted to localStorage or IndexedDB. Closing the page discards the working image set.
 
-## Input support in v0.2.0
+## Input support in v0.3.0
 
 Supported:
 
@@ -64,7 +64,7 @@ Not supported yet:
 - PSD
 - PDF
 
-## Limits in v0.2.0
+## Limits in v0.3.0
 
 - 200 images
 - 50 MiB per source file
@@ -106,4 +106,4 @@ Product behavior and acceptance criteria live in [APP_SPEC.md](APP_SPEC.md). The
 
 MIT. See [LICENSE](LICENSE).
 
-Third-party notices are recorded in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). v0.2.0 declares no runtime third-party dependency.
+Third-party notices are recorded in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). v0.3.0 declares no runtime third-party dependency.
