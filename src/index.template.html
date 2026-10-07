@@ -651,6 +651,16 @@
           frameStartedAt: 0,
           timeoutId: 0,
           rafId: 0
+        },
+        gif: {
+          busy: false,
+          generation: 0,
+          worker: null,
+          requestId: 0,
+          pending: new Set(),
+          resultBlob: null,
+          resultUrl: '',
+          resultMeta: null
         }
       };
       let dragSession = null;
@@ -674,7 +684,14 @@
       const canvasHeightInput = $('#canvasHeightInput');
       const backgroundMode = $('#backgroundMode');
       const backgroundColor = $('#backgroundColor');
-      const outputFilename = $('#outputFilename'); // Required template export marker; used by later export milestones.
+      const gifColorCount = $('#gifColorCount');
+      const gifLoopMode = $('#gifLoopMode');
+      const gifDither = $('#gifDither');
+      const gifProgress = $('#gifProgress');
+      const gifProgressWrap = $('#gifProgressWrap');
+      const gifProgressText = $('#gifProgressText');
+      const gifResultImage = $('#gifResultImage');
+      const outputFilename = $('#outputFilename');
 
       function readStorage(key) { try { return localStorage.getItem(key); } catch { return null; } }
       function writeStorage(key, value) { try { localStorage.setItem(key, value); } catch { /* language persistence is optional */ } }
@@ -687,6 +704,7 @@
         for (const [name, replacement] of Object.entries(vars)) value = value.replaceAll(`{${name}}`, String(replacement));
         return value;
       }
+      function isBusy() { return state.importBusy || state.gif.busy; }
       function makeId() {
         return crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
       }
@@ -798,6 +816,633 @@
           decoded.close();
         }
       }
+      async function renderSourceFrameImageData(frame, snapshot) {
+        const canvas = document.createElement('canvas');
+        canvas.width = snapshot.width;
+        canvas.height = snapshot.height;
+        const context = canvas.getContext('2d', { alpha: true, willReadFrequently: true });
+        if (!context) throw new Error('canvas');
+        context.clearRect(0, 0, snapshot.width, snapshot.height);
+        if (snapshot.background) {
+          context.fillStyle = snapshot.background;
+          context.fillRect(0, 0, snapshot.width, snapshot.height);
+        }
+        const decoded = await decodeImage(frame.file);
+        try {
+          const rect = computePlacement(frame.width, frame.height, snapshot.width, snapshot.height, snapshot.placement);
+          context.imageSmoothingEnabled = true;
+          context.imageSmoothingQuality = 'high';
+          context.drawImage(decoded.source, rect.x, rect.y, rect.width, rect.height);
+          return context.getImageData(0, 0, snapshot.width, snapshot.height);
+        } finally {
+          decoded.close();
+          canvas.width = 1;
+          canvas.height = 1;
+        }
+      }
+
+      function gifWorkerMain() {
+        'use strict';
+
+        function createStream(initialCapacity = 4096) {
+          let contents = new Uint8Array(initialCapacity);
+          let cursor = 0;
+          return {
+            byte(value) {
+              if (cursor >= contents.length) {
+                const next = new Uint8Array(Math.max(cursor + 1, Math.ceil(contents.length * 1.5)));
+                next.set(contents);
+                contents = next;
+              }
+              contents[cursor++] = value & 255;
+            },
+            bytes(values) {
+              for (let i = 0; i < values.length; i += 1) this.byte(values[i]);
+            },
+            u16(value) {
+              this.byte(value);
+              this.byte(value >> 8);
+            },
+            result() {
+              return contents.slice(0, cursor);
+            }
+          };
+        }
+
+        function tableBits(length) {
+          return Math.max(1, Math.ceil(Math.log2(Math.max(2, length))));
+        }
+
+        function writePalette(stream, palette, bits) {
+          const tableLength = 1 << bits;
+          for (let index = 0; index < tableLength; index += 1) {
+            const color = palette[index] || [0, 0, 0];
+            stream.byte(color[0]);
+            stream.byte(color[1]);
+            stream.byte(color[2]);
+          }
+        }
+
+        function writeSubblocks(stream, bytes) {
+          for (let offset = 0; offset < bytes.length; offset += 255) {
+            const length = Math.min(255, bytes.length - offset);
+            stream.byte(length);
+            for (let index = 0; index < length; index += 1) stream.byte(bytes[offset + index]);
+          }
+          stream.byte(0);
+        }
+
+        function lzwEncode(indices, minCodeSize) {
+          const clearCode = 1 << minCodeSize;
+          const endCode = clearCode + 1;
+          let nextCode = endCode + 1;
+          let codeSize = minCodeSize + 1;
+          let maxCode = (1 << codeSize) - 1;
+          let dictionary = new Map();
+          let current = 0;
+          let bitCount = 0;
+          const output = [];
+
+          function emit(code, allowGrow = true) {
+            current |= code << bitCount;
+            bitCount += codeSize;
+            while (bitCount >= 8) {
+              output.push(current & 255);
+              current >>>= 8;
+              bitCount -= 8;
+            }
+            if (allowGrow && nextCode > maxCode && codeSize < 12) {
+              codeSize += 1;
+              maxCode = (1 << codeSize) - 1;
+            }
+          }
+
+          emit(clearCode, false);
+          let prefix = indices[0] || 0;
+
+          for (let index = 1; index < indices.length; index += 1) {
+            const value = indices[index];
+            const key = (prefix << 8) | value;
+            const found = dictionary.get(key);
+            if (found !== undefined) {
+              prefix = found;
+              continue;
+            }
+
+            emit(prefix);
+            if (nextCode < 4096) {
+              dictionary.set(key, nextCode++);
+            } else {
+              emit(clearCode, false);
+              dictionary = new Map();
+              nextCode = endCode + 1;
+              codeSize = minCodeSize + 1;
+              maxCode = (1 << codeSize) - 1;
+            }
+            prefix = value;
+          }
+
+          emit(prefix);
+          emit(endCode, false);
+          if (bitCount > 0) output.push(current & 255);
+          return Uint8Array.from(output);
+        }
+
+        function createBox(points) {
+          let minR = 255, minG = 255, minB = 255;
+          let maxR = 0, maxG = 0, maxB = 0, total = 0;
+          for (const point of points) {
+            if (point.r < minR) minR = point.r;
+            if (point.r > maxR) maxR = point.r;
+            if (point.g < minG) minG = point.g;
+            if (point.g > maxG) maxG = point.g;
+            if (point.b < minB) minB = point.b;
+            if (point.b > maxB) maxB = point.b;
+            total += point.count;
+          }
+          const range = Math.max(maxR - minR, maxG - minG, maxB - minB);
+          return { points, minR, maxR, minG, maxG, minB, maxB, total, score: range * total };
+        }
+
+        function splitBox(box) {
+          const rangeR = box.maxR - box.minR;
+          const rangeG = box.maxG - box.minG;
+          const rangeB = box.maxB - box.minB;
+          const channel = rangeR >= rangeG && rangeR >= rangeB ? 'r' : rangeG >= rangeB ? 'g' : 'b';
+          const points = box.points.slice().sort((a, b) => a[channel] - b[channel]);
+          const half = box.total / 2;
+          let accumulated = 0;
+          let splitAt = 1;
+          for (let index = 0; index < points.length - 1; index += 1) {
+            accumulated += points[index].count;
+            if (accumulated >= half) {
+              splitAt = index + 1;
+              break;
+            }
+          }
+          if (splitAt <= 0 || splitAt >= points.length) splitAt = Math.max(1, Math.floor(points.length / 2));
+          return [createBox(points.slice(0, splitAt)), createBox(points.slice(splitAt))];
+        }
+
+        function quantize(rgba, maxColors, transparent) {
+          const reserved = transparent ? 1 : 0;
+          const target = Math.max(1, maxColors - reserved);
+          const counts = new Uint32Array(32768);
+          const sumR = new Uint32Array(32768);
+          const sumG = new Uint32Array(32768);
+          const sumB = new Uint32Array(32768);
+
+          for (let offset = 0; offset < rgba.length; offset += 4) {
+            if (transparent && rgba[offset + 3] < 128) continue;
+            const r = rgba[offset], g = rgba[offset + 1], b = rgba[offset + 2];
+            const key = ((r >> 3) << 10) | ((g >> 3) << 5) | (b >> 3);
+            counts[key] += 1;
+            sumR[key] += r;
+            sumG[key] += g;
+            sumB[key] += b;
+          }
+
+          const points = [];
+          for (let key = 0; key < counts.length; key += 1) {
+            const count = counts[key];
+            if (!count) continue;
+            points.push({
+              r: sumR[key] / count,
+              g: sumG[key] / count,
+              b: sumB[key] / count,
+              count
+            });
+          }
+
+          let colors = [];
+          if (!points.length) {
+            colors = [[0, 0, 0]];
+          } else if (points.length <= target) {
+            colors = points.map(point => [Math.round(point.r), Math.round(point.g), Math.round(point.b)]);
+          } else {
+            const boxes = [createBox(points)];
+            while (boxes.length < target) {
+              let bestIndex = -1;
+              let bestScore = -1;
+              for (let index = 0; index < boxes.length; index += 1) {
+                const box = boxes[index];
+                if (box.points.length > 1 && box.score > bestScore) {
+                  bestScore = box.score;
+                  bestIndex = index;
+                }
+              }
+              if (bestIndex < 0) break;
+              const parts = splitBox(boxes[bestIndex]);
+              boxes.splice(bestIndex, 1, parts[0], parts[1]);
+            }
+            colors = boxes.map(box => {
+              let r = 0, g = 0, b = 0, total = 0;
+              for (const point of box.points) {
+                r += point.r * point.count;
+                g += point.g * point.count;
+                b += point.b * point.count;
+                total += point.count;
+              }
+              return [Math.round(r / total), Math.round(g / total), Math.round(b / total)];
+            });
+          }
+
+          return transparent ? [[0, 0, 0], ...colors.slice(0, target)] : colors.slice(0, target);
+        }
+
+        function mapPalette(rgba, palette, width, dither, transparent) {
+          const pixelCount = rgba.length / 4;
+          const output = new Uint8Array(pixelCount);
+          const paletteStart = transparent ? 1 : 0;
+          const cache = new Uint16Array(32768);
+          cache.fill(65535);
+
+          function nearest(r, g, b) {
+            const key = ((r >> 3) << 10) | ((g >> 3) << 5) | (b >> 3);
+            const cached = cache[key];
+            if (cached !== 65535) return cached;
+            let best = paletteStart;
+            let bestDistance = Infinity;
+            for (let index = paletteStart; index < palette.length; index += 1) {
+              const color = palette[index];
+              const dr = r - color[0], dg = g - color[1], db = b - color[2];
+              const distance = dr * dr + dg * dg + db * db;
+              if (distance < bestDistance) {
+                bestDistance = distance;
+                best = index;
+              }
+            }
+            cache[key] = best;
+            return best;
+          }
+
+          if (!dither) {
+            for (let pixel = 0, offset = 0; offset < rgba.length; offset += 4, pixel += 1) {
+              if (transparent && rgba[offset + 3] < 128) {
+                output[pixel] = 0;
+                continue;
+              }
+              output[pixel] = nearest(rgba[offset], rgba[offset + 1], rgba[offset + 2]);
+            }
+            return output;
+          }
+
+          const currentR = new Float32Array(width + 2);
+          const currentG = new Float32Array(width + 2);
+          const currentB = new Float32Array(width + 2);
+          const nextR = new Float32Array(width + 2);
+          const nextG = new Float32Array(width + 2);
+          const nextB = new Float32Array(width + 2);
+          const height = pixelCount / width;
+
+          for (let y = 0; y < height; y += 1) {
+            nextR.fill(0);
+            nextG.fill(0);
+            nextB.fill(0);
+            for (let x = 0; x < width; x += 1) {
+              const pixel = y * width + x;
+              const offset = pixel * 4;
+              if (transparent && rgba[offset + 3] < 128) {
+                output[pixel] = 0;
+                continue;
+              }
+
+              const r = Math.max(0, Math.min(255, rgba[offset] + currentR[x + 1]));
+              const g = Math.max(0, Math.min(255, rgba[offset + 1] + currentG[x + 1]));
+              const b = Math.max(0, Math.min(255, rgba[offset + 2] + currentB[x + 1]));
+              const paletteIndex = nearest(r | 0, g | 0, b | 0);
+              output[pixel] = paletteIndex;
+              const color = palette[paletteIndex];
+              const errorR = r - color[0], errorG = g - color[1], errorB = b - color[2];
+
+              currentR[x + 2] += errorR * 7 / 16;
+              currentG[x + 2] += errorG * 7 / 16;
+              currentB[x + 2] += errorB * 7 / 16;
+
+              nextR[x] += errorR * 3 / 16;
+              nextG[x] += errorG * 3 / 16;
+              nextB[x] += errorB * 3 / 16;
+
+              nextR[x + 1] += errorR * 5 / 16;
+              nextG[x + 1] += errorG * 5 / 16;
+              nextB[x + 1] += errorB * 5 / 16;
+
+              nextR[x + 2] += errorR / 16;
+              nextG[x + 2] += errorG / 16;
+              nextB[x + 2] += errorB / 16;
+            }
+            currentR.set(nextR);
+            currentG.set(nextG);
+            currentB.set(nextB);
+          }
+          return output;
+        }
+
+        function createEncoder(width, height, options) {
+          const stream = createStream();
+          let first = true;
+
+          function writeText(text) {
+            for (let index = 0; index < text.length; index += 1) stream.byte(text.charCodeAt(index));
+          }
+
+          writeText('GIF89a');
+
+          return {
+            addFrame(rgba, delay) {
+              const palette = quantize(rgba, options.colors, options.transparent);
+              const indexed = mapPalette(rgba, palette, width, options.dither, options.transparent);
+              const bits = tableBits(palette.length);
+
+              if (first) {
+                stream.u16(width);
+                stream.u16(height);
+                stream.byte(0x80 | (7 << 4) | (bits - 1));
+                stream.byte(0);
+                stream.byte(0);
+                writePalette(stream, palette, bits);
+                if (options.repeat >= 0) {
+                  stream.bytes([0x21, 0xff, 0x0b]);
+                  writeText('NETSCAPE2.0');
+                  stream.bytes([3, 1]);
+                  stream.u16(options.repeat);
+                  stream.byte(0);
+                }
+                first = false;
+              }
+
+              stream.bytes([0x21, 0xf9, 4]);
+              stream.byte(options.transparent ? 0x09 : 0);
+              stream.u16(Math.max(2, Math.round(delay / 10)));
+              stream.byte(0);
+              stream.byte(0);
+
+              stream.byte(0x2c);
+              stream.u16(0);
+              stream.u16(0);
+              stream.u16(width);
+              stream.u16(height);
+              if (stream && !first && options.__frameIndex > 0) {
+                stream.byte(0x80 | (bits - 1));
+                writePalette(stream, palette, bits);
+              } else {
+                stream.byte(0);
+              }
+
+              const minCodeSize = Math.max(2, bits);
+              stream.byte(minCodeSize);
+              writeSubblocks(stream, lzwEncode(indexed, minCodeSize));
+              options.__frameIndex += 1;
+            },
+            finish() {
+              stream.byte(0x3b);
+              return stream.result();
+            }
+          };
+        }
+
+        let encoder = null;
+        self.onmessage = event => {
+          const message = event.data || {};
+          const id = message.id;
+          try {
+            if (message.type === 'init') {
+              const options = { ...message.options, __frameIndex: 0 };
+              encoder = createEncoder(message.width, message.height, options);
+              self.postMessage({ id, ok: true });
+              return;
+            }
+            if (!encoder) throw new Error('GIF encoder is not initialized');
+            if (message.type === 'frame') {
+              encoder.addFrame(new Uint8ClampedArray(message.buffer), message.delay);
+              self.postMessage({ id, ok: true });
+              return;
+            }
+            if (message.type === 'finish') {
+              const bytes = encoder.finish();
+              encoder = null;
+              self.postMessage({ id, ok: true, buffer: bytes.buffer }, [bytes.buffer]);
+              return;
+            }
+            throw new Error('Unknown GIF worker message');
+          } catch (error) {
+            self.postMessage({ id, ok: false, error: error?.message || String(error) });
+          }
+        };
+      }
+
+      function createGifWorker() {
+        const source = `(${gifWorkerMain.toString()})();`;
+        const url = URL.createObjectURL(new Blob([source], { type: 'text/javascript' }));
+        const worker = new Worker(url);
+        URL.revokeObjectURL(url);
+        return worker;
+      }
+
+      function gifWorkerCall(worker, type, payload = {}, transfer = []) {
+        const id = ++state.gif.requestId;
+        return new Promise((resolve, reject) => {
+          let settled = false;
+          const pending = {
+            reject(error) {
+              if (settled) return;
+              settled = true;
+              cleanup();
+              reject(error);
+            }
+          };
+
+          function cleanup() {
+            worker.removeEventListener('message', onMessage);
+            worker.removeEventListener('error', onError);
+            state.gif.pending.delete(pending);
+          }
+
+          function onMessage(event) {
+            if (event.data?.id !== id) return;
+            if (settled) return;
+            settled = true;
+            cleanup();
+            if (event.data.ok === false) reject(new Error(event.data.error || 'GIF worker failed'));
+            else resolve(event.data);
+          }
+
+          function onError(event) {
+            if (settled) return;
+            settled = true;
+            cleanup();
+            reject(new Error(event.message || 'GIF worker failed'));
+          }
+
+          state.gif.pending.add(pending);
+          worker.addEventListener('message', onMessage);
+          worker.addEventListener('error', onError);
+          worker.postMessage({ id, type, ...payload }, transfer);
+        });
+      }
+
+      function sanitizeFilenameBase(value) {
+        const cleaned = String(value || '').trim().replace(/[\\/:*?"<>|\u0000-\u001f]/g, '-').replace(/\.+$/g, '').trim();
+        let base = cleaned.replace(/\.gif$/i, '') || 'frame-animation';
+        if (/^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/i.test(base)) base = `${base}-file`;
+        return base.slice(0, 120);
+      }
+
+      function clearGifResult({ stale = false } = {}) {
+        const hadResult = Boolean(state.gif.resultUrl);
+        if (state.gif.resultUrl) URL.revokeObjectURL(state.gif.resultUrl);
+        state.gif.resultBlob = null;
+        state.gif.resultUrl = '';
+        state.gif.resultMeta = null;
+        gifResultImage.removeAttribute('src');
+        $('#gifResultCard').hidden = true;
+        $('#gifResultEmpty').hidden = false;
+        $('#saveGifButton').disabled = true;
+        if (stale && hadResult) AppToast.show({ message: t('gifStale'), tone: 'warning' });
+      }
+
+      function invalidateGifResult(options = {}) {
+        state.gif.generation += 1;
+        clearGifResult(options);
+      }
+
+      function setGifBusy(busy) {
+        state.gif.busy = busy;
+        gifColorCount.disabled = busy;
+        gifLoopMode.disabled = busy;
+        gifDither.disabled = busy;
+        outputFilename.disabled = busy;
+        $('#createGifButton').disabled = busy || state.importBusy || state.frames.length === 0;
+        $('#cancelGifButton').hidden = !busy;
+        gifProgressWrap.hidden = !busy;
+        render();
+      }
+
+      function renderGifResult() {
+        const meta = state.gif.resultMeta;
+        if (!state.gif.resultUrl || !meta) {
+          $('#gifResultCard').hidden = true;
+          $('#gifResultEmpty').hidden = false;
+          $('#saveGifButton').disabled = true;
+          return;
+        }
+        $('#gifResultEmpty').hidden = true;
+        $('#gifResultCard').hidden = false;
+        gifResultImage.src = state.gif.resultUrl;
+        $('#gifResultDimensions').textContent = `${meta.width} × ${meta.height} px`;
+        $('#gifResultFrames').textContent = String(meta.frames);
+        $('#gifResultDuration').textContent = formatSeconds(meta.duration);
+        $('#gifResultBytes').textContent = formatBytes(meta.bytes);
+        $('#saveGifButton').disabled = false;
+      }
+
+      function cancelGif({ announce = true } = {}) {
+        if (!state.gif.busy) return;
+        state.gif.generation += 1;
+        const error = Object.assign(new Error('cancelled'), { code: 'cancelled' });
+        for (const pending of [...state.gif.pending]) pending.reject(error);
+        state.gif.pending.clear();
+        state.gif.worker?.terminate();
+        state.gif.worker = null;
+        state.gif.busy = false;
+        gifProgressWrap.hidden = true;
+        gifProgress.value = 0;
+        gifProgressText.textContent = '';
+        render();
+        if (announce) AppToast.show({ message: t('gifCancelled') });
+      }
+
+      async function createGif() {
+        if (isBusy() || !state.frames.length) return;
+        clearGifResult();
+        pausePreview({ resetElapsed: true });
+
+        const generation = ++state.gif.generation;
+        const frames = state.frames.slice();
+        const size = resolvedCanvasSize();
+        const snapshot = {
+          width: size.width,
+          height: size.height,
+          placement: state.canvas.placement,
+          background: resolvedBackgroundColor(),
+          transparent: state.canvas.backgroundMode === 'transparent'
+        };
+        const colors = [64, 128, 256].includes(Number(gifColorCount.value)) ? Number(gifColorCount.value) : 256;
+        const dither = gifDither.checked;
+        const repeat = gifLoopMode.value === 'once' ? -1 : 0;
+        const total = frames.length;
+        const totalDuration = frames.reduce((sum, frame) => sum + (frame.duration || DEFAULT_FRAME_DURATION), 0);
+        const worker = createGifWorker();
+        state.gif.worker = worker;
+        setGifBusy(true);
+
+        try {
+          await gifWorkerCall(worker, 'init', {
+            width: snapshot.width,
+            height: snapshot.height,
+            options: { colors, dither, transparent: snapshot.transparent, repeat }
+          });
+
+          for (let index = 0; index < frames.length; index += 1) {
+            if (generation !== state.gif.generation) throw Object.assign(new Error('cancelled'), { code: 'cancelled' });
+            gifProgress.value = index / Math.max(1, total);
+            gifProgressText.textContent = t('gifPreparing', { current: index + 1, total });
+            const imageData = await renderSourceFrameImageData(frames[index], snapshot);
+            if (generation !== state.gif.generation) throw Object.assign(new Error('cancelled'), { code: 'cancelled' });
+            gifProgressText.textContent = t('gifEncoding', { current: index + 1, total });
+            const buffer = imageData.data.buffer;
+            await gifWorkerCall(worker, 'frame', { buffer, delay: frames[index].duration || DEFAULT_FRAME_DURATION }, [buffer]);
+            gifProgress.value = (index + 1) / total;
+            await new Promise(resolve => setTimeout(resolve, 0));
+          }
+
+          gifProgressText.textContent = t('gifFinishing');
+          const result = await gifWorkerCall(worker, 'finish');
+          if (generation !== state.gif.generation) throw Object.assign(new Error('cancelled'), { code: 'cancelled' });
+
+          const blob = new Blob([result.buffer], { type: 'image/gif' });
+          const url = URL.createObjectURL(blob);
+          state.gif.resultBlob = blob;
+          state.gif.resultUrl = url;
+          state.gif.resultMeta = {
+            width: snapshot.width,
+            height: snapshot.height,
+            frames: total,
+            duration: totalDuration,
+            bytes: blob.size
+          };
+          renderGifResult();
+          AppToast.show({ message: t('gifDone'), tone: 'success' });
+        } catch (error) {
+          if (error?.code !== 'cancelled' && generation === state.gif.generation) {
+            console.error(error);
+            AppToast.show({ message: t('gifFailed'), tone: 'warning' });
+          }
+        } finally {
+          if (state.gif.worker === worker) {
+            worker.terminate();
+            state.gif.worker = null;
+          }
+          if (generation === state.gif.generation) {
+            state.gif.busy = false;
+            gifProgressWrap.hidden = true;
+            render();
+          }
+        }
+      }
+
+      function saveGif() {
+        if (!state.gif.resultBlob || !state.gif.resultUrl) return;
+        const base = sanitizeFilenameBase(outputFilename.value);
+        outputFilename.value = base;
+        const anchor = document.createElement('a');
+        anchor.href = state.gif.resultUrl;
+        anchor.download = `${base}.gif`;
+        document.body.append(anchor);
+        anchor.click();
+        anchor.remove();
+      }
+
       function elapsedBeforeFrame(index) {
         let elapsed = 0;
         for (let i = 0; i < Math.min(index, state.frames.length); i += 1) elapsed += state.frames[i].duration || DEFAULT_FRAME_DURATION;
@@ -903,6 +1548,7 @@
       }
       function recordHistory(before, after, label) {
         if (sameSequence(before, after)) return false;
+        invalidateGifResult();
         pausePreview({ resetElapsed: true });
         pushHistory({ type: 'sequence', before: before.slice(), after: after.slice(), label });
         return true;
@@ -915,6 +1561,7 @@
       }
       function recordTimingHistory(before, after, label) {
         if (sameTiming(before, after)) return false;
+        invalidateGifResult();
         pausePreview({ resetElapsed: true });
         pushHistory({ type: 'timing', before, after, label });
         return true;
@@ -926,13 +1573,14 @@
         }
       }
       function applyHistorySide(entry, side) {
+        invalidateGifResult();
         pausePreview({ resetElapsed: true });
         if (entry.type === 'timing') applyTimingSnapshot(entry[side]);
         else state.frames = entry[side].slice();
         render();
       }
       function undoHistory({ announce = true } = {}) {
-        if (state.importBusy || !state.undoStack.length) return false;
+        if (isBusy() || !state.undoStack.length) return false;
         const entry = state.undoStack.pop();
         state.redoStack.push(entry);
         applyHistorySide(entry, 'before');
@@ -940,7 +1588,7 @@
         return true;
       }
       function redoHistory({ announce = true } = {}) {
-        if (state.importBusy || !state.redoStack.length) return false;
+        if (isBusy() || !state.redoStack.length) return false;
         const entry = state.redoStack.pop();
         state.undoStack.push(entry);
         applyHistorySide(entry, 'after');
@@ -952,7 +1600,7 @@
       }
       function frameIndexById(id) { return state.frames.findIndex(frame => frame.id === id); }
       function moveFrameById(id, delta) {
-        if (state.importBusy) return;
+        if (isBusy()) return;
         const from = frameIndexById(id);
         const to = from + delta;
         if (from < 0 || to < 0 || to >= state.frames.length) return;
@@ -964,7 +1612,7 @@
         showUndoToast(t('reordered'));
       }
       function duplicateFrame(id) {
-        if (state.importBusy) return;
+        if (isBusy()) return;
         if (state.frames.length >= LIMITS.frames) {
           AppToast.show({ message: t('duplicateLimit'), tone: 'warning' });
           return;
@@ -990,7 +1638,7 @@
         showUndoToast(t('duplicated'), 'success');
       }
       function deleteFrame(id) {
-        if (state.importBusy) return;
+        if (isBusy()) return;
         const index = frameIndexById(id);
         if (index < 0) return;
         const before = state.frames.slice();
@@ -1000,7 +1648,7 @@
         showUndoToast(t('deleted'));
       }
       function sortFrames(direction) {
-        if (state.importBusy || state.frames.length < 2) return;
+        if (isBusy() || state.frames.length < 2) return;
         const before = state.frames.slice();
         const collator = new Intl.Collator(language, { numeric: true, sensitivity: 'base' });
         const indexed = state.frames.map((frame, index) => ({ frame, index }));
@@ -1017,7 +1665,7 @@
       }
 
       async function importFiles(fileList) {
-        if (state.importBusy) return;
+        if (isBusy()) return;
         const files = Array.from(fileList || []);
         if (!files.length) return;
         state.importBusy = true;
@@ -1090,6 +1738,8 @@
         state.framePool.clear();
       }
       function clearAllImmediately() {
+        if (state.gif.busy) cancelGif({ announce: false });
+        invalidateGifResult();
         state.generation += 1;
         releaseAllFrameResources();
         state.frames = [];
@@ -1189,11 +1839,12 @@
           const actions = card.querySelectorAll('[data-action]');
           for (const button of actions) {
             const action = button.dataset.action;
-            if (action === 'previous') button.disabled = state.importBusy || index === 0;
-            else if (action === 'next') button.disabled = state.importBusy || index === cards.length - 1;
-            else if (action === 'duplicate') button.disabled = state.importBusy || state.frames.length >= LIMITS.frames;
-            else if (action === 'drag') button.disabled = state.importBusy || state.frames.length < 2;
-            else button.disabled = state.importBusy;
+            const busy = isBusy();
+            if (action === 'previous') button.disabled = busy || index === 0;
+            else if (action === 'next') button.disabled = busy || index === cards.length - 1;
+            else if (action === 'duplicate') button.disabled = busy || state.frames.length >= LIMITS.frames;
+            else if (action === 'drag') button.disabled = busy || state.frames.length < 2;
+            else button.disabled = busy;
           }
         });
       }
@@ -1314,7 +1965,7 @@
         updatePreviewControls();
       }
       function updatePreviewControls() {
-        const hasFrames = state.frames.length > 0 && !state.importBusy;
+        const hasFrames = state.frames.length > 0 && !isBusy();
         $('#previewRestartButton').disabled = !hasFrames;
         $('#previewPreviousButton').disabled = !hasFrames;
         $('#previewNextButton').disabled = !hasFrames;
@@ -1325,6 +1976,7 @@
         if (pauseIcon) pauseIcon.hidden = !state.preview.playing;
       }
       function setFrameDuration(frameId, rawValue) {
+        if (isBusy()) return;
         const frame = state.framePool.get(frameId);
         if (!frame) return;
         const wasPlaying = state.preview.playing;
@@ -1340,7 +1992,7 @@
         if (wasPlaying) playPreview();
       }
       function applyDurationToAll(rawValue) {
-        if (!state.frames.length || state.importBusy) return;
+        if (!state.frames.length || isBusy()) return;
         const duration = normalizeDuration(rawValue);
         globalDurationInput.value = String(duration);
         const wasPlaying = state.preview.playing;
@@ -1379,8 +2031,8 @@
         importReport.hidden = false;
       }
       function updateHistoryButtons() {
-        $('#undoButton').disabled = state.importBusy || state.undoStack.length === 0;
-        $('#redoButton').disabled = state.importBusy || state.redoStack.length === 0;
+        $('#undoButton').disabled = isBusy() || state.undoStack.length === 0;
+        $('#redoButton').disabled = isBusy() || state.redoStack.length === 0;
       }
       function render() {
         $('#frameCount').textContent = new Intl.NumberFormat(language).format(state.frames.length);
@@ -1388,15 +2040,29 @@
         $('#totalSize').textContent = formatBytes(totalSourceBytes());
         $('#emptyState').hidden = state.frames.length > 0;
         frameGrid.hidden = state.frames.length === 0;
-        $('#addMoreButton').disabled = state.importBusy || state.frames.length >= LIMITS.frames;
-        $('#clearAllButton').disabled = state.importBusy || state.frames.length === 0;
-        $('#applyDurationButton').disabled = state.importBusy || state.frames.length === 0;
-        document.querySelectorAll('[data-duration-preset]').forEach(button => { button.disabled = state.importBusy || state.frames.length === 0; });
-        sortSelect.disabled = state.importBusy || state.frames.length < 2;
+        const busy = isBusy();
+        $('#addMoreButton').disabled = busy || state.frames.length >= LIMITS.frames;
+        $('#clearAllButton').disabled = busy || state.frames.length === 0;
+        $('#applyDurationButton').disabled = busy || state.frames.length === 0;
+        globalDurationInput.disabled = busy;
+        document.querySelectorAll('[data-duration-preset]').forEach(button => { button.disabled = busy || state.frames.length === 0; });
+        sortSelect.disabled = busy || state.frames.length < 2;
+        canvasSizeMode.disabled = busy;
+        canvasWidthInput.disabled = busy;
+        canvasHeightInput.disabled = busy;
+        backgroundMode.disabled = busy;
+        backgroundColor.disabled = busy || state.canvas.backgroundMode !== 'custom';
+        document.querySelectorAll('[data-placement]').forEach(button => { button.disabled = busy; });
+        $('#createGifButton').disabled = busy || state.frames.length === 0;
+        gifColorCount.disabled = state.gif.busy;
+        gifLoopMode.disabled = state.gif.busy;
+        gifDither.disabled = state.gif.busy;
+        outputFilename.disabled = state.gif.busy;
         renderFrames();
         renderFailures();
         updateHistoryButtons();
         renderPreviewFrame();
+        renderGifResult();
       }
       function updateBusy(busy) {
         $('#chooseButton').disabled = busy;
@@ -1413,7 +2079,7 @@
       }
 
       function beginFrameDrag(event, handle) {
-        if (state.importBusy || state.frames.length < 2 || (event.pointerType === 'mouse' && event.button !== 0)) return;
+        if (isBusy() || state.frames.length < 2 || (event.pointerType === 'mouse' && event.button !== 0)) return;
         const card = handle.closest('.frame-card');
         if (!card) return;
         event.preventDefault();
@@ -1547,6 +2213,7 @@
       canvasSizeMode.addEventListener('change', () => {
         state.canvas.sizeMode = canvasSizeMode.value;
         customSizeRow.hidden = state.canvas.sizeMode !== 'custom';
+        invalidateGifResult({ stale: true });
         renderPreviewFrame();
       });
       function commitCustomCanvasSize() {
@@ -1554,6 +2221,7 @@
         state.canvas.customHeight = normalizeCanvasDimension(canvasHeightInput.value, state.canvas.customHeight);
         canvasWidthInput.value = String(state.canvas.customWidth);
         canvasHeightInput.value = String(state.canvas.customHeight);
+        invalidateGifResult({ stale: true });
         renderPreviewFrame();
       }
       canvasWidthInput.addEventListener('change', commitCustomCanvasSize);
@@ -1561,18 +2229,31 @@
       document.querySelectorAll('[data-placement]').forEach(button => {
         button.addEventListener('click', () => {
           state.canvas.placement = button.dataset.placement === 'fill' ? 'fill' : 'fit';
+          invalidateGifResult({ stale: true });
           renderPreviewFrame();
         });
       });
       backgroundMode.addEventListener('change', () => {
         state.canvas.backgroundMode = backgroundMode.value;
         backgroundColor.disabled = state.canvas.backgroundMode !== 'custom';
+        invalidateGifResult({ stale: true });
         renderPreviewFrame();
       });
       backgroundColor.addEventListener('input', () => {
         state.canvas.customColor = backgroundColor.value;
-        if (state.canvas.backgroundMode === 'custom') renderPreviewFrame();
+        if (state.canvas.backgroundMode === 'custom') {
+          invalidateGifResult({ stale: true });
+          renderPreviewFrame();
+        }
       });
+
+      for (const control of [gifColorCount, gifLoopMode, gifDither]) {
+        control.addEventListener('change', () => invalidateGifResult({ stale: true }));
+      }
+      outputFilename.addEventListener('blur', () => { outputFilename.value = sanitizeFilenameBase(outputFilename.value); });
+      $('#createGifButton').addEventListener('click', createGif);
+      $('#cancelGifButton').addEventListener('click', () => cancelGif());
+      $('#saveGifButton').addEventListener('click', saveGif);
 
       sortSelect.addEventListener('change', () => {
         const direction = sortSelect.value;
@@ -1616,7 +2297,7 @@
       });
 
       $('#clearAllButton').addEventListener('click', async () => {
-        if (!state.frames.length || state.importBusy) return;
+        if (!state.frames.length || isBusy()) return;
         const ok = await AppConfirm.ask({ title:t('clearConfirmTitle'), message:t('clearConfirmBody'), confirmLabel:t('clearConfirmAction'), cancelLabel:t('cancel'), tone:'danger' });
         if (!ok) return;
         clearAllImmediately();
@@ -1641,6 +2322,8 @@
       window.addEventListener('pagehide', () => {
         state.generation += 1;
         pausePreview({ resetElapsed: true });
+        cancelGif({ announce: false });
+        clearGifResult();
         releaseAllFrameResources();
         StandaloneAssets.revokeAll();
       }, { once:true });
