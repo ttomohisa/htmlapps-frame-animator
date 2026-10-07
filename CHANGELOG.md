@@ -106,3 +106,4 @@ The project uses Semantic Versioning.
 ### Notes
 
 - v0.1.0 intentionally does not implement frame reordering, timing, animation preview, or GIF/WebP export yet. Those capabilities are staged in `DEVELOPMENT_PLAN.md`.
+
