@@ -543,33 +543,66 @@
 
       // Generic embedded-asset API retained from the template contract.
       const StandaloneAssets = (() => {
-        const records = new Map((EMBEDDED_ASSETS.assets || []).map(asset => [asset.id, asset]));
-        const urls = new Map();
-        function base64Bytes(base64) {
+        const dependencies = EMBEDDED_ASSETS.dependencies || {};
+        const urls = new Set();
+        const byteCache = new Map();
+
+        function decodeBase64Bytes(base64) {
           const raw = atob(base64 || '');
           const bytes = new Uint8Array(raw.length);
           for (let i = 0; i < raw.length; i += 1) bytes[i] = raw.charCodeAt(i);
           return bytes;
         }
-        async function bytesAsync(id) {
-          const record = records.get(id);
-          if (!record) throw new Error(`Unknown embedded asset: ${id}`);
-          const stored = base64Bytes(record.base64);
-          if (record.compression !== 'gzip') return stored;
+
+        function getAsset(dependencyId, assetKey) {
+          const asset = dependencies?.[dependencyId]?.assets?.[assetKey];
+          if (!asset) throw new Error(`Unknown embedded asset: ${dependencyId}/${assetKey}`);
+          return asset;
+        }
+
+        async function inflateAsset(asset) {
+          const stored = decodeBase64Bytes(asset.base64);
+          if (!asset.compression || asset.compression === 'none') return stored;
+          if (asset.compression !== 'gzip') throw new Error(`Unsupported embedded compression: ${asset.compression}`);
           if (typeof DecompressionStream !== 'function') throw new Error('This browser cannot inflate embedded gzip assets.');
           const stream = new Blob([stored]).stream().pipeThrough(new DecompressionStream('gzip'));
-          return new Uint8Array(await new Response(stream).arrayBuffer());
+          const expanded = new Uint8Array(await new Response(stream).arrayBuffer());
+          if (Number.isFinite(asset.originalBytes) && expanded.byteLength !== asset.originalBytes) {
+            throw new Error(`Embedded asset size mismatch: expected ${asset.originalBytes}, got ${expanded.byteLength}`);
+          }
+          return expanded;
         }
-        async function blobUrlAsync(id) {
-          if (urls.has(id)) return urls.get(id);
-          const record = records.get(id);
-          const bytes = await bytesAsync(id);
-          const url = URL.createObjectURL(new Blob([bytes], { type: record?.mime || 'application/octet-stream' }));
-          urls.set(id, url);
+
+        async function bytesAsync(dependencyId, assetKey) {
+          const cacheKey = `${dependencyId}/${assetKey}`;
+          if (!byteCache.has(cacheKey)) byteCache.set(cacheKey, inflateAsset(getAsset(dependencyId, assetKey)));
+          return new Uint8Array(await byteCache.get(cacheKey));
+        }
+
+        async function textAsync(dependencyId, assetKey) {
+          return new TextDecoder().decode(await bytesAsync(dependencyId, assetKey));
+        }
+
+        async function blobUrlAsync(dependencyId, assetKey) {
+          const asset = getAsset(dependencyId, assetKey);
+          const url = URL.createObjectURL(new Blob([await bytesAsync(dependencyId, assetKey)], { type: asset.mime || 'application/octet-stream' }));
+          urls.add(url);
           return url;
         }
-        function revokeAll() { for (const url of urls.values()) URL.revokeObjectURL(url); urls.clear(); }
-        return Object.freeze({ bytesAsync, blobUrlAsync, revokeAll });
+
+        function revoke(url) {
+          if (!url) return;
+          URL.revokeObjectURL(url);
+          urls.delete(url);
+        }
+
+        function revokeAll() {
+          for (const url of urls) URL.revokeObjectURL(url);
+          urls.clear();
+          byteCache.clear();
+        }
+
+        return Object.freeze({ bytesAsync, textAsync, blobUrlAsync, revoke, revokeAll });
       })();
       window.StandaloneAssets = StandaloneAssets;
 
