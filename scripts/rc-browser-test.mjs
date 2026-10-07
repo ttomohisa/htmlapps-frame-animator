@@ -148,6 +148,7 @@ async function loadFiles(page, files) {
 
 async function waitToastGone(page) {
   await page.waitForFunction(() => !document.querySelector('#appToast')?.classList.contains('show'), null, { timeout: 10_000 });
+  await page.waitForTimeout(300);
 }
 
 async function saveDownload(page, buttonSelector, destination) {
