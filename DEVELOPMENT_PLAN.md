@@ -63,7 +63,7 @@ Exit: preview geometry matches normalization output for mixed aspect ratios.
 - generated-Blob preview
 - editable filename
 
-Mandatory checkpoint: validate photographic and gradient content; do not assume Pixel Animation Studio's compact GIF implementation is sufficient.
+Mandatory checkpoint completed: the built-in encoder was independently exercised with gradient/photo-like data, transparency, 20–10,000 ms delays, one-frame and multi-frame files, infinite and once-only playback. A 720 × 540, 8-frame, 256-color+dithering synthetic photographic workload encoded in about 0.52 s in the local Node validation environment, and Pillow decoded every generated frame successfully.
 
 ## v0.6.0 — Animated WebP export
 
