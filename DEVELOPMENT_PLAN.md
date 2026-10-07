@@ -28,7 +28,7 @@ Exit: importing a mixed valid/invalid batch leaves valid frames usable and expla
 
 Exit: every reorder operation remains possible without relying on Drag & Drop alone.
 
-## v0.3.0 — Timing and live preview
+## v0.3.0 — Timing and live preview ✅
 
 - Default 500 ms/frame
 - 20–10,000 ms per frame
