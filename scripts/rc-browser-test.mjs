@@ -137,6 +137,9 @@ function watchNetwork(page, externalRequests, pageErrors) {
     }
   });
   page.on('pageerror', error => pageErrors.push(String(error)));
+  page.on('console', message => {
+    if (message.type() === 'error') pageErrors.push(`console: ${message.text()}`);
+  });
 }
 
 async function loadFiles(page, files) {
@@ -366,7 +369,18 @@ async function exerciseFileUrl(browser) {
   await page.locator('#createGifButton').click();
   await page.locator('#gifResultCard').waitFor({ state: 'visible', timeout: 30_000 });
   await page.locator('#createWebpButton').click();
-  await page.locator('#webpResultCard').waitFor({ state: 'visible', timeout: 30_000 });
+  try {
+    await page.locator('#webpResultCard').waitFor({ state: 'visible', timeout: 15_000 });
+  } catch (error) {
+    const diagnostic = await page.evaluate(() => ({
+      resultText: document.querySelector('#webpResultEmpty')?.textContent || '',
+      createDisabled: Boolean(document.querySelector('#createWebpButton')?.disabled),
+      progressText: document.querySelector('#webpProgressText')?.textContent || '',
+      progressHidden: Boolean(document.querySelector('#webpProgressWrap')?.hidden)
+    }));
+    console.error('FILE_WEBP_DIAGNOSTIC', JSON.stringify({ diagnostic, pageErrors: errors }));
+    throw error;
+  }
   assert(external.length === 0, `External runtime requests from file://: ${external.join(', ')}`);
   assert(errors.length === 0, `file:// page errors: ${errors.join(' | ')}`);
   await context.close();
