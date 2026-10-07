@@ -18,6 +18,9 @@ The project uses Semantic Versioning.
 ### Verified
 
 - Mixed image import, partial failure handling, long/Unicode filenames, natural sort, and 20/10,000 ms frame durations.
+- Zero-byte and non-zero corrupt PNG rejection while valid files in the same batch remain usable.
+- Clipboard image paste through the normal import-validation path.
+- GIF/WebP stale-result invalidation after output-affecting settings change.
 - Forward / Reverse / Ping-pong playback and custom finite loops.
 - Generated GIF download structure and Netscape loop metadata.
 - Generated Animated WebP RIFF/ANIM/ANMF structure and finite loop metadata.
