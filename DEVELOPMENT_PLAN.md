@@ -109,6 +109,8 @@ Validation completed against the exact `webpWorkerMain` extracted from the CI-ge
 
 v0.8 implementation notes: smartphone staged navigation is enabled only at <=640 px; safe-area padding and 44 px touch targets were added; 360 px and below uses one-column frame/export layouts; thumbnail images lazy-decode; single-frame timing edits avoid a full frame-card rerender; GIF/WebP failures leave a persistent retryable state while preserving source frames and settings; existing Worker/Blob cleanup paths remain active on success, cancel, invalidation, retry, and page exit.
 
+v0.8 verification notes: source JavaScript parsed successfully; mobile empty-state/tab reset, safe-area/touch-target CSS, lazy thumbnail decoding, result/Worker Blob URL cleanup, and retryable encoder failure paths were audited; the authoritative standalone build succeeded before the generated root HTML was synchronized.
+
 ## v0.9.0 — Release candidate
 
 Stop feature work.
