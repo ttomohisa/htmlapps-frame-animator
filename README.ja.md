@@ -2,7 +2,7 @@
 
 Frame Animatorは、複数のローカル画像からAnimated GIF / WebPを作るためのBrowser Kittyツールです。選択した画像を変換サーバーへアップロードせず、ブラウザ内で処理する構成を目指します。
 
-> 現在の開発版は **v0.8.0** です。画像からGIF / WebPを作る一連の機能に加え、スマートフォン導線、性能、失敗後の復旧を強化しています。
+> 現在の開発版は **v0.9.0 RC** です。v1.0.0に向けて新機能追加を止め、画像からGIF / WebPを作る一連の機能を回帰テストしています。
 
 ## 現在できること
 
@@ -67,9 +67,9 @@ Frame Animatorは、複数のローカル画像からAnimated GIF / WebPを作�
 - PC / スマートフォン対応のレスポンシブUI
 - 実行時CDN、Analytics、Telemetry、外部APIなし
 
-## 完成時の操作フロー
+## 操作フロー
 
-v1.0.0では次の流れを完成させます。
+現在のRCでは次の流れを一通り利用できます。
 
 1. 画像を追加
 2. フレームを並べ替え
@@ -81,6 +81,16 @@ v1.0.0では次の流れを完成させます。
 
 段階的な実装内容は [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md) を参照してください。
 
+## スクリーンショット
+
+### PC
+
+![Frame Animator PC](assets/screenshot.png)
+
+### スマートフォン
+
+![Frame Animator スマートフォン](assets/screenshot-mobile.png)
+
 ## プライバシー
 
 読み込んだ画像はブラウザ内に留まります。Frame Animatorは選択ファイルをアップロードせず、変換用バックエンドも使用しません。
@@ -89,7 +99,7 @@ CSPは `connect-src 'none'` を使用し、Analytics、Telemetry、実行時CDN�
 
 読み込んだ画像そのものをlocalStorageやIndexedDBへ自動保存しません。ページを閉じると作業中の画像セットは破棄されます。
 
-## v0.8.0の対応入力
+## v0.9.0の対応入力
 
 対応:
 
@@ -109,7 +119,7 @@ CSPは `connect-src 'none'` を使用し、Analytics、Telemetry、実行時CDN�
 - PSD
 - PDF
 
-## v0.8.0の上限
+## v0.9.0の上限
 
 - 最大200枚
 - 1ファイル50 MiB
@@ -153,4 +163,4 @@ powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File .\scripts\check-
 
 MIT。詳細は [LICENSE](LICENSE) を参照してください。
 
-第三者ライブラリの情報は [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) に記載します。v0.8.0では、ローカルWebP生成のため固定した `@jsquash/webp@1.5.0` とlibwebpエンコーダ資産を単一HTMLへ内包します。
+第三者ライブラリの情報は [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) に記載します。v0.9.0では、ローカルWebP生成のため固定した `@jsquash/webp@1.5.0` とlibwebpエンコーダ資産を単一HTMLへ内包します。
