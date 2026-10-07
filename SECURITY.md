@@ -14,7 +14,7 @@ Include the affected commit/version, reproduction steps, expected and actual beh
 
 Frame Animator is a static, local-first browser application with no conversion backend.
 
-v0.6.0 protections include:
+v0.7.0 protections include:
 
 - `connect-src 'none'` at runtime.
 - No runtime CDN, external font, analytics, telemetry, or API.
@@ -32,6 +32,7 @@ A downloaded standalone HTML file is executable code. Distribute it through a tr
 Imported files are untrusted input. The application must:
 
 - validate file type and supported container structure where practical
+- treat pasted clipboard image data as untrusted input and pass it through the same import limits and decoding checks
 - reject zero-byte and oversized files before expensive decode work
 - limit per-file size, total source bytes, frame count, and decoded pixel count
 - keep valid files usable when another item in the batch fails
@@ -41,7 +42,7 @@ Imported files are untrusted input. The application must:
 - release ImageBitmap and other large temporary resources
 - invalidate stale asynchronous work when the source set is cleared or replaced
 
-Animated WebP is outside the v0.6.0 input contract and is rejected when detectable from WebP animation metadata.
+Animated WebP is outside the v0.7.0 input contract and is rejected when detectable from WebP animation metadata.
 
 ## Encoder review
 

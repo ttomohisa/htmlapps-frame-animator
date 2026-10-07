@@ -85,7 +85,7 @@ Validation completed against the exact `webpWorkerMain` extracted from the CI-ge
 - lossless / opaque: 32 × 24, 2 frames, durations 100 / 1,500 ms, loop count 1; generated ANMF payloads used `VP8L`, Pillow decoded 2 frames, and direct RIFF parsing confirmed the loop/duration values
 - RIFF size fields matched the generated file sizes in both tests
 
-## v0.7.0 — Playback modes and workflow polish
+## v0.7.0 — Playback modes and workflow polish ✅
 
 - Forward
 - Reverse
