@@ -1901,7 +1901,9 @@
           const workerSource = `(${webpWorkerMain.toString()})();`;
           workerUrl = URL.createObjectURL(new Blob([workerSource], { type: 'text/javascript' }));
           state.webp.workerUrl = workerUrl;
-          const worker = new Worker(workerUrl, { type: 'module' });
+          // Use a classic Blob Worker so direct file:// standalone use does not depend on module-worker origin handling.
+          // The dedicated worker can still dynamically import the embedded Emscripten module from its Blob URL.
+          const worker = new Worker(workerUrl);
           return { worker, moduleUrl, wasmBuffer: wasmBytes.slice().buffer };
         } catch (error) {
           if (workerUrl) URL.revokeObjectURL(workerUrl);
