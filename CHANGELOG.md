@@ -6,6 +6,23 @@ The project uses Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.2.0] - 2026-10-07
+
+### Added
+
+- Mouse and touch frame reordering through a dedicated drag handle.
+- Earlier/later frame buttons as an accessible non-drag alternative.
+- Frame duplication and single-frame deletion with Undo.
+- Bounded Undo / Redo history for imports and sequence edits, including keyboard shortcuts.
+- Natural filename sorting in ascending and descending order with Undo support.
+- Sequence resource tracking so thumbnail Blob URLs can be released after they fall out of active state and history.
+
+### Changed
+
+- Language switch now shows compact `EN` / `JA` labels.
+- Source-total size counts unique active source images, so duplicating a frame does not imply duplicate source-file bytes.
+- In-app help and milestone copy now describe the v0.2.0 sequence editor.
+
 ## [0.1.0] - 2026-10-07
 
 ### Added
