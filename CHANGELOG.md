@@ -6,6 +6,26 @@ The project uses Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.9.0] - 2026-10-08
+
+### Changed
+
+- Entered release-candidate feature freeze for v1.0.0.
+- Added an automated Chromium RC regression suite covering desktop, mobile, 200-frame import, GIF/WebP generation, cancellation/retry, forced encoder failure recovery, direct local-file usage, and runtime network checks.
+- RC browser tests generate fresh Japanese desktop, English desktop, and smartphone screenshots from the built standalone HTML.
+- README files now describe the complete RC workflow and include current screenshots.
+
+### Verified
+
+- Mixed image import, partial failure handling, long/Unicode filenames, natural sort, and 20/10,000 ms frame durations.
+- Forward / Reverse / Ping-pong playback and custom finite loops.
+- Generated GIF download structure and Netscape loop metadata.
+- Generated Animated WebP RIFF/ANIM/ANMF structure and finite loop metadata.
+- 390 / 360 / 320 px smartphone staged navigation without horizontal overflow.
+- 200-frame import and single-frame timing update.
+- GIF cancel then retry, and forced GIF/WebP Worker failure recovery without losing source frames.
+- Direct local-file workflow and no external HTTP(S) runtime requests during the tested flows.
+
 ## [0.8.0] - 2026-10-08
 
 ### Added
