@@ -78,6 +78,30 @@
     .frame-action.danger{color:var(--danger)}.drag-handle{touch-action:none;cursor:grab}.drag-handle:active{cursor:grabbing}
     .sort-select{min-height:40px;max-width:190px;padding:7px 32px 7px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--text);font:inherit;font-size:12px;font-weight:700}
     .sort-select:focus-visible{outline:3px solid color-mix(in srgb,var(--focus) 55%,transparent);outline-offset:2px}
+    .timing-toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:end;margin:0 0 14px;padding:13px;border:1px solid var(--line);border-radius:12px;background:var(--surface-muted)}
+    .timing-copy strong{display:block;font-size:13px}.timing-copy span{display:block;margin-top:2px;color:var(--muted);font-size:11px}
+    .timing-controls{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:7px;align-items:end}
+    .timing-presets{display:flex;flex-wrap:wrap;gap:5px}.timing-preset{min-height:36px;padding:6px 9px;border:1px solid var(--line);border-radius:9px;background:var(--surface);font-size:11px;font-weight:750;cursor:pointer}
+    .timing-preset:hover:not(:disabled){border-color:var(--line-strong);background:var(--surface-hover)}.timing-preset:disabled{opacity:.42;cursor:not-allowed}
+    .duration-control{display:grid;grid-template-columns:minmax(64px,84px) auto;align-items:center;overflow:hidden;border:1px solid var(--line);border-radius:9px;background:var(--surface)}
+    .duration-control:focus-within{border-color:var(--focus);box-shadow:0 0 0 3px color-mix(in srgb,var(--focus) 18%,transparent)}
+    .duration-input{width:100%;min-width:0;height:36px;padding:6px 8px;border:0;outline:0;background:transparent;color:var(--text);font:inherit;font-size:12px;text-align:right}
+    .duration-unit{padding:0 8px 0 4px;color:var(--muted);font-size:10px}
+    .duration-apply{min-height:36px;padding:6px 10px}
+    .frame-duration{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;align-items:center;margin-top:8px}
+    .frame-duration-label{color:var(--muted);font-size:10px;font-weight:700}
+    .frame-duration .duration-control{justify-self:end;width:min(100%,112px)}
+    .preview-layout{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(260px,.75fr);gap:16px}
+    .preview-stage{position:relative;display:grid;place-items:center;min-height:360px;overflow:hidden;border:1px solid var(--line);border-radius:14px;background:#1b1d1c}
+    .preview-stage img{display:block;max-width:100%;max-height:520px;width:auto;height:auto;object-fit:contain}
+    .preview-placeholder{max-width:320px;padding:28px;text-align:center;color:#c5c8c4;font-size:12px}
+    .preview-side{display:flex;flex-direction:column;gap:12px}
+    .preview-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+    .preview-stat{padding:10px;border-radius:10px;background:var(--surface-muted)}.preview-stat span{display:block;color:var(--muted);font-size:10px}.preview-stat strong{display:block;margin-top:2px;font-size:13px}
+    .preview-progress{width:100%;height:9px;accent-color:var(--accent)}
+    .preview-transport{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}
+    .preview-transport .button{min-width:0;padding:8px}.preview-transport svg{width:17px;height:17px}
+    .preview-help{margin:0;color:var(--muted);font-size:11px}
     .import-report{margin-top:14px;padding:12px;border:1px solid #ead18e;border-radius:11px;background:var(--warning-soft)}
     .import-report h4{margin:0 0 5px;color:#674400;font-size:13px}.import-report p{margin:0;color:#674400;font-size:11px}
     .failure-list{margin:9px 0 0;padding-left:18px;color:#674400;font-size:11px}.failure-list li+li{margin-top:3px}
@@ -103,7 +127,8 @@
     @media(max-width:900px){.frame-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
     @media(max-width:640px){
       .main{padding:16px 12px 38px}.page-intro{display:block}.local-badge{margin-top:11px}.panel-body{padding:13px}.drop-zone{min-height:190px;padding:22px 14px}
-      .frame-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.summary-bar{align-items:flex-start}.summary-actions{width:100%}.summary-actions .button{flex:1 1 auto}
+      .frame-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.summary-bar{align-items:flex-start}.summary-actions{width:100%}.summary-actions .button{flex:1 1 auto}.summary-actions .sort-select{flex:1 1 150px;max-width:none}
+      .timing-toolbar{grid-template-columns:1fr}.timing-controls{justify-content:flex-start}.preview-layout{grid-template-columns:1fr}.preview-stage{min-height:260px}.preview-stage img{max-height:48vh}
       .next-panel{grid-template-columns:1fr}.future-button{width:100%}.build-grid{grid-template-columns:1fr}
       dialog{width:calc(100vw - 16px);max-height:calc(100dvh - 16px);border-radius:16px}.dialog-shell{max-height:calc(100dvh - 16px)}.dialog-head{position:sticky;top:0;background:var(--surface);z-index:1}
       .dialog-body{padding-bottom:calc(20px + env(safe-area-inset-bottom))}.app-toast{right:10px;bottom:calc(10px + env(safe-area-inset-bottom));max-width:calc(100vw - 20px)}
@@ -135,8 +160,8 @@
   <main class="main">
     <section class="page-intro">
       <div>
-        <h2 data-i18n="introTitle">画像を追加して、フレーム順を整える</h2>
-        <p data-i18n="introBody">JPEG・PNG・静止WebPを複数追加し、ドラッグやボタンで順番を整えられます。画像はこの端末内だけで処理します。</p>
+        <h2 data-i18n="introTitle">画像を並べて、表示時間を調整</h2>
+        <p data-i18n="introBody">JPEG・PNG・静止WebPを追加し、順番と各フレームの表示時間を整えて動きをプレビューできます。画像はこの端末内だけで処理します。</p>
       </div>
       <span class="local-badge">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V8a5 5 0 0 1 10 0v2m-9 0h8a2 2 0 0 1 2 2v6H6v-6a2 2 0 0 1 2-2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
@@ -179,13 +204,14 @@
       <div class="panel-head">
         <div>
           <h3 id="framesHeading" data-i18n="framesHeading">フレーム</h3>
-          <p data-i18n="framesNote">ドラッグまたはボタンで順番を整え、複製・削除・ファイル名順の並べ替えができます。</p>
+          <p data-i18n="framesNote">順番を整え、各フレームの表示時間を設定します。</p>
         </div>
       </div>
       <div class="panel-body">
         <div class="summary-bar">
           <div class="stats">
             <div class="stat"><strong id="frameCount">0</strong><span data-i18n="images">画像</span></div>
+            <div class="stat"><strong id="totalDuration">0.0 s</strong><span data-i18n="totalDurationLabel">合計時間</span></div>
             <div class="stat"><strong id="totalSize">0 B</strong><span data-i18n="sourceSize">元ファイル合計</span></div>
           </div>
           <div class="summary-actions">
@@ -206,6 +232,27 @@
             <button class="button danger" id="clearAllButton" type="button" disabled data-i18n="clearAll">すべて消去</button>
           </div>
         </div>
+
+        <div class="timing-toolbar" id="timingToolbar">
+          <div class="timing-copy">
+            <strong data-i18n="timingTitle">全フレームの表示時間</strong>
+            <span data-i18n="timingBody">プリセットまたは入力値を全フレームへ適用します。個別の時間は各カードで変更できます。</span>
+          </div>
+          <div class="timing-controls">
+            <div class="timing-presets" aria-label="Frame duration presets">
+              <button class="timing-preset" type="button" data-duration-preset="100">100 ms</button>
+              <button class="timing-preset" type="button" data-duration-preset="200">200 ms</button>
+              <button class="timing-preset" type="button" data-duration-preset="500">500 ms</button>
+              <button class="timing-preset" type="button" data-duration-preset="1000">1000 ms</button>
+            </div>
+            <div class="duration-control">
+              <input class="duration-input" id="globalDurationInput" type="number" min="20" max="10000" step="10" value="500" inputmode="numeric" data-i18n-aria-label="globalDurationLabel">
+              <span class="duration-unit">ms</span>
+            </div>
+            <button class="button duration-apply" id="applyDurationButton" type="button" disabled data-i18n="applyAll">すべてに適用</button>
+          </div>
+        </div>
+
         <div class="empty-state" id="emptyState">
           <div>
             <h4 data-i18n="emptyTitle">まだ画像がありません</h4>
@@ -214,10 +261,50 @@
         </div>
         <div class="frame-grid" id="frameGrid" hidden></div>
       </div>
+    </section>
+
+    <section class="panel" aria-labelledby="previewHeading">
+      <div class="panel-head">
+        <div>
+          <h3 id="previewHeading" data-i18n="previewHeading">アニメーションプレビュー</h3>
+          <p data-i18n="previewNote">各フレームの表示時間をそのまま使って動きを確認します。</p>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="preview-layout">
+          <div class="preview-stage" id="previewStage">
+            <p class="preview-placeholder" id="previewPlaceholder" data-i18n="previewEmpty">画像を追加すると、ここでアニメーションを確認できます。</p>
+            <img id="previewImage" alt="" hidden>
+          </div>
+          <div class="preview-side">
+            <div class="preview-stats">
+              <div class="preview-stat"><span data-i18n="previewFrameLabel">フレーム</span><strong id="previewFrame">—</strong></div>
+              <div class="preview-stat"><span data-i18n="previewTimeLabel">再生位置</span><strong id="previewTime">0.0 / 0.0 s</strong></div>
+            </div>
+            <progress class="preview-progress" id="previewProgress" max="1" value="0"></progress>
+            <div class="preview-transport">
+              <button class="button" id="previewRestartButton" type="button" disabled data-i18n-aria-label="previewRestart">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7v5h5M7.8 11A6 6 0 1 1 7 15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <button class="button" id="previewPreviousButton" type="button" disabled data-i18n-aria-label="previewPrevious">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 6v12m10-11-7 5 7 5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+              </button>
+              <button class="button primary" id="previewPlayButton" type="button" disabled data-i18n-aria-label="previewPlay">
+                <svg class="play-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 9 6-9 6Z" fill="currentColor"/></svg>
+                <svg class="pause-icon" viewBox="0 0 24 24" aria-hidden="true" hidden><path d="M8 6v12m8-12v12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+              </button>
+              <button class="button" id="previewNextButton" type="button" disabled data-i18n-aria-label="previewNext">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 6v12M7 7l7 5-7 5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+            <p class="preview-help" data-i18n="previewHelp">このプレビューは動きと表示時間の確認用です。最終出力の画質確認はエンコード機能追加後に行います。</p>
+          </div>
+        </div>
+      </div>
       <div class="next-panel">
         <div>
-          <strong data-i18n="nextTitle">次の段階: 表示時間とプレビュー</strong>
-          <span data-i18n="nextBody">v0.3.0でフレームごとの表示時間とアニメーションプレビューを追加します。</span>
+          <strong data-i18n="nextTitle">次の段階: 出力サイズとFit / Fill</strong>
+          <span data-i18n="nextBody">v0.4.0で異なる画像サイズを1つの出力Canvasへそろえる設定を追加します。</span>
         </div>
         <button class="button future-button" type="button" disabled data-i18n="createAnimation">アニメーションを作成</button>
       </div>
@@ -250,13 +337,13 @@
         <h3 data-i18n="helpHowTitle">基本操作</h3>
         <ol>
           <li data-i18n="helpHow1">JPEG・PNG・静止WebPを複数選択するか、画面へドロップします。</li>
-          <li data-i18n="helpHow2">ドラッグまたは前後移動ボタンでフレーム順を整えます。複製・削除・ファイル名順の並べ替えもできます。</li>
-          <li data-i18n="helpHow3">削除や並べ替えは元に戻す／やり直すで復元できます。表示時間とGIF / WebP生成は後続段階で追加します。</li>
+          <li data-i18n="helpHow2">順番を整え、各カードの表示時間または全フレーム一括設定を調整します。</li>
+          <li data-i18n="helpHow3">プレビューの再生・一時停止・最初から・前後移動で、設定した時間どおりの動きを確認できます。</li>
         </ol>
         <h3 data-i18n="helpFormatsTitle">対応形式</h3>
         <p data-i18n="helpFormatsBody">JPEG / JPG、PNG、静止WebPに対応します。Animated WebP、GIF、動画、HEIC等は現在対象外です。</p>
         <h3 data-i18n="helpLimitsTitle">上限</h3>
-        <p data-i18n="helpLimitsBody">最大200枚、1ファイル50 MiB、読み込み済み元ファイル合計500 MiB、1画像50メガピクセルです。</p>
+        <p data-i18n="helpLimitsBody">最大200枚、1ファイル50 MiB、読み込み済み元ファイル合計500 MiB、1画像50メガピクセルです。表示時間は1フレーム20〜10,000 ms、10 ms刻みです。</p>
         <h3 data-i18n="helpPrivacyTitle">プライバシー</h3>
         <p data-i18n="helpPrivacyBody">選択した画像はブラウザ内だけで読み込みます。このアプリは画像を外部サーバーへ送信せず、Analyticsや外部APIも使用しません。</p>
         <h3 data-i18n="helpStorageTitle">データ保持</h3>
@@ -342,17 +429,19 @@
 
       const translations = {
         ja: {
-          brandMeta:'複数画像からGIF / WebPを作成', introTitle:'画像を追加して、フレーム順を整える', introBody:'JPEG・PNG・静止WebPを複数追加し、ドラッグやボタンで順番を整えられます。画像はこの端末内だけで処理します。',
+          brandMeta:'複数画像からGIF / WebPを作成', introTitle:'画像を並べて、表示時間を調整', introBody:'JPEG・PNG・静止WebPを追加し、順番と各フレームの表示時間を整えて動きをプレビューできます。画像はこの端末内だけで処理します。',
           localProcessing:'完全ローカル処理', addHeading:'画像を追加', addNote:'複数選択またはドラッグ＆ドロップに対応しています。', dropTitle:'JPEG / PNG / WebPをここにドロップ', dropNote:'または端末から画像を選択します', chooseImages:'画像を選択',
-          limitFrames:'最大200枚', limitFile:'1枚50 MiBまで', limitPixels:'1枚50 MPまで', framesHeading:'フレーム', framesNote:'ドラッグまたはボタンで順番を整え、複製・削除・ファイル名順の並べ替えができます。',
-          images:'画像', sourceSize:'元ファイル合計', addMore:'画像を追加', clearAll:'すべて消去', emptyTitle:'まだ画像がありません', emptyBody:'画像を追加すると、ここにサムネイル一覧が表示されます。',
+          limitFrames:'最大200枚', limitFile:'1枚50 MiBまで', limitPixels:'1枚50 MPまで', framesHeading:'フレーム', framesNote:'順番を整え、各フレームの表示時間を設定します。',
+          images:'画像', totalDurationLabel:'合計時間', sourceSize:'元ファイル合計', addMore:'画像を追加', clearAll:'すべて消去', emptyTitle:'まだ画像がありません', emptyBody:'画像を追加すると、ここにサムネイル一覧が表示されます。',
           undo:'元に戻す', redo:'やり直す', sortLabel:'フレームを並べ替え', sortChoose:'並べ替え', sortAsc:'ファイル名 昇順', sortDesc:'ファイル名 降順',
           dragFrame:'ドラッグしてフレーム {number} を移動', movePrevious:'フレーム {number} を前へ移動', moveNext:'フレーム {number} を後ろへ移動', duplicate:'フレーム {number} を複製', deleteFrame:'フレーム {number} を削除',
           duplicated:'フレームを複製しました', deleted:'フレームを削除しました', reordered:'フレーム順を変更しました', sortedAsc:'ファイル名の昇順に並べ替えました', sortedDesc:'ファイル名の降順に並べ替えました', undone:'元に戻しました', redone:'やり直しました', duplicateLimit:'最大200枚までです',
-          nextTitle:'次の段階: 表示時間とプレビュー', nextBody:'v0.3.0でフレームごとの表示時間とアニメーションプレビューを追加します。', createAnimation:'アニメーションを作成',
+          timingTitle:'全フレームの表示時間', timingBody:'プリセットまたは入力値を全フレームへ適用します。個別の時間は各カードで変更できます。', globalDurationLabel:'全フレームの表示時間', applyAll:'すべてに適用', frameDuration:'表示時間', timingApplied:'全フレームの表示時間を変更しました', timingChanged:'表示時間を変更しました',
+          previewHeading:'アニメーションプレビュー', previewNote:'各フレームの表示時間をそのまま使って動きを確認します。', previewEmpty:'画像を追加すると、ここでアニメーションを確認できます。', previewFrameLabel:'フレーム', previewTimeLabel:'再生位置', previewRestart:'最初から', previewPrevious:'前のフレーム', previewPlay:'再生 / 一時停止', previewNext:'次のフレーム', previewHelp:'このプレビューは動きと表示時間の確認用です。最終出力の画質確認はエンコード機能追加後に行います。',
+          nextTitle:'次の段階: 出力サイズとFit / Fill', nextBody:'v0.4.0で異なる画像サイズを1つの出力Canvasへそろえる設定を追加します。', createAnimation:'アニメーションを作成',
           buildInfo:'ビルド情報', appVersion:'アプリバージョン', builtAt:'生成日時', dependencies:'内包依存', footer:'画像はこの端末内で処理されます',
-          help:'ヘルプ', close:'閉じる', helpTitle:'使い方と注意事項', helpHowTitle:'基本操作', helpHow1:'JPEG・PNG・静止WebPを複数選択するか、画面へドロップします。', helpHow2:'ドラッグまたは前後移動ボタンでフレーム順を整えます。複製・削除・ファイル名順の並べ替えもできます。', helpHow3:'削除や並べ替えは元に戻す／やり直すで復元できます。表示時間とGIF / WebP生成は後続段階で追加します。',
-          helpFormatsTitle:'対応形式', helpFormatsBody:'JPEG / JPG、PNG、静止WebPに対応します。Animated WebP、GIF、動画、HEIC等は現在対象外です。', helpLimitsTitle:'上限', helpLimitsBody:'最大200枚、1ファイル50 MiB、読み込み済み元ファイル合計500 MiB、1画像50メガピクセルです。',
+          help:'ヘルプ', close:'閉じる', helpTitle:'使い方と注意事項', helpHowTitle:'基本操作', helpHow1:'JPEG・PNG・静止WebPを複数選択するか、画面へドロップします。', helpHow2:'順番を整え、各カードの表示時間または全フレーム一括設定を調整します。', helpHow3:'プレビューの再生・一時停止・最初から・前後移動で、設定した時間どおりの動きを確認できます。',
+          helpFormatsTitle:'対応形式', helpFormatsBody:'JPEG / JPG、PNG、静止WebPに対応します。Animated WebP、GIF、動画、HEIC等は現在対象外です。', helpLimitsTitle:'上限', helpLimitsBody:'最大200枚、1ファイル50 MiB、読み込み済み元ファイル合計500 MiB、1画像50メガピクセルです。表示時間は1フレーム20〜10,000 ms、10 ms刻みです。',
           helpPrivacyTitle:'プライバシー', helpPrivacyBody:'選択した画像はブラウザ内だけで読み込みます。このアプリは画像を外部サーバーへ送信せず、Analyticsや外部APIも使用しません。', helpStorageTitle:'データ保持', helpStorageBody:'画像自体はブラウザストレージへ自動保存しません。ページを閉じると作業画像は破棄されます。',
           confirmTitle:'確認', cancel:'キャンセル', clearConfirmTitle:'すべての画像を消去しますか？', clearConfirmBody:'追加した画像とサムネイルをこのページから消去します。元ファイルは変更されません。', clearConfirmAction:'すべて消去',
           importing:'画像を読み込んでいます…', importAdded:'{count}枚追加しました', importPartial:'{added}枚追加 · {failed}枚を読み込めませんでした', importFailed:'画像を追加できませんでした', cleared:'画像を消去しました',
@@ -360,17 +449,19 @@
           frameAlt:'フレーム {number}: {name}', megapixels:'{value} MP'
         },
         en: {
-          brandMeta:'Create GIF / WebP from multiple images', introTitle:'Add images and arrange the frame order', introBody:'Add multiple JPEG, PNG, or still WebP images, then arrange them by dragging or with buttons. Images stay on this device.',
+          brandMeta:'Create GIF / WebP from multiple images', introTitle:'Arrange images and tune frame timing', introBody:'Add JPEG, PNG, or still WebP images, arrange their order, set each frame duration, and preview the motion. Images stay on this device.',
           localProcessing:'Fully local processing', addHeading:'Add images', addNote:'Select multiple files or drag and drop them here.', dropTitle:'Drop JPEG / PNG / WebP images here', dropNote:'or choose images from your device', chooseImages:'Choose images',
-          limitFrames:'Up to 200 images', limitFile:'50 MiB per image', limitPixels:'50 MP per image', framesHeading:'Frames', framesNote:'Drag frames or use the buttons to reorder, duplicate, delete, or sort them by filename.',
-          images:'Images', sourceSize:'Source total', addMore:'Add images', clearAll:'Clear all', emptyTitle:'No images yet', emptyBody:'Add images to see their thumbnails here.',
+          limitFrames:'Up to 200 images', limitFile:'50 MiB per image', limitPixels:'50 MP per image', framesHeading:'Frames', framesNote:'Arrange the sequence and set how long each frame stays visible.',
+          images:'Images', totalDurationLabel:'Total time', sourceSize:'Source total', addMore:'Add images', clearAll:'Clear all', emptyTitle:'No images yet', emptyBody:'Add images to see their thumbnails here.',
           undo:'Undo', redo:'Redo', sortLabel:'Sort frames', sortChoose:'Sort', sortAsc:'Filename ascending', sortDesc:'Filename descending',
           dragFrame:'Drag to move frame {number}', movePrevious:'Move frame {number} earlier', moveNext:'Move frame {number} later', duplicate:'Duplicate frame {number}', deleteFrame:'Delete frame {number}',
           duplicated:'Frame duplicated', deleted:'Frame deleted', reordered:'Frame order changed', sortedAsc:'Sorted by filename ascending', sortedDesc:'Sorted by filename descending', undone:'Undone', redone:'Redone', duplicateLimit:'Maximum of 200 frames reached',
-          nextTitle:'Next: timing and preview', nextBody:'v0.3.0 will add per-frame timing and animation preview.', createAnimation:'Create animation',
+          timingTitle:'All frame durations', timingBody:'Apply a preset or custom duration to every frame. Individual durations can be changed on each card.', globalDurationLabel:'Duration for all frames', applyAll:'Apply to all', frameDuration:'Duration', timingApplied:'Updated all frame durations', timingChanged:'Frame duration updated',
+          previewHeading:'Animation preview', previewNote:'Preview motion using each frame’s actual duration.', previewEmpty:'Add images to preview the animation here.', previewFrameLabel:'Frame', previewTimeLabel:'Playback position', previewRestart:'Restart', previewPrevious:'Previous frame', previewPlay:'Play / pause', previewNext:'Next frame', previewHelp:'This preview is for motion and timing. Final encoded quality will be reviewed after export is implemented.',
+          nextTitle:'Next: output size and Fit / Fill', nextBody:'v0.4.0 will normalize different source sizes onto one output canvas.', createAnimation:'Create animation',
           buildInfo:'Build information', appVersion:'App version', builtAt:'Built at', dependencies:'Embedded dependencies', footer:'Images are processed on this device',
-          help:'Help', close:'Close', helpTitle:'How to use & notes', helpHowTitle:'Basic workflow', helpHow1:'Choose multiple JPEG, PNG, or still WebP images, or drop them onto the page.', helpHow2:'Arrange frames by dragging or with the earlier/later buttons. You can also duplicate, delete, and sort by filename.', helpHow3:'Deletion and reordering can be undone and redone. Timing and GIF / WebP generation arrive in later milestones.',
-          helpFormatsTitle:'Supported formats', helpFormatsBody:'JPEG / JPG, PNG, and still WebP are supported. Animated WebP, GIF, video, HEIC, and other formats are not supported yet.', helpLimitsTitle:'Limits', helpLimitsBody:'Up to 200 images, 50 MiB per file, 500 MiB total source files, and 50 megapixels per image.',
+          help:'Help', close:'Close', helpTitle:'How to use & notes', helpHowTitle:'Basic workflow', helpHow1:'Choose multiple JPEG, PNG, or still WebP images, or drop them onto the page.', helpHow2:'Arrange the sequence, then adjust each card duration or apply one duration to every frame.', helpHow3:'Use Play/Pause, Restart, Previous, and Next to preview the motion with the configured timing.',
+          helpFormatsTitle:'Supported formats', helpFormatsBody:'JPEG / JPG, PNG, and still WebP are supported. Animated WebP, GIF, video, HEIC, and other formats are not supported yet.', helpLimitsTitle:'Limits', helpLimitsBody:'Up to 200 images, 50 MiB per file, 500 MiB total source files, 50 megapixels per image, and 20–10,000 ms per frame in 10 ms steps.',
           helpPrivacyTitle:'Privacy', helpPrivacyBody:'Selected images are read only in your browser. This app does not upload images or use analytics or external APIs.', helpStorageTitle:'Data retention', helpStorageBody:'Images are not automatically stored in browser storage. Closing the page discards the working images.',
           confirmTitle:'Confirm', cancel:'Cancel', clearConfirmTitle:'Clear all images?', clearConfirmBody:'This removes the imported images and thumbnails from this page. Your original files are not changed.', clearConfirmAction:'Clear all',
           importing:'Loading images…', importAdded:'Added {count} images', importPartial:'Added {added} · could not load {failed}', importFailed:'Could not add images', cleared:'Images cleared',
@@ -380,6 +471,10 @@
       };
 
       const HISTORY_LIMIT = 100;
+      const DEFAULT_FRAME_DURATION = 500;
+      const MIN_FRAME_DURATION = 20;
+      const MAX_FRAME_DURATION = 10000;
+      const FRAME_DURATION_STEP = 10;
       const state = {
         frames: [],
         failures: [],
@@ -387,7 +482,15 @@
         generation: 0,
         undoStack: [],
         redoStack: [],
-        framePool: new Map()
+        framePool: new Map(),
+        preview: {
+          index: 0,
+          playing: false,
+          elapsedInFrame: 0,
+          frameStartedAt: 0,
+          timeoutId: 0,
+          rafId: 0
+        }
       };
       let dragSession = null;
       const storageKey = `${APP_CONFIG.slug}:language`;
@@ -399,6 +502,10 @@
       const frameGrid = $('#frameGrid');
       const importReport = $('#importReport');
       const sortSelect = $('#sortSelect');
+      const globalDurationInput = $('#globalDurationInput');
+      const previewImage = $('#previewImage');
+      const previewPlaceholder = $('#previewPlaceholder');
+      const previewProgress = $('#previewProgress');
       const outputFilename = $('#outputFilename'); // Required template export marker; used by later export milestones.
 
       function readStorage(key) { try { return localStorage.getItem(key); } catch { return null; } }
@@ -428,6 +535,23 @@
         let total = 0;
         for (const size of sources.values()) total += size;
         return total;
+      }
+      function totalDurationMs() {
+        return state.frames.reduce((sum, frame) => sum + (frame.duration || DEFAULT_FRAME_DURATION), 0);
+      }
+      function normalizeDuration(value, fallback = DEFAULT_FRAME_DURATION) {
+        const numeric = Number(value);
+        if (!Number.isFinite(numeric)) return fallback;
+        const clamped = Math.min(MAX_FRAME_DURATION, Math.max(MIN_FRAME_DURATION, numeric));
+        return Math.round(clamped / FRAME_DURATION_STEP) * FRAME_DURATION_STEP;
+      }
+      function formatSeconds(ms) {
+        return `${(Math.max(0, ms) / 1000).toFixed(1)} s`;
+      }
+      function elapsedBeforeFrame(index) {
+        let elapsed = 0;
+        for (let i = 0; i < Math.min(index, state.frames.length); i += 1) elapsed += state.frames[i].duration || DEFAULT_FRAME_DURATION;
+        return elapsed;
       }
       function isSupportedFile(file) {
         const type = (file.type || '').toLowerCase();
@@ -499,8 +623,13 @@
       function reachableFrameIds() {
         const ids = new Set(state.frames.map(frame => frame.id));
         for (const entry of [...state.undoStack, ...state.redoStack]) {
-          for (const frame of entry.before) ids.add(frame.id);
-          for (const frame of entry.after) ids.add(frame.id);
+          if (entry.type === 'timing') {
+            for (const item of entry.before) ids.add(item.id);
+            for (const item of entry.after) ids.add(item.id);
+          } else {
+            for (const frame of entry.before) ids.add(frame.id);
+            for (const frame of entry.after) ids.add(frame.id);
+          }
         }
         return ids;
       }
@@ -515,35 +644,61 @@
           state.framePool.delete(id);
         }
       }
-      function recordHistory(before, after, label) {
-        if (sameSequence(before, after)) return false;
-        state.undoStack.push({ before: before.slice(), after: after.slice(), label });
+      function pushHistory(entry) {
+        state.undoStack.push(entry);
         if (state.undoStack.length > HISTORY_LIMIT) state.undoStack.splice(0, state.undoStack.length - HISTORY_LIMIT);
         state.redoStack = [];
         pruneFramePool();
         updateHistoryButtons();
+      }
+      function recordHistory(before, after, label) {
+        if (sameSequence(before, after)) return false;
+        pausePreview({ resetElapsed: true });
+        pushHistory({ type: 'sequence', before: before.slice(), after: after.slice(), label });
         return true;
       }
-      function undoSequence({ announce = true } = {}) {
+      function timingSnapshot(frames = state.frames) {
+        return frames.map(frame => ({ id: frame.id, duration: frame.duration || DEFAULT_FRAME_DURATION }));
+      }
+      function sameTiming(a, b) {
+        return a.length === b.length && a.every((item, index) => item.id === b[index]?.id && item.duration === b[index]?.duration);
+      }
+      function recordTimingHistory(before, after, label) {
+        if (sameTiming(before, after)) return false;
+        pausePreview({ resetElapsed: true });
+        pushHistory({ type: 'timing', before, after, label });
+        return true;
+      }
+      function applyTimingSnapshot(snapshot) {
+        for (const item of snapshot) {
+          const frame = state.framePool.get(item.id);
+          if (frame) frame.duration = item.duration;
+        }
+      }
+      function applyHistorySide(entry, side) {
+        pausePreview({ resetElapsed: true });
+        if (entry.type === 'timing') applyTimingSnapshot(entry[side]);
+        else state.frames = entry[side].slice();
+        render();
+      }
+      function undoHistory({ announce = true } = {}) {
         if (state.importBusy || !state.undoStack.length) return false;
         const entry = state.undoStack.pop();
         state.redoStack.push(entry);
-        state.frames = entry.before.slice();
-        render();
+        applyHistorySide(entry, 'before');
         if (announce) AppToast.show({ message: t('undone'), tone: 'success' });
         return true;
       }
-      function redoSequence({ announce = true } = {}) {
+      function redoHistory({ announce = true } = {}) {
         if (state.importBusy || !state.redoStack.length) return false;
         const entry = state.redoStack.pop();
         state.undoStack.push(entry);
-        state.frames = entry.after.slice();
-        render();
+        applyHistorySide(entry, 'after');
         if (announce) AppToast.show({ message: t('redone'), tone: 'success' });
         return true;
       }
       function showUndoToast(message, tone = 'default') {
-        AppToast.show({ message, actionLabel: t('undo'), onAction: () => undoSequence({ announce: false }), duration: 5000, tone });
+        AppToast.show({ message, actionLabel: t('undo'), onAction: () => undoHistory({ announce: false }), duration: 5000, tone });
       }
       function frameIndexById(id) { return state.frames.findIndex(frame => frame.id === id); }
       function moveFrameById(id, delta) {
@@ -574,6 +729,7 @@
           file: original.file,
           width: original.width,
           height: original.height,
+          duration: original.duration || DEFAULT_FRAME_DURATION,
           thumbnailBlob: original.thumbnailBlob,
           thumbnailUrl: URL.createObjectURL(original.thumbnailBlob)
         };
@@ -647,6 +803,7 @@
                 file,
                 width: decoded.width,
                 height: decoded.height,
+                duration: DEFAULT_FRAME_DURATION,
                 thumbnailBlob: thumbnail.blob,
                 thumbnailUrl: thumbnail.url
               };
@@ -690,6 +847,8 @@
         state.undoStack = [];
         state.redoStack = [];
         dragSession = null;
+        pausePreview({ resetElapsed: true });
+        state.preview.index = 0;
         render();
       }
 
@@ -730,7 +889,29 @@
           meta.className = 'frame-meta';
           const mp = (frame.width * frame.height / 1_000_000).toFixed(frame.width * frame.height >= 10_000_000 ? 0 : 1);
           meta.textContent = `${frame.width} × ${frame.height} · ${t('megapixels', { value: mp })} · ${formatBytes(frame.file.size)}`;
-          info.append(name, meta);
+          const durationRow = document.createElement('div');
+          durationRow.className = 'frame-duration';
+          const durationLabel = document.createElement('span');
+          durationLabel.className = 'frame-duration-label';
+          durationLabel.textContent = t('frameDuration');
+          const durationControl = document.createElement('div');
+          durationControl.className = 'duration-control';
+          const durationInput = document.createElement('input');
+          durationInput.className = 'duration-input frame-duration-input';
+          durationInput.type = 'number';
+          durationInput.min = String(MIN_FRAME_DURATION);
+          durationInput.max = String(MAX_FRAME_DURATION);
+          durationInput.step = String(FRAME_DURATION_STEP);
+          durationInput.inputMode = 'numeric';
+          durationInput.value = String(frame.duration || DEFAULT_FRAME_DURATION);
+          durationInput.dataset.frameId = frame.id;
+          durationInput.setAttribute('aria-label', `${t('frameDuration')} ${index + 1}`);
+          const durationUnit = document.createElement('span');
+          durationUnit.className = 'duration-unit';
+          durationUnit.textContent = 'ms';
+          durationControl.append(durationInput, durationUnit);
+          durationRow.append(durationLabel, durationControl);
+          info.append(name, meta, durationRow);
 
           const actions = document.createElement('div');
           actions.className = 'frame-actions';
@@ -765,6 +946,155 @@
           }
         });
       }
+      function clearPreviewTimers() {
+        clearTimeout(state.preview.timeoutId);
+        cancelAnimationFrame(state.preview.rafId);
+        state.preview.timeoutId = 0;
+        state.preview.rafId = 0;
+      }
+      function currentFrameDuration() {
+        return state.frames[state.preview.index]?.duration || DEFAULT_FRAME_DURATION;
+      }
+      function pausePreview({ resetElapsed = false } = {}) {
+        if (state.preview.playing) {
+          state.preview.elapsedInFrame += performance.now() - state.preview.frameStartedAt;
+          state.preview.elapsedInFrame = Math.min(currentFrameDuration(), state.preview.elapsedInFrame);
+        }
+        state.preview.playing = false;
+        clearPreviewTimers();
+        if (resetElapsed) state.preview.elapsedInFrame = 0;
+        updatePreviewControls();
+        updatePreviewClock();
+      }
+      function normalizePreviewIndex() {
+        if (!state.frames.length) {
+          state.preview.index = 0;
+          state.preview.elapsedInFrame = 0;
+          return;
+        }
+        state.preview.index = Math.max(0, Math.min(state.preview.index, state.frames.length - 1));
+        state.preview.elapsedInFrame = Math.min(state.preview.elapsedInFrame, currentFrameDuration());
+      }
+      function updatePreviewClock() {
+        normalizePreviewIndex();
+        const total = totalDurationMs();
+        let elapsedInFrame = state.preview.elapsedInFrame;
+        if (state.preview.playing) elapsedInFrame += performance.now() - state.preview.frameStartedAt;
+        elapsedInFrame = Math.min(currentFrameDuration(), elapsedInFrame);
+        const elapsed = state.frames.length ? elapsedBeforeFrame(state.preview.index) + elapsedInFrame : 0;
+        $('#previewTime').textContent = `${formatSeconds(elapsed)} / ${formatSeconds(total)}`;
+        previewProgress.max = Math.max(1, total);
+        previewProgress.value = Math.min(total, elapsed);
+      }
+      function previewTick() {
+        if (!state.preview.playing) return;
+        updatePreviewClock();
+        state.preview.rafId = requestAnimationFrame(previewTick);
+      }
+      function schedulePreviewFrame() {
+        if (!state.preview.playing || !state.frames.length) return;
+        clearTimeout(state.preview.timeoutId);
+        const remaining = Math.max(1, currentFrameDuration() - state.preview.elapsedInFrame);
+        state.preview.frameStartedAt = performance.now();
+        state.preview.timeoutId = window.setTimeout(() => {
+          if (!state.preview.playing || !state.frames.length) return;
+          state.preview.elapsedInFrame = 0;
+          state.preview.index = (state.preview.index + 1) % state.frames.length;
+          renderPreviewFrame();
+          schedulePreviewFrame();
+        }, remaining);
+      }
+      function playPreview() {
+        if (!state.frames.length) return;
+        normalizePreviewIndex();
+        if (state.preview.elapsedInFrame >= currentFrameDuration()) state.preview.elapsedInFrame = 0;
+        state.preview.playing = true;
+        schedulePreviewFrame();
+        cancelAnimationFrame(state.preview.rafId);
+        state.preview.rafId = requestAnimationFrame(previewTick);
+        updatePreviewControls();
+      }
+      function togglePreview() {
+        if (state.preview.playing) pausePreview();
+        else playPreview();
+      }
+      function setPreviewIndex(index, { keepPlaying = true } = {}) {
+        if (!state.frames.length) return;
+        const wasPlaying = state.preview.playing && keepPlaying;
+        pausePreview({ resetElapsed: true });
+        state.preview.index = (index + state.frames.length) % state.frames.length;
+        renderPreviewFrame();
+        if (wasPlaying) playPreview();
+      }
+      function restartPreview() {
+        const wasPlaying = state.preview.playing;
+        pausePreview({ resetElapsed: true });
+        state.preview.index = 0;
+        renderPreviewFrame();
+        if (wasPlaying) playPreview();
+      }
+      function renderPreviewFrame() {
+        normalizePreviewIndex();
+        const frame = state.frames[state.preview.index];
+        if (!frame) {
+          previewImage.hidden = true;
+          previewImage.removeAttribute('src');
+          previewImage.alt = '';
+          previewPlaceholder.hidden = false;
+          $('#previewFrame').textContent = '—';
+        } else {
+          previewPlaceholder.hidden = true;
+          previewImage.hidden = false;
+          previewImage.src = frame.thumbnailUrl;
+          previewImage.alt = t('frameAlt', { number: state.preview.index + 1, name: frame.file.name });
+          $('#previewFrame').textContent = `${state.preview.index + 1} / ${state.frames.length}`;
+        }
+        updatePreviewClock();
+        updatePreviewControls();
+      }
+      function updatePreviewControls() {
+        const hasFrames = state.frames.length > 0 && !state.importBusy;
+        $('#previewRestartButton').disabled = !hasFrames;
+        $('#previewPreviousButton').disabled = !hasFrames;
+        $('#previewNextButton').disabled = !hasFrames;
+        $('#previewPlayButton').disabled = !hasFrames;
+        const playIcon = $('#previewPlayButton .play-icon');
+        const pauseIcon = $('#previewPlayButton .pause-icon');
+        if (playIcon) playIcon.hidden = state.preview.playing;
+        if (pauseIcon) pauseIcon.hidden = !state.preview.playing;
+      }
+      function setFrameDuration(frameId, rawValue) {
+        const frame = state.framePool.get(frameId);
+        if (!frame) return;
+        const wasPlaying = state.preview.playing;
+        const before = timingSnapshot();
+        frame.duration = normalizeDuration(rawValue, frame.duration || DEFAULT_FRAME_DURATION);
+        const after = timingSnapshot();
+        if (recordTimingHistory(before, after, 'frame-duration')) {
+          render();
+          showUndoToast(t('timingChanged'), 'success');
+        } else {
+          render();
+        }
+        if (wasPlaying) playPreview();
+      }
+      function applyDurationToAll(rawValue) {
+        if (!state.frames.length || state.importBusy) return;
+        const duration = normalizeDuration(rawValue);
+        globalDurationInput.value = String(duration);
+        const wasPlaying = state.preview.playing;
+        const before = timingSnapshot();
+        for (const frame of state.frames) frame.duration = duration;
+        const after = timingSnapshot();
+        if (recordTimingHistory(before, after, 'all-duration')) {
+          render();
+          showUndoToast(t('timingApplied'), 'success');
+        } else {
+          render();
+        }
+        if (wasPlaying) playPreview();
+      }
+
       function renderFailures() {
         importReport.replaceChildren();
         if (!state.failures.length) { importReport.hidden = true; return; }
@@ -793,24 +1123,32 @@
       }
       function render() {
         $('#frameCount').textContent = new Intl.NumberFormat(language).format(state.frames.length);
+        $('#totalDuration').textContent = formatSeconds(totalDurationMs());
         $('#totalSize').textContent = formatBytes(totalSourceBytes());
         $('#emptyState').hidden = state.frames.length > 0;
         frameGrid.hidden = state.frames.length === 0;
         $('#addMoreButton').disabled = state.importBusy || state.frames.length >= LIMITS.frames;
         $('#clearAllButton').disabled = state.importBusy || state.frames.length === 0;
+        $('#applyDurationButton').disabled = state.importBusy || state.frames.length === 0;
+        document.querySelectorAll('[data-duration-preset]').forEach(button => { button.disabled = state.importBusy || state.frames.length === 0; });
         sortSelect.disabled = state.importBusy || state.frames.length < 2;
         renderFrames();
         renderFailures();
         updateHistoryButtons();
+        renderPreviewFrame();
       }
       function updateBusy(busy) {
         $('#chooseButton').disabled = busy;
         $('#addMoreButton').disabled = busy || state.frames.length >= LIMITS.frames;
         $('#clearAllButton').disabled = busy || state.frames.length === 0;
         sortSelect.disabled = busy || state.frames.length < 2;
+        $('#applyDurationButton').disabled = busy || state.frames.length === 0;
+        document.querySelectorAll('[data-duration-preset]').forEach(button => { button.disabled = busy || state.frames.length === 0; });
         dropZone.setAttribute('aria-busy', String(busy));
+        if (busy) pausePreview({ resetElapsed: true });
         updateHistoryButtons();
         updateFrameCardPositions();
+        updatePreviewControls();
       }
 
       function beginFrameDrag(event, handle) {
@@ -919,8 +1257,31 @@
       }
       dropZone.addEventListener('drop', event => { if (!state.importBusy) importFiles(event.dataTransfer?.files); });
 
-      $('#undoButton').addEventListener('click', () => undoSequence());
-      $('#redoButton').addEventListener('click', () => redoSequence());
+      $('#undoButton').addEventListener('click', () => undoHistory());
+      $('#redoButton').addEventListener('click', () => redoHistory());
+
+      document.querySelectorAll('[data-duration-preset]').forEach(button => {
+        button.addEventListener('click', () => applyDurationToAll(Number(button.dataset.durationPreset)));
+      });
+      $('#applyDurationButton').addEventListener('click', () => applyDurationToAll(globalDurationInput.value));
+      globalDurationInput.addEventListener('change', () => {
+        globalDurationInput.value = String(normalizeDuration(globalDurationInput.value));
+      });
+
+      frameGrid.addEventListener('change', event => {
+        const input = event.target.closest('.frame-duration-input');
+        if (!input) return;
+        const frame = state.framePool.get(input.dataset.frameId);
+        if (!frame) return;
+        const normalized = normalizeDuration(input.value, frame.duration || DEFAULT_FRAME_DURATION);
+        input.value = String(normalized);
+        setFrameDuration(input.dataset.frameId, normalized);
+      });
+
+      $('#previewPlayButton').addEventListener('click', togglePreview);
+      $('#previewRestartButton').addEventListener('click', restartPreview);
+      $('#previewPreviousButton').addEventListener('click', () => setPreviewIndex(state.preview.index - 1));
+      $('#previewNextButton').addEventListener('click', () => setPreviewIndex(state.preview.index + 1));
       sortSelect.addEventListener('change', () => {
         const direction = sortSelect.value;
         sortSelect.value = '';
@@ -954,11 +1315,11 @@
         const key = event.key.toLowerCase();
         if (key === 'z') {
           event.preventDefault();
-          if (event.shiftKey) redoSequence();
-          else undoSequence();
+          if (event.shiftKey) redoHistory();
+          else undoHistory();
         } else if (key === 'y') {
           event.preventDefault();
-          redoSequence();
+          redoHistory();
         }
       });
 
@@ -987,6 +1348,7 @@
 
       window.addEventListener('pagehide', () => {
         state.generation += 1;
+        pausePreview({ resetElapsed: true });
         releaseAllFrameResources();
         StandaloneAssets.revokeAll();
       }, { once:true });

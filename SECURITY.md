@@ -14,7 +14,7 @@ Include the affected commit/version, reproduction steps, expected and actual beh
 
 Frame Animator is a static, local-first browser application with no conversion backend.
 
-v0.1.0 protections include:
+v0.3.0 protections include:
 
 - `connect-src 'none'` at runtime.
 - No runtime CDN, external font, analytics, telemetry, or API.
@@ -41,7 +41,7 @@ Imported files are untrusted input. The application must:
 - release ImageBitmap and other large temporary resources
 - invalidate stale asynchronous work when the source set is cleared or replaced
 
-Animated WebP is outside the v0.1.0 input contract and is rejected when detectable from WebP animation metadata.
+Animated WebP is outside the v0.3.0 input contract and is rejected when detectable from WebP animation metadata.
 
 ## Future encoders
 
