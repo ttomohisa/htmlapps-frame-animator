@@ -1,6 +1,6 @@
 # Third-Party Notices
 
-Frame Animator v0.7.0 embeds the following runtime dependency in the generated standalone HTML. It is version-pinned in `dependencies.json` and the npm tarball is pinned by SHA-256 and npm integrity in `dependencies.lock.json`.
+Frame Animator v0.8.0 embeds the following runtime dependency in the generated standalone HTML. It is version-pinned in `dependencies.json` and the npm tarball is pinned by SHA-256 and npm integrity in `dependencies.lock.json`.
 
 ## @jsquash/webp 1.5.0
 
