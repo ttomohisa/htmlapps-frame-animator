@@ -2,55 +2,56 @@
 
 ## Supported version
 
-Security fixes target the latest version on the default branch.
+Security fixes target the latest Frame Animator version on the default branch.
 
 ## Reporting a vulnerability
 
 Do not publish sensitive vulnerability details in a public issue. Use the repository owner's private security reporting channel when available.
 
-Include:
-
-- Affected commit or version.
-- Reproduction steps.
-- Expected and actual behavior.
-- Security impact.
-- A minimal test file when file parsing is involved.
+Include the affected commit/version, reproduction steps, expected and actual behavior, security impact, and a minimal test image when file parsing is involved.
 
 ## Trust model
 
-The default template is a static browser application with no backend. Its primary protections are:
+Frame Animator is a static, local-first browser application with no conversion backend.
 
-- No ordinary runtime CDN/API connection (`connect-src 'none'`). Optional peer-to-peer WebRTC must be explicit in the product specification and must not introduce hidden signaling/STUN/TURN services.
-- Explicitly pinned and embedded third-party files.
-- Committed `dependencies.lock.json` tarball SHA-256 values verified before embedding.
-- SHA-256 records in the generated dependency manifest.
-- No analytics, telemetry, remote fonts, or silent update checks.
-- User-initiated downloads rather than automatic uploads.
+v0.1.0 protections include:
 
-A generated HTML file is executable code. Distribute it through a trusted channel and verify hashes for high-trust workflows.
+- `connect-src 'none'` at runtime.
+- No runtime CDN, external font, analytics, telemetry, or API.
+- No automatic upload of selected images.
+- No automatic persistence of imported image bytes to localStorage or IndexedDB.
+- No declared runtime third-party dependency.
+- User-selected JPEG / PNG / WebP files are decoded only in the browser.
 
-If an app uses `components/webrtc-qr-pairing.html`, treat the paired browser as an explicit data recipient. “No server upload” does not mean “data never leaves this device.” Keep the manual signaling and `iceServers: []` boundary visible in the UI/help text, and do not silently add STUN/TURN later.
+The GitHub Pages version naturally requires the initial page request. After the page has loaded, the application itself must not transmit selected image contents.
 
-## Input files
+A downloaded standalone HTML file is executable code. Distribute it through a trusted channel and verify hashes for high-trust workflows.
 
-Applications created from this template may parse untrusted local files. Implementations should:
+## Local image handling
 
-- Validate type, size, and structure before expensive processing.
-- Avoid unbounded allocation or recursion.
-- Handle malformed data without exposing stack traces to users.
-- Release Blob URLs, workers, canvas resources, and large buffers.
-- Make destructive transformations reversible where practical.
-- Never upload a selected file unless the product explicitly requires it and the user is clearly informed.
+Imported files are untrusted input. The application must:
 
-## Dependency review
+- validate file type and supported container structure where practical
+- reject zero-byte and oversized files before expensive decode work
+- limit per-file size, total source bytes, frame count, and decoded pixel count
+- keep valid files usable when another item in the batch fails
+- avoid exposing raw stack traces in user-facing errors
+- avoid retaining full-resolution RGBA data for every frame
+- revoke generated Blob URLs when they are no longer needed
+- release ImageBitmap and other large temporary resources
+- invalidate stale asynchronous work when the source set is cleared or replaced
 
-Before adding or upgrading a package:
+Animated WebP is outside the v0.1.0 input contract and is rejected when detectable from WebP animation metadata.
 
-- Confirm the package identity and exact version.
-- Review the scheduled dependency Issue; never treat an available update as an automatic approval to upgrade.
-- Review its license and required notices.
-- Inspect the browser bundle and package scripts.
-- Confirm every runtime support asset is embedded.
-- Refresh the selected lock entry with the dependency scripts; never hand-edit a lock hash to bypass a mismatch.
-- Rebuild with a clean cache.
-- Test with the network disabled.
+## Future encoders
+
+GIF / Animated WebP export will add more complex binary processing in later milestones. Before adding an encoder:
+
+- review dependency identity, exact version, license, and notices
+- prefer the smallest focused local runtime that satisfies the product need
+- embed all runtime assets
+- keep encoding off the main thread when practical
+- bound memory use
+- support cancellation and cleanup
+- verify no runtime network request appears
+- test malformed and high-load inputs
