@@ -2,7 +2,7 @@
 
 Frame Animator is a Browser Kitty utility for turning multiple local still images into an animated GIF or WebP without uploading the source images.
 
-> Current development version: **v0.4.0**. Image import, sequence editing, timing, live preview, and output-canvas normalization are implemented. GIF/WebP encoding is planned in later milestones and is not presented as finished yet.
+> Current development version: **v0.5.0**. Image import, sequence editing, timing, canvas normalization, live preview, and Animated GIF export are implemented. Animated WebP export is planned for the next milestone.
 
 ## Current features
 
@@ -29,6 +29,16 @@ Frame Animator is a Browser Kitty utility for turning multiple local still image
 - Transparent / white / black / custom-color backgrounds
 - Checkerboard transparency preview
 - On-demand preview decode with ImageBitmap cleanup; no full-sequence RGBA retention
+- Local GIF89a encoder running color reduction, dithering, and LZW compression in a Blob Worker
+- 64 / 128 / 256-color GIF output
+- Floyd–Steinberg dithering, enabled by default for smoother photographic gradients
+- Infinite-loop or play-once GIF output
+- GIF timing from the current per-frame durations
+- Full-resolution source frames normalized one at a time and transferred to the Worker
+- Encoding progress and cancellation
+- Actual generated GIF preview with dimensions, frame count, duration, and file size
+- Editable/sanitized output filename and local GIF download
+- Stale-result invalidation when an output-affecting setting changes
 - Japanese and English in the same HTML; the language switch uses compact EN / JA labels
 - Responsive desktop and smartphone layout
 - No runtime CDN, analytics, telemetry, or external API
@@ -55,7 +65,7 @@ The app uses a restrictive Content Security Policy with `connect-src 'none'`. It
 
 Imported image bytes are not automatically persisted to localStorage or IndexedDB. Closing the page discards the working image set.
 
-## Input support in v0.4.0
+## Input support in v0.5.0
 
 Supported:
 
@@ -75,7 +85,7 @@ Not supported yet:
 - PSD
 - PDF
 
-## Limits in v0.4.0
+## Limits in v0.5.0
 
 - 200 images
 - 50 MiB per source file
@@ -119,4 +129,4 @@ Product behavior and acceptance criteria live in [APP_SPEC.md](APP_SPEC.md). The
 
 MIT. See [LICENSE](LICENSE).
 
-Third-party notices are recorded in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). v0.4.0 declares no runtime third-party dependency.
+Third-party notices are recorded in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). v0.5.0 declares no runtime third-party dependency.
