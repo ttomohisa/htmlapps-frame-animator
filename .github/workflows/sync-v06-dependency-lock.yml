@@ -20,7 +20,7 @@ jobs:
           ref: feat/frame-animator-v0.6.0
       - name: Sync jsquash-webp lock
         shell: pwsh
-        run: ./scripts/sync-dependency-lock.ps1 -Id jsquash-webp
+        run: ./scripts/sync-dependency-lock.ps1
       - name: Commit lock
         shell: pwsh
         run: |
