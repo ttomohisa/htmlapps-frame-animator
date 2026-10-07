@@ -6,6 +6,28 @@ The project uses Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.7.0] - 2026-10-08
+
+### Added
+
+- Shared Forward / Reverse / Ping-pong playback order for preview, GIF, and WebP.
+- Ping-pong derivation without duplicate endpoints.
+- Shared infinite / once / custom 2–100 playback count.
+- Finite preview-loop completion and restart-from-beginning behavior.
+- Clipboard image paste for supported still-image types outside editable controls.
+- Deterministic clipboard image filenames passed through the normal import-validation flow.
+- Advisory heavy-export warning for large resolved canvas / derived-frame workloads.
+
+### Changed
+
+- Preview, GIF, and WebP now use the same derived playback sequence.
+- GIF loop metadata maps finite play count to Netscape repeat count.
+- Animated WebP loop metadata stores the requested finite play count directly.
+- Generated-result duration includes configured finite playback repetition.
+- Playback setting changes invalidate both generated output formats.
+- Filename fields retain fixed visible format suffixes while stripping mistakenly typed GIF/WebP extensions from the filename base.
+- The frame summary now reports one-pass duration because finite/infinite looping is controlled separately.
+
 ## [0.6.0] - 2026-10-08
 
 ### Added
