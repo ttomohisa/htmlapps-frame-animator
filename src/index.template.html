@@ -46,8 +46,14 @@
     .panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:16px 18px 12px;border-bottom:1px solid var(--line)}
     .panel-head h3{margin:0;font-size:17px;letter-spacing:-.015em}.panel-head p{margin:4px 0 0;color:var(--muted);font-size:12px}
     .panel-body{padding:18px}
-    .drop-zone{display:grid;place-items:center;min-height:214px;padding:28px 18px;border:1.5px dashed var(--line-strong);border-radius:14px;background:var(--surface-muted);text-align:center;transition:border-color .15s ease,background .15s ease}
+    .drop-zone{display:grid;place-items:center;min-height:214px;padding:28px 18px;border:1.5px dashed var(--line-strong);border-radius:14px;background:var(--surface-muted);text-align:center;transition:min-height .18s ease,padding .18s ease,border-color .15s ease,background .15s ease}
     .drop-zone.is-dragging{border-color:var(--accent);background:var(--accent-soft)}
+    .drop-zone.is-compact{min-height:76px;padding:10px 12px}
+    .drop-zone.is-compact>div{display:flex;align-items:center;gap:10px;width:100%;min-width:0;text-align:left}
+    .drop-zone.is-compact .drop-icon{width:30px;height:30px;margin:0;flex:0 0 auto}
+    .drop-zone.is-compact .drop-title{font-size:13px;white-space:nowrap}
+    .drop-zone.is-compact .drop-note,.drop-zone.is-compact .limits{display:none}
+    .drop-zone.is-compact #chooseButton{margin-left:auto;flex:0 0 auto}
     .drop-icon{width:46px;height:46px;margin-bottom:10px;color:var(--accent)}
     .drop-title{margin:0;font-size:16px;font-weight:800}.drop-note{margin:5px 0 14px;color:var(--muted);font-size:12px}
     .button{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:40px;padding:8px 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface);cursor:pointer;font-weight:720;font-size:13px;transition:border-color .15s ease,background .15s ease,transform .05s ease}
@@ -163,6 +169,7 @@
     @media(max-width:640px){
       .main{padding:16px 12px 38px}.page-intro{display:block}.local-badge{margin-top:11px}.panel-body{padding:13px}.drop-zone{min-height:190px;padding:22px 14px}
       .frame-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.summary-bar{align-items:flex-start}.summary-actions{width:100%}.summary-actions .button{flex:1 1 auto}.summary-actions .sort-select{flex:1 1 150px;max-width:none}
+      .drop-zone.is-compact>div{flex-wrap:wrap}.drop-zone.is-compact .drop-title{flex:1 1 auto;min-width:130px;white-space:normal}.drop-zone.is-compact #chooseButton{margin-left:0}
       .timing-toolbar{grid-template-columns:1fr}.timing-controls{justify-content:flex-start}.preview-layout{grid-template-columns:1fr}.preview-stage{min-height:260px;padding:10px}.preview-canvas-wrap,.preview-canvas{max-height:48vh}
       .gif-layout{grid-template-columns:1fr}.gif-option-grid{grid-template-columns:1fr 1fr}.gif-result-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.gif-result-preview{min-height:220px}.gif-create-row{align-items:stretch}.gif-create-row .button{min-height:44px}
       .next-panel{grid-template-columns:1fr}.future-button{width:100%}.build-grid{grid-template-columns:1fr}
@@ -2064,6 +2071,7 @@
         $('#totalSize').textContent = formatBytes(totalSourceBytes());
         $('#emptyState').hidden = state.frames.length > 0;
         frameGrid.hidden = state.frames.length === 0;
+        dropZone.classList.toggle('is-compact', state.frames.length > 0);
         const busy = isBusy();
         $('#chooseButton').disabled = busy;
         fileInput.disabled = busy;
