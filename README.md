@@ -2,7 +2,7 @@
 
 Frame Animator is a Browser Kitty utility for turning multiple local still images into an animated GIF or WebP without uploading the source images.
 
-> Current development version: **v0.8.0**. The full image-to-animation workflow is implemented, with smartphone staging, performance cleanup, and failure recovery added in this milestone.
+> Current development version: **v0.9.0 RC**. Feature work is frozen while the complete image-to-GIF/WebP workflow is being regression-tested for v1.0.0.
 
 ## Current features
 
@@ -64,9 +64,9 @@ Frame Animator is a Browser Kitty utility for turning multiple local still image
 - Responsive desktop and smartphone layout
 - No runtime CDN, analytics, telemetry, or external API
 
-## Planned workflow
+## Workflow
 
-The target v1.0.0 flow is:
+The current RC supports this complete flow:
 
 1. Add images.
 2. Reorder frames.
@@ -78,6 +78,16 @@ The target v1.0.0 flow is:
 
 See [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md) for the milestone breakdown.
 
+## Screenshots
+
+### Desktop
+
+![Frame Animator desktop](assets/screenshot-en.png)
+
+### Mobile
+
+![Frame Animator mobile](assets/screenshot-mobile.png)
+
 ## Privacy
 
 Imported images stay in the browser. Frame Animator does not upload selected files or use an application backend for conversion.
@@ -86,7 +96,7 @@ The app uses a restrictive Content Security Policy with `connect-src 'none'`. It
 
 Imported image bytes are not automatically persisted to localStorage or IndexedDB. Closing the page discards the working image set.
 
-## Input support in v0.8.0
+## Input support in v0.9.0
 
 Supported:
 
@@ -106,7 +116,7 @@ Not supported yet:
 - PSD
 - PDF
 
-## Limits in v0.8.0
+## Limits in v0.9.0
 
 - 200 images
 - 50 MiB per source file
@@ -150,4 +160,4 @@ Product behavior and acceptance criteria live in [APP_SPEC.md](APP_SPEC.md). The
 
 MIT. See [LICENSE](LICENSE).
 
-Third-party notices are recorded in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). v0.6.0 embeds pinned `@jsquash/webp@1.5.0` and its libwebp encoder assets for local WebP generation.
+Third-party notices are recorded in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). v0.9.0 embeds pinned `@jsquash/webp@1.5.0` and its libwebp encoder assets for local WebP generation.
