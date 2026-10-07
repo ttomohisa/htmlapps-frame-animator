@@ -79,6 +79,12 @@ Mandatory checkpoint completed: the built-in encoder was independently exercised
 
 Implemented with pinned `@jsquash/webp@1.5.0` static libwebp encoding plus a local RIFF animation muxer. The video decode/demux profile was deliberately not reused because it does not accept the still-image sequence/variable-duration workflow directly.
 
+Validation completed against the exact `webpWorkerMain` extracted from the CI-generated standalone HTML and the JS/WASM bytes embedded in that same HTML:
+
+- lossy / alpha: 32 × 24, 3 frames, durations 20 / 500 / 10,000 ms, infinite loop; Pillow decoded 3 RGBA frames and direct RIFF parsing confirmed `VP8X` flags `0x12`, loop 0, and the three exact ANMF durations
+- lossless / opaque: 32 × 24, 2 frames, durations 100 / 1,500 ms, loop count 1; generated ANMF payloads used `VP8L`, Pillow decoded 2 frames, and direct RIFF parsing confirmed the loop/duration values
+- RIFF size fields matched the generated file sizes in both tests
+
 ## v0.7.0 — Playback modes and workflow polish
 
 - Forward
