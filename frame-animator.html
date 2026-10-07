@@ -91,11 +91,28 @@
     .frame-duration{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px;align-items:center;margin-top:8px}
     .frame-duration-label{color:var(--muted);font-size:10px;font-weight:700}
     .frame-duration .duration-control{justify-self:end;width:min(100%,112px)}
-    .preview-layout{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(260px,.75fr);gap:16px}
-    .preview-stage{position:relative;display:grid;place-items:center;min-height:360px;overflow:hidden;border:1px solid var(--line);border-radius:14px;background:#1b1d1c}
-    .preview-stage img{display:block;max-width:100%;max-height:520px;width:auto;height:auto;object-fit:contain}
+    .preview-layout{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(280px,.75fr);gap:16px}
+    .preview-stage{position:relative;display:grid;place-items:center;min-height:360px;overflow:hidden;border:1px solid var(--line);border-radius:14px;background:#1b1d1c;padding:16px}
+    .preview-canvas-wrap{display:grid;place-items:center;max-width:100%;max-height:520px;overflow:hidden;background-color:#fff;background-image:linear-gradient(45deg,#d8dad6 25%,transparent 25%),linear-gradient(-45deg,#d8dad6 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#d8dad6 75%),linear-gradient(-45deg,transparent 75%,#d8dad6 75%);background-size:20px 20px;background-position:0 0,0 10px,10px -10px,-10px 0;border-radius:4px;box-shadow:0 0 0 1px rgba(255,255,255,.16)}
+    .preview-canvas-wrap[hidden]{display:none}
+    .preview-canvas{display:block;max-width:100%;max-height:520px;width:auto;height:auto}
     .preview-placeholder{max-width:320px;padding:28px;text-align:center;color:#c5c8c4;font-size:12px}
     .preview-side{display:flex;flex-direction:column;gap:12px}
+    .output-settings{display:grid;gap:10px;padding:12px;border:1px solid var(--line);border-radius:12px;background:var(--surface-muted)}
+    .output-settings-head strong{display:block;font-size:13px}.output-settings-head span{display:block;margin-top:2px;color:var(--muted);font-size:10px}
+    .output-field{display:grid;gap:5px}.output-label{color:var(--muted);font-size:10px;font-weight:750}
+    .output-select{width:100%;min-height:38px;padding:7px 30px 7px 9px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--text);font:inherit;font-size:12px}
+    .output-select:focus-visible{outline:3px solid color-mix(in srgb,var(--focus) 55%,transparent);outline-offset:2px}
+    .custom-size-row{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:7px;align-items:center}
+    .custom-size-row[hidden]{display:none}.size-input{width:100%;min-width:0;min-height:38px;padding:7px 8px;border:1px solid var(--line);border-radius:9px;background:var(--surface);color:var(--text);font:inherit;font-size:12px;text-align:right}
+    .size-separator{color:var(--muted);font-size:12px}
+    .segmented{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+    .segment-button{min-height:38px;padding:7px 9px;border:1px solid var(--line);border-radius:9px;background:var(--surface);font:inherit;font-size:12px;font-weight:750;cursor:pointer}
+    .segment-button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);color:var(--accent)}
+    .segment-button:hover{border-color:var(--line-strong)}
+    .background-row{display:grid;grid-template-columns:minmax(0,1fr) 42px;gap:7px}.background-color{width:42px;height:38px;padding:3px;border:1px solid var(--line);border-radius:9px;background:var(--surface);cursor:pointer}
+    .background-color:disabled{opacity:.4;cursor:not-allowed}
+    .canvas-size-readout{padding:8px 10px;border-radius:9px;background:var(--surface);color:var(--muted);font-size:11px}.canvas-size-readout strong{color:var(--text)}
     .preview-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
     .preview-stat{padding:10px;border-radius:10px;background:var(--surface-muted)}.preview-stat span{display:block;color:var(--muted);font-size:10px}.preview-stat strong{display:block;margin-top:2px;font-size:13px}
     .preview-progress{width:100%;height:9px;accent-color:var(--accent)}
@@ -128,7 +145,7 @@
     @media(max-width:640px){
       .main{padding:16px 12px 38px}.page-intro{display:block}.local-badge{margin-top:11px}.panel-body{padding:13px}.drop-zone{min-height:190px;padding:22px 14px}
       .frame-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.summary-bar{align-items:flex-start}.summary-actions{width:100%}.summary-actions .button{flex:1 1 auto}.summary-actions .sort-select{flex:1 1 150px;max-width:none}
-      .timing-toolbar{grid-template-columns:1fr}.timing-controls{justify-content:flex-start}.preview-layout{grid-template-columns:1fr}.preview-stage{min-height:260px}.preview-stage img{max-height:48vh}
+      .timing-toolbar{grid-template-columns:1fr}.timing-controls{justify-content:flex-start}.preview-layout{grid-template-columns:1fr}.preview-stage{min-height:260px;padding:10px}.preview-canvas-wrap,.preview-canvas{max-height:48vh}
       .next-panel{grid-template-columns:1fr}.future-button{width:100%}.build-grid{grid-template-columns:1fr}
       dialog{width:calc(100vw - 16px);max-height:calc(100dvh - 16px);border-radius:16px}.dialog-shell{max-height:calc(100dvh - 16px)}.dialog-head{position:sticky;top:0;background:var(--surface);z-index:1}
       .dialog-body{padding-bottom:calc(20px + env(safe-area-inset-bottom))}.app-toast{right:10px;bottom:calc(10px + env(safe-area-inset-bottom));max-width:calc(100vw - 20px)}
@@ -160,8 +177,8 @@
   <main class="main">
     <section class="page-intro">
       <div>
-        <h2 data-i18n="introTitle">画像を並べて、表示時間を調整</h2>
-        <p data-i18n="introBody">JPEG・PNG・静止WebPを追加し、順番と各フレームの表示時間を整えて動きをプレビューできます。画像はこの端末内だけで処理します。</p>
+        <h2 data-i18n="introTitle">画像を並べて、同じCanvasへそろえる</h2>
+        <p data-i18n="introBody">順番と表示時間を整え、異なるサイズや縦横比の画像を同じ出力Canvasへ収める／切り抜く設定で確認できます。</p>
       </div>
       <span class="local-badge">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V8a5 5 0 0 1 10 0v2m-9 0h8a2 2 0 0 1 2 2v6H6v-6a2 2 0 0 1 2-2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
@@ -267,16 +284,61 @@
       <div class="panel-head">
         <div>
           <h3 id="previewHeading" data-i18n="previewHeading">アニメーションプレビュー</h3>
-          <p data-i18n="previewNote">各フレームの表示時間をそのまま使って動きを確認します。</p>
+          <p data-i18n="previewNote">出力CanvasへFit / Fillした状態で、各フレームの表示時間どおりに確認します。</p>
         </div>
       </div>
       <div class="panel-body">
         <div class="preview-layout">
           <div class="preview-stage" id="previewStage">
-            <p class="preview-placeholder" id="previewPlaceholder" data-i18n="previewEmpty">画像を追加すると、ここでアニメーションを確認できます。</p>
-            <img id="previewImage" alt="" hidden>
+            <p class="preview-placeholder" id="previewPlaceholder" data-i18n="previewEmpty">画像を追加すると、ここで出力Canvasとアニメーションを確認できます。</p>
+            <div class="preview-canvas-wrap" id="previewCanvasWrap" hidden>
+              <canvas class="preview-canvas" id="previewCanvas" width="720" height="720" data-i18n-aria-label="previewCanvasLabel"></canvas>
+            </div>
           </div>
           <div class="preview-side">
+            <div class="output-settings">
+              <div class="output-settings-head">
+                <strong data-i18n="outputSettingsTitle">出力Canvas</strong>
+                <span data-i18n="outputSettingsBody">1枚目の縦横比を基準にサイズをそろえます。カスタムでは幅・高さを個別指定できます。</span>
+              </div>
+              <label class="output-field">
+                <span class="output-label" data-i18n="canvasSizeLabel">Canvasサイズ</span>
+                <select class="output-select" id="canvasSizeMode">
+                  <option value="auto" data-i18n="canvasAuto">自動（長辺最大720px）</option>
+                  <option value="480" data-i18n="canvas480">長辺480px</option>
+                  <option value="720" data-i18n="canvas720">長辺720px</option>
+                  <option value="1080" data-i18n="canvas1080">長辺1080px</option>
+                  <option value="original" data-i18n="canvasOriginal">1枚目の元サイズ相当</option>
+                  <option value="custom" data-i18n="canvasCustom">カスタム</option>
+                </select>
+              </label>
+              <div class="custom-size-row" id="customSizeRow" hidden>
+                <input class="size-input" id="canvasWidthInput" type="number" min="16" max="4096" step="1" value="720" inputmode="numeric" data-i18n-aria-label="canvasWidthLabel">
+                <span class="size-separator">×</span>
+                <input class="size-input" id="canvasHeightInput" type="number" min="16" max="4096" step="1" value="720" inputmode="numeric" data-i18n-aria-label="canvasHeightLabel">
+              </div>
+              <div class="output-field">
+                <span class="output-label" data-i18n="placementLabel">画像の配置</span>
+                <div class="segmented">
+                  <button class="segment-button" id="fitButton" type="button" data-placement="fit" aria-pressed="true" data-i18n="fit">収める</button>
+                  <button class="segment-button" id="fillButton" type="button" data-placement="fill" aria-pressed="false" data-i18n="fill">切り抜く</button>
+                </div>
+              </div>
+              <div class="output-field">
+                <span class="output-label" data-i18n="backgroundLabel">背景</span>
+                <span class="background-row">
+                  <select class="output-select" id="backgroundMode" data-i18n-aria-label="backgroundLabel">
+                    <option value="transparent" data-i18n="backgroundTransparent">透明</option>
+                    <option value="white" data-i18n="backgroundWhite">白</option>
+                    <option value="black" data-i18n="backgroundBlack">黒</option>
+                    <option value="custom" data-i18n="backgroundCustom">カスタム色</option>
+                  </select>
+                  <input class="background-color" id="backgroundColor" type="color" value="#ffffff" disabled data-i18n-aria-label="backgroundColorLabel">
+                </span>
+              </div>
+              <div class="canvas-size-readout"><span data-i18n="resolvedCanvas">実際のCanvas</span>: <strong id="resolvedCanvasSize">—</strong></div>
+            </div>
+
             <div class="preview-stats">
               <div class="preview-stat"><span data-i18n="previewFrameLabel">フレーム</span><strong id="previewFrame">—</strong></div>
               <div class="preview-stat"><span data-i18n="previewTimeLabel">再生位置</span><strong id="previewTime">0.0 / 0.0 s</strong></div>
@@ -297,14 +359,14 @@
                 <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 6v12M7 7l7 5-7 5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
               </button>
             </div>
-            <p class="preview-help" data-i18n="previewHelp">このプレビューは動きと表示時間の確認用です。最終出力の画質確認はエンコード機能追加後に行います。</p>
+            <p class="preview-help" data-i18n="previewHelp">プレビューは軽量画像を使いますが、Canvasサイズ・Fit / Fill・背景は最終出力と同じ計算を使います。</p>
           </div>
         </div>
       </div>
       <div class="next-panel">
         <div>
-          <strong data-i18n="nextTitle">次の段階: 出力サイズとFit / Fill</strong>
-          <span data-i18n="nextBody">v0.4.0で異なる画像サイズを1つの出力Canvasへそろえる設定を追加します。</span>
+          <strong data-i18n="nextTitle">次の段階: Animated GIF出力</strong>
+          <span data-i18n="nextBody">v0.5.0で、このCanvas正規化結果を使ってGIFを書き出します。</span>
         </div>
         <button class="button future-button" type="button" disabled data-i18n="createAnimation">アニメーションを作成</button>
       </div>
@@ -338,7 +400,7 @@
         <ol>
           <li data-i18n="helpHow1">JPEG・PNG・静止WebPを複数選択するか、画面へドロップします。</li>
           <li data-i18n="helpHow2">順番を整え、各カードの表示時間または全フレーム一括設定を調整します。</li>
-          <li data-i18n="helpHow3">プレビューの再生・一時停止・最初から・前後移動で、設定した時間どおりの動きを確認できます。</li>
+          <li data-i18n="helpHow3">Canvasサイズ、収める／切り抜く、背景を設定し、同じ正規化結果でアニメーションをプレビューします。</li>
         </ol>
         <h3 data-i18n="helpFormatsTitle">対応形式</h3>
         <p data-i18n="helpFormatsBody">JPEG / JPG、PNG、静止WebPに対応します。Animated WebP、GIF、動画、HEIC等は現在対象外です。</p>
@@ -375,8 +437,8 @@
     <button class="app-toast-action" id="appToastAction" type="button" hidden></button>
   </div>
 
-  <script id="app-config" type="application/json">{"$schema":"./schemas/app-config.schema.json","name":"Frame Animator","nameJa":"Frame Animator","slug":"frame-animator","version":"0.3.0","description":"Build animated GIF and WebP files from multiple local images entirely in your browser.","descriptionJa":"複数のローカル画像からGIF / WebPアニメーションをブラウザー内だけで作成します。","defaultLanguage":"auto","repository":{"owner":"ttomohisa","name":"htmlapps-frame-animator"},"build":{"output":"dist/index.html","blockRuntimeNetwork":true,"selfExtract":{"enabled":true,"output":"dist/index.self-extract.html"},"sizeBudget":{"readableWarningMb":25,"selfExtractWarningMb":12}}}</script>
-  <script id="build-manifest" type="application/json">{"schemaVersion":2,"builder":"single-html-app-template/1.3","generatedAtUtc":"2026-10-07T06:05:25.9621154Z","app":{"name":"Frame Animator","slug":"frame-animator","version":"0.3.0"},"dependencies":[]}</script>
+  <script id="app-config" type="application/json">{"$schema":"./schemas/app-config.schema.json","name":"Frame Animator","nameJa":"Frame Animator","slug":"frame-animator","version":"0.4.0","description":"Build animated GIF and WebP files from multiple local images entirely in your browser.","descriptionJa":"複数のローカル画像からGIF / WebPアニメーションをブラウザー内だけで作成します。","defaultLanguage":"auto","repository":{"owner":"ttomohisa","name":"htmlapps-frame-animator"},"build":{"output":"dist/index.html","blockRuntimeNetwork":true,"selfExtract":{"enabled":true,"output":"dist/index.self-extract.html"},"sizeBudget":{"readableWarningMb":25,"selfExtractWarningMb":12}}}</script>
+  <script id="build-manifest" type="application/json">{"schemaVersion":2,"builder":"single-html-app-template/1.3","generatedAtUtc":"2026-10-07T07:01:48.1169414Z","app":{"name":"Frame Animator","slug":"frame-animator","version":"0.4.0"},"dependencies":[]}</script>
   <script id="embedded-assets" type="application/json">{"schemaVersion":2,"dependencies":{}}</script>
   <script>
     (() => {
@@ -429,7 +491,7 @@
 
       const translations = {
         ja: {
-          brandMeta:'複数画像からGIF / WebPを作成', introTitle:'画像を並べて、表示時間を調整', introBody:'JPEG・PNG・静止WebPを追加し、順番と各フレームの表示時間を整えて動きをプレビューできます。画像はこの端末内だけで処理します。',
+          brandMeta:'複数画像からGIF / WebPを作成', introTitle:'画像を並べて、同じCanvasへそろえる', introBody:'順番と表示時間を整え、異なるサイズや縦横比の画像を同じ出力Canvasへ収める／切り抜く設定で確認できます。',
           localProcessing:'完全ローカル処理', addHeading:'画像を追加', addNote:'複数選択またはドラッグ＆ドロップに対応しています。', dropTitle:'JPEG / PNG / WebPをここにドロップ', dropNote:'または端末から画像を選択します', chooseImages:'画像を選択',
           limitFrames:'最大200枚', limitFile:'1枚50 MiBまで', limitPixels:'1枚50 MPまで', framesHeading:'フレーム', framesNote:'順番を整え、各フレームの表示時間を設定します。',
           images:'画像', totalDurationLabel:'合計時間', sourceSize:'元ファイル合計', addMore:'画像を追加', clearAll:'すべて消去', emptyTitle:'まだ画像がありません', emptyBody:'画像を追加すると、ここにサムネイル一覧が表示されます。',
@@ -437,11 +499,12 @@
           dragFrame:'ドラッグしてフレーム {number} を移動', movePrevious:'フレーム {number} を前へ移動', moveNext:'フレーム {number} を後ろへ移動', duplicate:'フレーム {number} を複製', deleteFrame:'フレーム {number} を削除',
           duplicated:'フレームを複製しました', deleted:'フレームを削除しました', reordered:'フレーム順を変更しました', sortedAsc:'ファイル名の昇順に並べ替えました', sortedDesc:'ファイル名の降順に並べ替えました', undone:'元に戻しました', redone:'やり直しました', duplicateLimit:'最大200枚までです',
           timingTitle:'全フレームの表示時間', timingBody:'プリセットまたは入力値を全フレームへ適用します。個別の時間は各カードで変更できます。', globalDurationLabel:'全フレームの表示時間', applyAll:'すべてに適用', frameDuration:'表示時間', timingApplied:'全フレームの表示時間を変更しました', timingChanged:'表示時間を変更しました',
-          previewHeading:'アニメーションプレビュー', previewNote:'各フレームの表示時間をそのまま使って動きを確認します。', previewEmpty:'画像を追加すると、ここでアニメーションを確認できます。', previewFrameLabel:'フレーム', previewTimeLabel:'再生位置', previewRestart:'最初から', previewPrevious:'前のフレーム', previewPlay:'再生 / 一時停止', previewNext:'次のフレーム', previewHelp:'このプレビューは動きと表示時間の確認用です。最終出力の画質確認はエンコード機能追加後に行います。',
-          nextTitle:'次の段階: 出力サイズとFit / Fill', nextBody:'v0.4.0で異なる画像サイズを1つの出力Canvasへそろえる設定を追加します。', createAnimation:'アニメーションを作成',
+          previewHeading:'アニメーションプレビュー', previewNote:'出力CanvasへFit / Fillした状態で、各フレームの表示時間どおりに確認します。', previewEmpty:'画像を追加すると、ここで出力Canvasとアニメーションを確認できます。', previewFrameLabel:'フレーム', previewTimeLabel:'再生位置', previewRestart:'最初から', previewPrevious:'前のフレーム', previewPlay:'再生 / 一時停止', previewNext:'次のフレーム', previewHelp:'プレビューは軽量画像を使いますが、Canvasサイズ・Fit / Fill・背景は最終出力と同じ計算を使います。',
+          outputSettingsTitle:'出力Canvas', outputSettingsBody:'1枚目の縦横比を基準にサイズをそろえます。カスタムでは幅・高さを個別指定できます。', canvasSizeLabel:'Canvasサイズ', canvasAuto:'自動（長辺最大720px）', canvas480:'長辺480px', canvas720:'長辺720px', canvas1080:'長辺1080px', canvasOriginal:'1枚目の元サイズ相当', canvasCustom:'カスタム', canvasWidthLabel:'Canvas幅', canvasHeightLabel:'Canvas高さ', placementLabel:'画像の配置', fit:'収める', fill:'切り抜く', backgroundLabel:'背景', backgroundTransparent:'透明', backgroundWhite:'白', backgroundBlack:'黒', backgroundCustom:'カスタム色', backgroundColorLabel:'背景色', previewCanvasLabel:'正規化されたアニメーションプレビュー', resolvedCanvas:'実際のCanvas',
+          nextTitle:'次の段階: Animated GIF出力', nextBody:'v0.5.0で、このCanvas正規化結果を使ってGIFを書き出します。', createAnimation:'アニメーションを作成',
           buildInfo:'ビルド情報', appVersion:'アプリバージョン', builtAt:'生成日時', dependencies:'内包依存', footer:'画像はこの端末内で処理されます',
-          help:'ヘルプ', close:'閉じる', helpTitle:'使い方と注意事項', helpHowTitle:'基本操作', helpHow1:'JPEG・PNG・静止WebPを複数選択するか、画面へドロップします。', helpHow2:'順番を整え、各カードの表示時間または全フレーム一括設定を調整します。', helpHow3:'プレビューの再生・一時停止・最初から・前後移動で、設定した時間どおりの動きを確認できます。',
-          helpFormatsTitle:'対応形式', helpFormatsBody:'JPEG / JPG、PNG、静止WebPに対応します。Animated WebP、GIF、動画、HEIC等は現在対象外です。', helpLimitsTitle:'上限', helpLimitsBody:'最大200枚、1ファイル50 MiB、読み込み済み元ファイル合計500 MiB、1画像50メガピクセルです。表示時間は1フレーム20〜10,000 ms、10 ms刻みです。',
+          help:'ヘルプ', close:'閉じる', helpTitle:'使い方と注意事項', helpHowTitle:'基本操作', helpHow1:'JPEG・PNG・静止WebPを複数選択するか、画面へドロップします。', helpHow2:'順番と表示時間を整えます。', helpHow3:'Canvasサイズ、収める／切り抜く、背景を設定し、同じ正規化結果でアニメーションをプレビューします。',
+          helpFormatsTitle:'対応形式', helpFormatsBody:'JPEG / JPG、PNG、静止WebPに対応します。Animated WebP、GIF、動画、HEIC等は現在対象外です。', helpLimitsTitle:'上限', helpLimitsBody:'最大200枚、1ファイル50 MiB、読み込み済み元ファイル合計500 MiB、1画像50メガピクセルです。表示時間は1フレーム20〜10,000 ms、Canvasは16〜4096pxです。',
           helpPrivacyTitle:'プライバシー', helpPrivacyBody:'選択した画像はブラウザ内だけで読み込みます。このアプリは画像を外部サーバーへ送信せず、Analyticsや外部APIも使用しません。', helpStorageTitle:'データ保持', helpStorageBody:'画像自体はブラウザストレージへ自動保存しません。ページを閉じると作業画像は破棄されます。',
           confirmTitle:'確認', cancel:'キャンセル', clearConfirmTitle:'すべての画像を消去しますか？', clearConfirmBody:'追加した画像とサムネイルをこのページから消去します。元ファイルは変更されません。', clearConfirmAction:'すべて消去',
           importing:'画像を読み込んでいます…', importAdded:'{count}枚追加しました', importPartial:'{added}枚追加 · {failed}枚を読み込めませんでした', importFailed:'画像を追加できませんでした', cleared:'画像を消去しました',
@@ -449,7 +512,7 @@
           frameAlt:'フレーム {number}: {name}', megapixels:'{value} MP'
         },
         en: {
-          brandMeta:'Create GIF / WebP from multiple images', introTitle:'Arrange images and tune frame timing', introBody:'Add JPEG, PNG, or still WebP images, arrange their order, set each frame duration, and preview the motion. Images stay on this device.',
+          brandMeta:'Create GIF / WebP from multiple images', introTitle:'Arrange images on one output canvas', introBody:'Arrange the sequence and timing, then normalize mixed image sizes and aspect ratios onto one output canvas with Fit or Fill.',
           localProcessing:'Fully local processing', addHeading:'Add images', addNote:'Select multiple files or drag and drop them here.', dropTitle:'Drop JPEG / PNG / WebP images here', dropNote:'or choose images from your device', chooseImages:'Choose images',
           limitFrames:'Up to 200 images', limitFile:'50 MiB per image', limitPixels:'50 MP per image', framesHeading:'Frames', framesNote:'Arrange the sequence and set how long each frame stays visible.',
           images:'Images', totalDurationLabel:'Total time', sourceSize:'Source total', addMore:'Add images', clearAll:'Clear all', emptyTitle:'No images yet', emptyBody:'Add images to see their thumbnails here.',
@@ -457,11 +520,12 @@
           dragFrame:'Drag to move frame {number}', movePrevious:'Move frame {number} earlier', moveNext:'Move frame {number} later', duplicate:'Duplicate frame {number}', deleteFrame:'Delete frame {number}',
           duplicated:'Frame duplicated', deleted:'Frame deleted', reordered:'Frame order changed', sortedAsc:'Sorted by filename ascending', sortedDesc:'Sorted by filename descending', undone:'Undone', redone:'Redone', duplicateLimit:'Maximum of 200 frames reached',
           timingTitle:'All frame durations', timingBody:'Apply a preset or custom duration to every frame. Individual durations can be changed on each card.', globalDurationLabel:'Duration for all frames', applyAll:'Apply to all', frameDuration:'Duration', timingApplied:'Updated all frame durations', timingChanged:'Frame duration updated',
-          previewHeading:'Animation preview', previewNote:'Preview motion using each frame’s actual duration.', previewEmpty:'Add images to preview the animation here.', previewFrameLabel:'Frame', previewTimeLabel:'Playback position', previewRestart:'Restart', previewPrevious:'Previous frame', previewPlay:'Play / pause', previewNext:'Next frame', previewHelp:'This preview is for motion and timing. Final encoded quality will be reviewed after export is implemented.',
-          nextTitle:'Next: output size and Fit / Fill', nextBody:'v0.4.0 will normalize different source sizes onto one output canvas.', createAnimation:'Create animation',
+          previewHeading:'Animation preview', previewNote:'Preview each frame after applying the output canvas, Fit / Fill, and background settings.', previewEmpty:'Add images to preview the normalized output canvas here.', previewFrameLabel:'Frame', previewTimeLabel:'Playback position', previewRestart:'Restart', previewPrevious:'Previous frame', previewPlay:'Play / pause', previewNext:'Next frame', previewHelp:'The preview uses lightweight image data, but canvas size, Fit / Fill, and background use the same geometry as final output.',
+          outputSettingsTitle:'Output canvas', outputSettingsBody:'Preset sizes keep the first frame aspect ratio. Custom size lets you set width and height independently.', canvasSizeLabel:'Canvas size', canvasAuto:'Auto (long edge up to 720px)', canvas480:'480px long edge', canvas720:'720px long edge', canvas1080:'1080px long edge', canvasOriginal:'First frame original equivalent', canvasCustom:'Custom', canvasWidthLabel:'Canvas width', canvasHeightLabel:'Canvas height', placementLabel:'Image placement', fit:'Fit', fill:'Fill', backgroundLabel:'Background', backgroundTransparent:'Transparent', backgroundWhite:'White', backgroundBlack:'Black', backgroundCustom:'Custom color', backgroundColorLabel:'Background color', previewCanvasLabel:'Normalized animation preview', resolvedCanvas:'Resolved canvas',
+          nextTitle:'Next: Animated GIF export', nextBody:'v0.5.0 will use this normalized canvas to encode GIF output.', createAnimation:'Create animation',
           buildInfo:'Build information', appVersion:'App version', builtAt:'Built at', dependencies:'Embedded dependencies', footer:'Images are processed on this device',
-          help:'Help', close:'Close', helpTitle:'How to use & notes', helpHowTitle:'Basic workflow', helpHow1:'Choose multiple JPEG, PNG, or still WebP images, or drop them onto the page.', helpHow2:'Arrange the sequence, then adjust each card duration or apply one duration to every frame.', helpHow3:'Use Play/Pause, Restart, Previous, and Next to preview the motion with the configured timing.',
-          helpFormatsTitle:'Supported formats', helpFormatsBody:'JPEG / JPG, PNG, and still WebP are supported. Animated WebP, GIF, video, HEIC, and other formats are not supported yet.', helpLimitsTitle:'Limits', helpLimitsBody:'Up to 200 images, 50 MiB per file, 500 MiB total source files, 50 megapixels per image, and 20–10,000 ms per frame in 10 ms steps.',
+          help:'Help', close:'Close', helpTitle:'How to use & notes', helpHowTitle:'Basic workflow', helpHow1:'Choose multiple JPEG, PNG, or still WebP images, or drop them onto the page.', helpHow2:'Arrange the sequence and adjust timing.', helpHow3:'Choose the canvas size, Fit / Fill placement, and background, then preview the animation using the same normalization geometry.',
+          helpFormatsTitle:'Supported formats', helpFormatsBody:'JPEG / JPG, PNG, and still WebP are supported. Animated WebP, GIF, video, HEIC, and other formats are not supported yet.', helpLimitsTitle:'Limits', helpLimitsBody:'Up to 200 images, 50 MiB per file, 500 MiB total source files, 50 megapixels per image, 20–10,000 ms per frame, and a 16–4096 px output canvas.',
           helpPrivacyTitle:'Privacy', helpPrivacyBody:'Selected images are read only in your browser. This app does not upload images or use analytics or external APIs.', helpStorageTitle:'Data retention', helpStorageBody:'Images are not automatically stored in browser storage. Closing the page discards the working images.',
           confirmTitle:'Confirm', cancel:'Cancel', clearConfirmTitle:'Clear all images?', clearConfirmBody:'This removes the imported images and thumbnails from this page. Your original files are not changed.', clearConfirmAction:'Clear all',
           importing:'Loading images…', importAdded:'Added {count} images', importPartial:'Added {added} · could not load {failed}', importFailed:'Could not add images', cleared:'Images cleared',
@@ -483,6 +547,15 @@
         undoStack: [],
         redoStack: [],
         framePool: new Map(),
+        canvas: {
+          sizeMode: 'auto',
+          customWidth: 720,
+          customHeight: 720,
+          placement: 'fit',
+          backgroundMode: 'transparent',
+          customColor: '#ffffff',
+          renderToken: 0
+        },
         preview: {
           index: 0,
           playing: false,
@@ -497,14 +570,22 @@
       let language = readStorage(storageKey) || detectLanguage();
 
       const $ = selector => document.querySelector(selector);
-      const fileInput = $('#fileInput');      const dropZone = $('#dropZone');
+      const fileInput = $('#fileInput');
+      const dropZone = $('#dropZone');
       const frameGrid = $('#frameGrid');
       const importReport = $('#importReport');
       const sortSelect = $('#sortSelect');
       const globalDurationInput = $('#globalDurationInput');
-      const previewImage = $('#previewImage');
+      const previewCanvas = $('#previewCanvas');
+      const previewCanvasWrap = $('#previewCanvasWrap');
       const previewPlaceholder = $('#previewPlaceholder');
       const previewProgress = $('#previewProgress');
+      const canvasSizeMode = $('#canvasSizeMode');
+      const customSizeRow = $('#customSizeRow');
+      const canvasWidthInput = $('#canvasWidthInput');
+      const canvasHeightInput = $('#canvasHeightInput');
+      const backgroundMode = $('#backgroundMode');
+      const backgroundColor = $('#backgroundColor');
       const outputFilename = $('#outputFilename'); // Required template export marker; used by later export milestones.
 
       function readStorage(key) { try { return localStorage.getItem(key); } catch { return null; } }
@@ -546,6 +627,88 @@
       }
       function formatSeconds(ms) {
         return `${(Math.max(0, ms) / 1000).toFixed(1)} s`;
+      }
+      function normalizeCanvasDimension(value, fallback = 720) {
+        const numeric = Math.round(Number(value));
+        if (!Number.isFinite(numeric)) return fallback;
+        return Math.min(4096, Math.max(16, numeric));
+      }
+      function sizeForLongEdge(width, height, longEdge, { allowUpscale = true } = {}) {
+        if (!width || !height) return { width: longEdge, height: longEdge };
+        const sourceLongEdge = Math.max(width, height);
+        const targetLongEdge = allowUpscale ? longEdge : Math.min(longEdge, sourceLongEdge);
+        const scale = targetLongEdge / sourceLongEdge;
+        return {
+          width: normalizeCanvasDimension(Math.round(width * scale), 16),
+          height: normalizeCanvasDimension(Math.round(height * scale), 16)
+        };
+      }
+      function resolvedCanvasSize() {
+        if (state.canvas.sizeMode === 'custom') {
+          return {
+            width: normalizeCanvasDimension(state.canvas.customWidth, 720),
+            height: normalizeCanvasDimension(state.canvas.customHeight, 720)
+          };
+        }
+        const first = state.frames[0];
+        if (!first) return { width: 720, height: 720 };
+        if (state.canvas.sizeMode === 'auto') return sizeForLongEdge(first.width, first.height, 720, { allowUpscale: false });
+        if (state.canvas.sizeMode === 'original') return sizeForLongEdge(first.width, first.height, Math.min(4096, Math.max(first.width, first.height)), { allowUpscale: false });
+        return sizeForLongEdge(first.width, first.height, Number(state.canvas.sizeMode) || 720);
+      }
+      function resolvedBackgroundColor() {
+        if (state.canvas.backgroundMode === 'white') return '#ffffff';
+        if (state.canvas.backgroundMode === 'black') return '#000000';
+        if (state.canvas.backgroundMode === 'custom') return state.canvas.customColor || '#ffffff';
+        return null;
+      }
+      function computePlacement(sourceWidth, sourceHeight, canvasWidth, canvasHeight, mode = 'fit') {
+        if (!sourceWidth || !sourceHeight || !canvasWidth || !canvasHeight) return { x: 0, y: 0, width: canvasWidth, height: canvasHeight };
+        const scale = mode === 'fill'
+          ? Math.max(canvasWidth / sourceWidth, canvasHeight / sourceHeight)
+          : Math.min(canvasWidth / sourceWidth, canvasHeight / sourceHeight);
+        const width = sourceWidth * scale;
+        const height = sourceHeight * scale;
+        return {
+          x: (canvasWidth - width) / 2,
+          y: (canvasHeight - height) / 2,
+          width,
+          height
+        };
+      }
+      async function decodePreviewFrame(frame) {
+        const blob = frame.thumbnailBlob || frame.file;
+        if (typeof createImageBitmap === 'function') {
+          try {
+            const bitmap = await createImageBitmap(blob);
+            return { source: bitmap, close: () => bitmap.close?.() };
+          } catch { /* fall through to Image element */ }
+        }
+        const image = await decodeViaImage(blob);
+        return { source: image, close: () => {} };
+      }
+      async function renderNormalizedFrame(frame, canvas, token) {
+        const size = resolvedCanvasSize();
+        if (canvas.width !== size.width) canvas.width = size.width;
+        if (canvas.height !== size.height) canvas.height = size.height;
+        const context = canvas.getContext('2d', { alpha: true });
+        if (!context) throw new Error('canvas');
+        context.clearRect(0, 0, size.width, size.height);
+        const background = resolvedBackgroundColor();
+        if (background) {
+          context.fillStyle = background;
+          context.fillRect(0, 0, size.width, size.height);
+        }
+        const decoded = await decodePreviewFrame(frame);
+        try {
+          if (token !== state.canvas.renderToken) return;
+          const rect = computePlacement(frame.width, frame.height, size.width, size.height, state.canvas.placement);
+          context.imageSmoothingEnabled = true;
+          context.imageSmoothingQuality = 'high';
+          context.drawImage(decoded.source, rect.x, rect.y, rect.width, rect.height);
+        } finally {
+          decoded.close();
+        }
       }
       function elapsedBeforeFrame(index) {
         let elapsed = 0;
@@ -846,6 +1009,7 @@
         state.undoStack = [];
         state.redoStack = [];
         dragSession = null;
+        state.canvas.renderToken += 1;
         pausePreview({ resetElapsed: true });
         state.preview.index = 0;
         render();
@@ -996,7 +1160,8 @@
         const remaining = Math.max(1, currentFrameDuration() - state.preview.elapsedInFrame);
         state.preview.frameStartedAt = performance.now();
         state.preview.timeoutId = window.setTimeout(() => {
-          if (!state.preview.playing || !state.frames.length) return;          state.preview.elapsedInFrame = 0;
+          if (!state.preview.playing || !state.frames.length) return;
+          state.preview.elapsedInFrame = 0;
           state.preview.index = (state.preview.index + 1) % state.frames.length;
           renderPreviewFrame();
           schedulePreviewFrame();
@@ -1034,18 +1199,28 @@
       function renderPreviewFrame() {
         normalizePreviewIndex();
         const frame = state.frames[state.preview.index];
+        const size = resolvedCanvasSize();
+        $('#resolvedCanvasSize').textContent = frame ? `${size.width} × ${size.height} px` : '—';
+        customSizeRow.hidden = state.canvas.sizeMode !== 'custom';
+        backgroundColor.disabled = state.canvas.backgroundMode !== 'custom';
+        document.querySelectorAll('[data-placement]').forEach(button => {
+          button.setAttribute('aria-pressed', String(button.dataset.placement === state.canvas.placement));
+        });
         if (!frame) {
-          previewImage.hidden = true;
-          previewImage.removeAttribute('src');
-          previewImage.alt = '';
+          state.canvas.renderToken += 1;
+          previewCanvasWrap.hidden = true;
           previewPlaceholder.hidden = false;
           $('#previewFrame').textContent = '—';
         } else {
           previewPlaceholder.hidden = true;
-          previewImage.hidden = false;
-          previewImage.src = frame.thumbnailUrl;
-          previewImage.alt = t('frameAlt', { number: state.preview.index + 1, name: frame.file.name });
+          previewCanvasWrap.hidden = false;
           $('#previewFrame').textContent = `${state.preview.index + 1} / ${state.frames.length}`;
+          const token = ++state.canvas.renderToken;
+          renderNormalizedFrame(frame, previewCanvas, token).catch(() => {
+            if (token !== state.canvas.renderToken) return;
+            const context = previewCanvas.getContext('2d');
+            context?.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+          });
         }
         updatePreviewClock();
         updatePreviewControls();
@@ -1280,6 +1455,37 @@
       $('#previewRestartButton').addEventListener('click', restartPreview);
       $('#previewPreviousButton').addEventListener('click', () => setPreviewIndex(state.preview.index - 1));
       $('#previewNextButton').addEventListener('click', () => setPreviewIndex(state.preview.index + 1));
+
+      canvasSizeMode.addEventListener('change', () => {
+        state.canvas.sizeMode = canvasSizeMode.value;
+        customSizeRow.hidden = state.canvas.sizeMode !== 'custom';
+        renderPreviewFrame();
+      });
+      function commitCustomCanvasSize() {
+        state.canvas.customWidth = normalizeCanvasDimension(canvasWidthInput.value, state.canvas.customWidth);
+        state.canvas.customHeight = normalizeCanvasDimension(canvasHeightInput.value, state.canvas.customHeight);
+        canvasWidthInput.value = String(state.canvas.customWidth);
+        canvasHeightInput.value = String(state.canvas.customHeight);
+        renderPreviewFrame();
+      }
+      canvasWidthInput.addEventListener('change', commitCustomCanvasSize);
+      canvasHeightInput.addEventListener('change', commitCustomCanvasSize);
+      document.querySelectorAll('[data-placement]').forEach(button => {
+        button.addEventListener('click', () => {
+          state.canvas.placement = button.dataset.placement === 'fill' ? 'fill' : 'fit';
+          renderPreviewFrame();
+        });
+      });
+      backgroundMode.addEventListener('change', () => {
+        state.canvas.backgroundMode = backgroundMode.value;
+        backgroundColor.disabled = state.canvas.backgroundMode !== 'custom';
+        renderPreviewFrame();
+      });
+      backgroundColor.addEventListener('input', () => {
+        state.canvas.customColor = backgroundColor.value;
+        if (state.canvas.backgroundMode === 'custom') renderPreviewFrame();
+      });
+
       sortSelect.addEventListener('change', () => {
         const direction = sortSelect.value;
         sortSelect.value = '';

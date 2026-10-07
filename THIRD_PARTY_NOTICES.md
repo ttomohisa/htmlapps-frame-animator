@@ -1,6 +1,6 @@
 # Third-Party Notices
 
-Frame Animator v0.3.0 declares no runtime third-party package dependency in `dependencies.json`.
+Frame Animator v0.4.0 declares no runtime third-party package dependency in `dependencies.json`.
 
 The app uses browser APIs and system fonts directly. GitHub Actions workflows reference their respective GitHub-maintained actions under the terms published by those projects.
 

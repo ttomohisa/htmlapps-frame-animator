@@ -40,7 +40,7 @@ Exit: every reorder operation remains possible without relying on Drag & Drop al
 
 Exit: uneven frame timings preview correctly without fixed-FPS rounding.
 
-## v0.4.0 — Canvas normalization
+## v0.4.0 — Canvas normalization ✅
 
 - 480 / 720 / 1080 / original / custom sizing
 - Fit / Fill

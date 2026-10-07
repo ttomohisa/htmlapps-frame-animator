@@ -2,7 +2,7 @@
 
 Frame Animator is a Browser Kitty utility for turning multiple local still images into an animated GIF or WebP without uploading the source images.
 
-> Current development version: **v0.3.0**. Image import, frame-sequence editing, per-frame timing, and live motion preview are implemented. Canvas normalization and GIF/WebP encoding are planned in later milestones and are not presented as finished features yet.
+> Current development version: **v0.4.0**. Image import, sequence editing, timing, live preview, and output-canvas normalization are implemented. GIF/WebP encoding is planned in later milestones and is not presented as finished yet.
 
 ## Current features
 
@@ -23,6 +23,12 @@ Frame Animator is a Browser Kitty utility for turning multiple local still image
 - Total animation duration based on the current sequence
 - Live variable-duration preview with Play / Pause, Restart, Previous, and Next
 - Timing edits participate in Undo / Redo and resume playback when edited during playback
+- Normalize mixed source sizes onto one output canvas
+- Auto / 480 / 720 / 1080 / original-equivalent / custom canvas sizing
+- Fit or Fill placement with centered geometry
+- Transparent / white / black / custom-color backgrounds
+- Checkerboard transparency preview
+- On-demand preview decode with ImageBitmap cleanup; no full-sequence RGBA retention
 - Japanese and English in the same HTML; the language switch uses compact EN / JA labels
 - Responsive desktop and smartphone layout
 - No runtime CDN, analytics, telemetry, or external API
@@ -49,7 +55,7 @@ The app uses a restrictive Content Security Policy with `connect-src 'none'`. It
 
 Imported image bytes are not automatically persisted to localStorage or IndexedDB. Closing the page discards the working image set.
 
-## Input support in v0.3.0
+## Input support in v0.4.0
 
 Supported:
 
@@ -69,13 +75,14 @@ Not supported yet:
 - PSD
 - PDF
 
-## Limits in v0.3.0
+## Limits in v0.4.0
 
 - 200 images
 - 50 MiB per source file
 - 500 MiB total imported source bytes
 - 50 megapixels per source image
 - 20–10,000 ms per frame in 10 ms steps
+- output canvas width/height: 16–4096 px
 
 These are application safety guards and do not describe the absolute limits of every browser or device.
 
@@ -112,4 +119,4 @@ Product behavior and acceptance criteria live in [APP_SPEC.md](APP_SPEC.md). The
 
 MIT. See [LICENSE](LICENSE).
 
-Third-party notices are recorded in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). v0.3.0 declares no runtime third-party dependency.
+Third-party notices are recorded in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). v0.4.0 declares no runtime third-party dependency.
