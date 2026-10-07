@@ -2,7 +2,7 @@
 
 Frame Animator is a Browser Kitty utility for turning multiple local still images into an animated GIF or WebP without uploading the source images.
 
-> Current development version: **v0.6.0**. Image import, sequence editing, timing, canvas normalization, live preview, Animated GIF export, and Animated WebP export are implemented.
+> Current development version: **v0.7.0**. Image import, sequence editing, timing, canvas normalization, shared playback controls, Animated GIF export, and Animated WebP export are implemented.
 
 ## Current features
 
@@ -44,6 +44,12 @@ Frame Animator is a Browser Kitty utility for turning multiple local still image
 - Variable per-frame millisecond timing preserved in the Animated WebP container
 - Infinite-loop and play-once Animated WebP
 - Actual generated WebP preview and local save
+- Shared Forward / Reverse / Ping-pong playback order for preview, GIF, and WebP
+- Ping-pong sequence without duplicate endpoints
+- Infinite / once / custom 2–100 play-count setting shared by both export formats
+- Clipboard image paste for JPEG / PNG / still WebP
+- High-load export warning based on resolved canvas size and derived frame count
+- Format-aware filename handling: visible .gif / .webp suffix plus extension sanitization
 - Large initial image drop zone that becomes compact after images are loaded while remaining clickable and droppable
 - User-supplied Frame Animator SVG used for both the app icon and favicon
 - Japanese and English in the same HTML; the language switch uses compact EN / JA labels
@@ -72,7 +78,7 @@ The app uses a restrictive Content Security Policy with `connect-src 'none'`. It
 
 Imported image bytes are not automatically persisted to localStorage or IndexedDB. Closing the page discards the working image set.
 
-## Input support in v0.6.0
+## Input support in v0.7.0
 
 Supported:
 
@@ -92,7 +98,7 @@ Not supported yet:
 - PSD
 - PDF
 
-## Limits in v0.6.0
+## Limits in v0.7.0
 
 - 200 images
 - 50 MiB per source file
