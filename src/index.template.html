@@ -1798,13 +1798,22 @@
 
       async function createWebpWorker() {
         const moduleUrl = await StandaloneAssets.blobUrlAsync('jsquash-webp', 'encoder-js');
-        const wasmBytes = await StandaloneAssets.bytesAsync('jsquash-webp', 'encoder-wasm');
-        const workerSource = `(${webpWorkerMain.toString()})();`;
-        const workerUrl = URL.createObjectURL(new Blob([workerSource], { type: 'text/javascript' }));
-        const worker = new Worker(workerUrl, { type: 'module' });
-        state.webp.workerUrl = workerUrl;
         state.webp.moduleUrl = moduleUrl;
-        return { worker, moduleUrl, wasmBuffer: wasmBytes.slice().buffer };
+        let workerUrl = '';
+        try {
+          const wasmBytes = await StandaloneAssets.bytesAsync('jsquash-webp', 'encoder-wasm');
+          const workerSource = `(${webpWorkerMain.toString()})();`;
+          workerUrl = URL.createObjectURL(new Blob([workerSource], { type: 'text/javascript' }));
+          state.webp.workerUrl = workerUrl;
+          const worker = new Worker(workerUrl, { type: 'module' });
+          return { worker, moduleUrl, wasmBuffer: wasmBytes.slice().buffer };
+        } catch (error) {
+          if (workerUrl) URL.revokeObjectURL(workerUrl);
+          state.webp.workerUrl = '';
+          StandaloneAssets.revoke(moduleUrl);
+          state.webp.moduleUrl = '';
+          throw error;
+        }
       }
 
       function disposeWebpWorker(worker) {
@@ -2696,7 +2705,7 @@
         renderWebpResult();
       }
       function updateBusy(busy) {
-        const blocked = busy || state.gif.busy;
+        const blocked = busy || state.gif.busy || state.webp.busy;
         $('#chooseButton').disabled = blocked;
         fileInput.disabled = blocked;
         $('#addMoreButton').disabled = blocked || state.frames.length >= LIMITS.frames;
