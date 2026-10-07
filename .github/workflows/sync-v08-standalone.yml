@@ -1,0 +1,31 @@
+name: Sync v0.8 standalone HTML
+
+on:
+  push:
+    branches:
+      - feat/frame-animator-v0.8.0
+    paths:
+      - .github/workflows/sync-v08-standalone.yml
+
+permissions:
+  contents: write
+
+jobs:
+  sync:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/frame-animator-v0.8.0
+      - name: Build standalone HTML
+        shell: pwsh
+        run: ./build-standalone.ps1
+      - name: Commit generated root HTML and remove one-shot workflow
+        shell: pwsh
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add frame-animator.html
+          git rm .github/workflows/sync-v08-standalone.yml
+          git commit -m "build: refresh v0.8.0 standalone HTML"
+          git push origin HEAD:feat/frame-animator-v0.8.0
