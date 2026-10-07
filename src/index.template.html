@@ -1308,6 +1308,12 @@
 
       function setGifBusy(busy) {
         state.gif.busy = busy;
+        if (busy) {
+          pausePreview({ resetElapsed: true });
+          gifProgress.max = 1;
+          gifProgress.value = 0;
+          gifProgressText.textContent = '';
+        }
         gifColorCount.disabled = busy;
         gifLoopMode.disabled = busy;
         gifDither.disabled = busy;
@@ -2041,6 +2047,8 @@
         $('#emptyState').hidden = state.frames.length > 0;
         frameGrid.hidden = state.frames.length === 0;
         const busy = isBusy();
+        $('#chooseButton').disabled = busy;
+        fileInput.disabled = busy;
         $('#addMoreButton').disabled = busy || state.frames.length >= LIMITS.frames;
         $('#clearAllButton').disabled = busy || state.frames.length === 0;
         $('#applyDurationButton').disabled = busy || state.frames.length === 0;
@@ -2065,13 +2073,15 @@
         renderGifResult();
       }
       function updateBusy(busy) {
-        $('#chooseButton').disabled = busy;
-        $('#addMoreButton').disabled = busy || state.frames.length >= LIMITS.frames;
-        $('#clearAllButton').disabled = busy || state.frames.length === 0;
-        sortSelect.disabled = busy || state.frames.length < 2;
-        $('#applyDurationButton').disabled = busy || state.frames.length === 0;
-        document.querySelectorAll('[data-duration-preset]').forEach(button => { button.disabled = busy || state.frames.length === 0; });
-        dropZone.setAttribute('aria-busy', String(busy));
+        const blocked = busy || state.gif.busy;
+        $('#chooseButton').disabled = blocked;
+        fileInput.disabled = blocked;
+        $('#addMoreButton').disabled = blocked || state.frames.length >= LIMITS.frames;
+        $('#clearAllButton').disabled = blocked || state.frames.length === 0;
+        sortSelect.disabled = blocked || state.frames.length < 2;
+        $('#applyDurationButton').disabled = blocked || state.frames.length === 0;
+        document.querySelectorAll('[data-duration-preset]').forEach(button => { button.disabled = blocked || state.frames.length === 0; });
+        dropZone.setAttribute('aria-busy', String(blocked));
         if (busy) pausePreview({ resetElapsed: true });
         updateHistoryButtons();
         updateFrameCardPositions();
@@ -2177,12 +2187,12 @@
       $('#addMoreButton').addEventListener('click', () => fileInput.click());
       fileInput.addEventListener('change', () => importFiles(fileInput.files));
       for (const eventName of ['dragenter','dragover']) {
-        dropZone.addEventListener(eventName, event => { event.preventDefault(); if (!state.importBusy) dropZone.classList.add('is-dragging'); });
+        dropZone.addEventListener(eventName, event => { event.preventDefault(); if (!isBusy()) dropZone.classList.add('is-dragging'); });
       }
       for (const eventName of ['dragleave','drop']) {
         dropZone.addEventListener(eventName, event => { event.preventDefault(); dropZone.classList.remove('is-dragging'); });
       }
-      dropZone.addEventListener('drop', event => { if (!state.importBusy) importFiles(event.dataTransfer?.files); });
+      dropZone.addEventListener('drop', event => { if (!isBusy()) importFiles(event.dataTransfer?.files); });
 
       $('#undoButton').addEventListener('click', () => undoHistory());
       $('#redoButton').addEventListener('click', () => redoHistory());
@@ -2263,7 +2273,7 @@
 
       frameGrid.addEventListener('click', event => {
         const button = event.target.closest('button[data-action]');
-        if (!button || state.importBusy) return;
+        if (!button || isBusy()) return;
         const card = button.closest('.frame-card');
         if (!card) return;
         const id = card.dataset.frameId;
