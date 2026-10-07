@@ -253,7 +253,7 @@
       </div>
     </section>
 
-    <nav class="mobile-workflow-nav" id="mobileWorkflowNav" role="tablist" aria-label="Workflow" hidden>
+    <nav class="mobile-workflow-nav" id="mobileWorkflowNav" role="tablist" data-i18n-aria-label="mobileWorkflow" hidden>
       <button class="mobile-workflow-tab" id="mobileTabFrames" type="button" role="tab" data-mobile-target="frames" aria-controls="mobilePageFrames" aria-selected="true" data-i18n="mobileFrames">フレーム</button>
       <button class="mobile-workflow-tab" id="mobileTabPreview" type="button" role="tab" data-mobile-target="preview" aria-controls="mobilePagePreview" aria-selected="false" data-i18n="mobilePreview">プレビュー</button>
       <button class="mobile-workflow-tab" id="mobileTabExport" type="button" role="tab" data-mobile-target="export" aria-controls="mobilePageExport" aria-selected="false" data-i18n="mobileExport">書き出し</button>
@@ -721,7 +721,7 @@
 
       const translations = {
         ja: {
-          brandMeta:'複数画像からGIF / WebPを作成', mobileFrames:'フレーム', mobilePreview:'プレビュー', mobileExport:'書き出し', introTitle:'画像を並べて、同じCanvasへそろえる', introBody:'順番と表示時間を整え、異なるサイズや縦横比の画像を同じ出力Canvasへ収める／切り抜く設定で確認できます。',
+          brandMeta:'複数画像からGIF / WebPを作成', mobileWorkflow:'作業ステップ', mobileFrames:'フレーム', mobilePreview:'プレビュー', mobileExport:'書き出し', introTitle:'画像を並べて、同じCanvasへそろえる', introBody:'順番と表示時間を整え、異なるサイズや縦横比の画像を同じ出力Canvasへ収める／切り抜く設定で確認できます。',
           localProcessing:'完全ローカル処理', addHeading:'画像を追加', addNote:'複数選択・ドラッグ＆ドロップ・クリップボード画像の貼り付けに対応しています。', dropTitle:'JPEG / PNG / WebPをここにドロップ', dropNote:'または端末から画像を選択します', chooseImages:'画像を選択',
           limitFrames:'最大200枚', limitFile:'1枚50 MiBまで', limitPixels:'1枚50 MPまで', framesHeading:'フレーム', framesNote:'順番を整え、各フレームの表示時間を設定します。',
           images:'画像', totalDurationLabel:'1回分', sourceSize:'元ファイル合計', addMore:'画像を追加', clearAll:'すべて消去', emptyTitle:'まだ画像がありません', emptyBody:'画像を追加すると、ここにサムネイル一覧が表示されます。',
@@ -744,7 +744,7 @@
           frameAlt:'フレーム {number}: {name}', megapixels:'{value} MP'
         },
         en: {
-          brandMeta:'Create GIF / WebP from multiple images', mobileFrames:'Frames', mobilePreview:'Preview', mobileExport:'Export', introTitle:'Arrange images on one output canvas', introBody:'Arrange the sequence and timing, then normalize mixed image sizes and aspect ratios onto one output canvas with Fit or Fill.',
+          brandMeta:'Create GIF / WebP from multiple images', mobileWorkflow:'Workflow steps', mobileFrames:'Frames', mobilePreview:'Preview', mobileExport:'Export', introTitle:'Arrange images on one output canvas', introBody:'Arrange the sequence and timing, then normalize mixed image sizes and aspect ratios onto one output canvas with Fit or Fill.',
           localProcessing:'Fully local processing', addHeading:'Add images', addNote:'Select multiple files, drag and drop, or paste an image from the clipboard.', dropTitle:'Drop JPEG / PNG / WebP images here', dropNote:'or choose images from your device', chooseImages:'Choose images',
           limitFrames:'Up to 200 images', limitFile:'50 MiB per image', limitPixels:'50 MP per image', framesHeading:'Frames', framesNote:'Arrange the sequence and set how long each frame stays visible.',
           images:'Images', totalDurationLabel:'One pass', sourceSize:'Source total', addMore:'Add images', clearAll:'Clear all', emptyTitle:'No images yet', emptyBody:'Add images to see their thumbnails here.',
@@ -2249,6 +2249,8 @@
         context.clearRect(0, 0, width, height);
         context.drawImage(decoded.source, 0, 0, width, height);
         const blob = await canvasBlob(canvas);
+        canvas.width = 1;
+        canvas.height = 1;
         return { blob, url: URL.createObjectURL(blob) };
       }
       function failure(name, reason) { return { name: name || t('reasonDecode'), reason }; }
@@ -2511,11 +2513,15 @@
           const card = document.createElement('article');
           card.className = 'frame-card';
           card.dataset.frameId = frame.id;
+          card.setAttribute('aria-posinset', String(index + 1));
+          card.setAttribute('aria-setsize', String(state.frames.length));
 
           const thumb = document.createElement('div');
           thumb.className = 'thumb-wrap';
           const img = document.createElement('img');
           img.src = frame.thumbnailUrl;
+          img.loading = 'lazy';
+          img.decoding = 'async';
           img.alt = t('frameAlt', { number: index + 1, name: frame.file.name });
           const number = document.createElement('span');
           number.className = 'frame-number';
@@ -2575,6 +2581,8 @@
         cards.forEach((card, index) => {
           const number = index + 1;
           const frame = state.frames[index];
+          card.setAttribute('aria-posinset', String(number));
+          card.setAttribute('aria-setsize', String(cards.length));
           card.querySelector('.frame-number').textContent = String(number);
           const img = card.querySelector('img');
           if (img && frame) img.alt = t('frameAlt', { number, name: frame.file.name });
@@ -2753,6 +2761,16 @@
         if (playIcon) playIcon.hidden = state.preview.playing;
         if (pauseIcon) pauseIcon.hidden = !state.preview.playing;
       }
+      function refreshTimingUi() {
+        $('#totalDuration').textContent = formatSeconds(totalDurationMs());
+        const sequence = playbackSequence();
+        $('#playbackSummary').textContent = sequence.length ? `${sequence.length} ${t('framesUnit')} · ${formatSeconds(totalDurationMs())}` : '—';
+        updateHistoryButtons();
+        renderPreviewFrame();
+        renderGifResult();
+        renderWebpResult();
+      }
+
       function setFrameDuration(frameId, rawValue) {
         if (isBusy()) return;
         const frame = state.framePool.get(frameId);
@@ -2762,10 +2780,10 @@
         frame.duration = normalizeDuration(rawValue, frame.duration || DEFAULT_FRAME_DURATION);
         const after = timingSnapshot();
         if (recordTimingHistory(before, after, 'frame-duration')) {
-          render();
+          refreshTimingUi();
           showUndoToast(t('timingChanged'), 'success');
         } else {
-          render();
+          refreshTimingUi();
         }
         if (wasPlaying) playPreview();
       }
@@ -2806,7 +2824,8 @@
 
         if (scroll && isMobile) {
           const target = document.querySelector(`[data-mobile-page="${state.ui.mobilePage}"]`);
-          target?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+          const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          target?.scrollIntoView({ block: 'start', behavior: reduceMotion ? 'auto' : 'smooth' });
         }
       }
 
