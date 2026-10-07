@@ -2,7 +2,7 @@
 
 Frame Animatorは、複数のローカル画像からAnimated GIF / WebPを作るためのBrowser Kittyツールです。選択した画像を変換サーバーへアップロードせず、ブラウザ内で処理する構成を目指します。
 
-> 現在の開発版は **v0.7.0** です。画像読み込み、フレーム順編集、表示時間、Canvas統一、共通再生設定、Animated GIF / WebP出力まで実装しています。
+> 現在の開発版は **v0.8.0** です。画像からGIF / WebPを作る一連の機能に加え、スマートフォン導線、性能、失敗後の復旧を強化しています。
 
 ## 現在できること
 
@@ -55,6 +55,14 @@ Frame Animatorは、複数のローカル画像からAnimated GIF / WebPを作�
 - `.gif` / `.webp`の固定サフィックスと誤入力拡張子の自動整理
 - 最初は大きく、画像読み込み後はコンパクトになる画像追加欄（クリック追加・Drag & Dropは継続利用可能）
 - ユーザー指定SVGをアプリアイコンとfaviconの両方に使用
+- 640px以下では「フレーム / プレビュー / 書き出し」の段階表示
+- safe area対応とスマホ主要操作44px以上のタップ領域
+- 320 / 360 / 390pxを意識した狭幅レイアウト。360px以下では書き出し設定を1列化
+- 大量フレーム向けのサムネイル遅延デコードと一時Canvasの早期解放
+- 1フレームの表示時間変更では全フレームカードを作り直さない再描画最適化
+- `aria-posinset` / `aria-setsize`によるフレーム位置情報
+- ページが非表示になったときのプレビュー自動停止
+- GIF / WebP生成失敗後も画像や設定を維持し、リロードせず設定変更・再試行できるエラー状態
 - 日本語 / 英語を同じHTMLに内包し、言語切替はEN / JAの短い表示
 - PC / スマートフォン対応のレスポンシブUI
 - 実行時CDN、Analytics、Telemetry、外部APIなし
@@ -81,7 +89,7 @@ CSPは `connect-src 'none'` を使用し、Analytics、Telemetry、実行時CDN�
 
 読み込んだ画像そのものをlocalStorageやIndexedDBへ自動保存しません。ページを閉じると作業中の画像セットは破棄されます。
 
-## v0.7.0の対応入力
+## v0.8.0の対応入力
 
 対応:
 
@@ -101,7 +109,7 @@ CSPは `connect-src 'none'` を使用し、Analytics、Telemetry、実行時CDN�
 - PSD
 - PDF
 
-## v0.7.0の上限
+## v0.8.0の上限
 
 - 最大200枚
 - 1ファイル50 MiB
@@ -145,4 +153,4 @@ powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File .\scripts\check-
 
 MIT。詳細は [LICENSE](LICENSE) を参照してください。
 
-第三者ライブラリの情報は [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) に記載します。v0.7.0では、ローカルWebP生成のため固定した `@jsquash/webp@1.5.0` とlibwebpエンコーダ資産を単一HTMLへ内包します。
+第三者ライブラリの情報は [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) に記載します。v0.8.0では、ローカルWebP生成のため固定した `@jsquash/webp@1.5.0` とlibwebpエンコーダ資産を単一HTMLへ内包します。
