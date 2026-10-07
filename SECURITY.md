@@ -14,7 +14,7 @@ Include the affected commit/version, reproduction steps, expected and actual beh
 
 Frame Animator is a static, local-first browser application with no conversion backend.
 
-v0.4.0 protections include:
+v0.5.0 protections include:
 
 - `connect-src 'none'` at runtime.
 - No runtime CDN, external font, analytics, telemetry, or API.
@@ -41,11 +41,11 @@ Imported files are untrusted input. The application must:
 - release ImageBitmap and other large temporary resources
 - invalidate stale asynchronous work when the source set is cleared or replaced
 
-Animated WebP is outside the v0.4.0 input contract and is rejected when detectable from WebP animation metadata.
+Animated WebP is outside the v0.5.0 input contract and is rejected when detectable from WebP animation metadata.
 
-## Future encoders
+## Encoder review
 
-GIF / Animated WebP export will add more complex binary processing in later milestones. Before adding an encoder:
+Animated GIF export now uses a local Blob Worker for quantization, dithering, and LZW compression. Animated WebP export will add a separate binary-processing path in a later milestone. Before adding or materially changing an encoder:
 
 - review dependency identity, exact version, license, and notices
 - prefer the smallest focused local runtime that satisfies the product need

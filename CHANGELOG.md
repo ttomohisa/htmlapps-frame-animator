@@ -6,6 +6,31 @@ The project uses Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-10-07
+
+### Added
+
+- Local GIF89a encoding from the current normalized output canvas.
+- First-party weighted histogram / median-cut color quantization for photographic and gradient content.
+- Floyd–Steinberg dithering with a default-on toggle.
+- 64 / 128 / 256-color GIF output.
+- Infinite-loop and play-once GIF modes.
+- Per-frame GIF delays derived from the existing frame durations.
+- 1-bit GIF transparency when the output canvas background is transparent.
+- Blob Worker execution for quantization, dithering, and LZW compression.
+- Sequential full-resolution frame normalization with transferable RGBA buffers instead of retaining all frames in memory.
+- Per-frame conversion progress and cancellation.
+- Actual generated GIF preview before saving.
+- Generated dimensions, frame count, total duration, and file-size reporting.
+- Editable and sanitized GIF output filename.
+- Stale-result invalidation when output-affecting settings change.
+
+### Changed
+
+- Output-affecting editing controls are locked while GIF encoding is running.
+- Worker, Blob URL, pending request, and result URL lifecycles are explicitly cleaned up on completion, cancellation, invalidation, and page exit.
+- The next development milestone is Animated WebP export.
+
 ## [0.4.0] - 2026-10-07
 
 ### Added
