@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="color-scheme" content="light">
   <meta name="theme-color" content="#f5f5f2">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data: blob:; media-src 'self' data: blob:; worker-src 'self' blob:; connect-src 'none'; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: blob:; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' blob:; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self' data: blob:; media-src 'self' data: blob:; worker-src 'self' blob:; connect-src 'none'; object-src 'none'; frame-src 'none'; base-uri 'none'; form-action 'none'">
   <title>Frame Animator</title>
   <link rel="icon" href="__APP_ICON_DATA_URI__">
   <style>
@@ -46,8 +46,14 @@
     .panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:16px 18px 12px;border-bottom:1px solid var(--line)}
     .panel-head h3{margin:0;font-size:17px;letter-spacing:-.015em}.panel-head p{margin:4px 0 0;color:var(--muted);font-size:12px}
     .panel-body{padding:18px}
-    .drop-zone{display:grid;place-items:center;min-height:214px;padding:28px 18px;border:1.5px dashed var(--line-strong);border-radius:14px;background:var(--surface-muted);text-align:center;transition:border-color .15s ease,background .15s ease}
+    .drop-zone{display:grid;place-items:center;min-height:214px;padding:28px 18px;border:1.5px dashed var(--line-strong);border-radius:14px;background:var(--surface-muted);text-align:center;transition:min-height .18s ease,padding .18s ease,border-color .15s ease,background .15s ease}
     .drop-zone.is-dragging{border-color:var(--accent);background:var(--accent-soft)}
+    .drop-zone.is-compact{min-height:76px;padding:10px 12px}
+    .drop-zone.is-compact>div{display:flex;align-items:center;gap:10px;width:100%;min-width:0;text-align:left}
+    .drop-zone.is-compact .drop-icon{width:30px;height:30px;margin:0;flex:0 0 auto}
+    .drop-zone.is-compact .drop-title{font-size:13px;white-space:nowrap}
+    .drop-zone.is-compact .drop-note,.drop-zone.is-compact .limits{display:none}
+    .drop-zone.is-compact #chooseButton{margin-left:auto;flex:0 0 auto}
     .drop-icon{width:46px;height:46px;margin-bottom:10px;color:var(--accent)}
     .drop-title{margin:0;font-size:16px;font-weight:800}.drop-note{margin:5px 0 14px;color:var(--muted);font-size:12px}
     .button{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:40px;padding:8px 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface);cursor:pointer;font-weight:720;font-size:13px;transition:border-color .15s ease,background .15s ease,transform .05s ease}
@@ -163,6 +169,7 @@
     @media(max-width:640px){
       .main{padding:16px 12px 38px}.page-intro{display:block}.local-badge{margin-top:11px}.panel-body{padding:13px}.drop-zone{min-height:190px;padding:22px 14px}
       .frame-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.summary-bar{align-items:flex-start}.summary-actions{width:100%}.summary-actions .button{flex:1 1 auto}.summary-actions .sort-select{flex:1 1 150px;max-width:none}
+      .drop-zone.is-compact>div{flex-wrap:wrap}.drop-zone.is-compact .drop-title{flex:1 1 auto;min-width:130px;white-space:normal}.drop-zone.is-compact #chooseButton{margin-left:0}
       .timing-toolbar{grid-template-columns:1fr}.timing-controls{justify-content:flex-start}.preview-layout{grid-template-columns:1fr}.preview-stage{min-height:260px;padding:10px}.preview-canvas-wrap,.preview-canvas{max-height:48vh}
       .gif-layout{grid-template-columns:1fr}.gif-option-grid{grid-template-columns:1fr 1fr}.gif-result-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.gif-result-preview{min-height:220px}.gif-create-row{align-items:stretch}.gif-create-row .button{min-height:44px}
       .next-panel{grid-template-columns:1fr}.future-button{width:100%}.build-grid{grid-template-columns:1fr}
@@ -450,12 +457,84 @@
           </div>
         </div>
       </div>
+    </section>
+
+    <section class="panel" aria-labelledby="webpHeading">
+      <div class="panel-head">
+        <div>
+          <h3 id="webpHeading" data-i18n="webpHeading">Animated WebPを書き出す</h3>
+          <p data-i18n="webpHeadingNote">写真や色数の多い画像を、品質・Lossless・Effortを指定してWebPへ変換します。</p>
+        </div>
+      </div>
+      <div class="panel-body">
+        <div class="gif-layout">
+          <div class="gif-settings">
+            <div class="gif-option-grid">
+              <label class="output-field">
+                <span class="output-label" data-i18n="webpQualityLabel">品質</span>
+                <input class="size-input" id="webpQuality" type="number" min="1" max="100" step="1" value="80" inputmode="numeric">
+              </label>
+              <label class="output-field">
+                <span class="output-label" data-i18n="webpEffortLabel">Effort</span>
+                <select class="output-select" id="webpEffort">
+                  <option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option>
+                  <option value="4" selected>4</option><option value="5">5</option><option value="6">6</option>
+                </select>
+              </label>
+            </div>
+            <div class="gif-option-grid">
+              <label class="gif-switch">
+                <span data-i18n="webpLosslessLabel">Lossless</span>
+                <input id="webpLossless" type="checkbox">
+              </label>
+              <label class="output-field">
+                <span class="output-label" data-i18n="webpLoopLabel">ループ</span>
+                <select class="output-select" id="webpLoopMode">
+                  <option value="infinite" data-i18n="webpLoopInfinite">繰り返す</option>
+                  <option value="once" data-i18n="webpLoopOnce">1回だけ</option>
+                </select>
+              </label>
+            </div>
+            <label class="output-field">
+              <span class="output-label" data-i18n="outputFilenameLabel">出力ファイル名</span>
+              <span class="filename-control">
+                <input class="filename-input" id="webpOutputFilename" type="text" value="frame-animation" maxlength="120" autocomplete="off" spellcheck="false">
+                <span class="filename-extension">.webp</span>
+              </span>
+            </label>
+            <p class="gif-note" data-i18n="webpNote">WebPはフルカラーとAlphaに対応します。Losslessや高いEffortは処理時間・ファイル容量が増える場合があります。</p>
+            <div class="gif-create-row">
+              <button class="button primary" id="createWebpButton" type="button" disabled data-i18n="createWebp">WebPを作成</button>
+              <button class="button" id="cancelWebpButton" type="button" hidden data-i18n="cancelWebp">キャンセル</button>
+            </div>
+            <div class="gif-progress-wrap" id="webpProgressWrap" hidden aria-live="polite">
+              <progress class="gif-progress" id="webpProgress" max="1" value="0"></progress>
+              <span class="gif-progress-text" id="webpProgressText"></span>
+            </div>
+          </div>
+
+          <div class="gif-result">
+            <div class="gif-result-empty" id="webpResultEmpty" data-i18n="webpResultEmpty">WebPを作成すると、ここで実際の生成ファイルを確認できます。</div>
+            <div class="gif-result-card" id="webpResultCard" hidden>
+              <div class="gif-result-preview"><img id="webpResultImage" alt="" data-i18n-aria-label="webpResultPreviewLabel"></div>
+              <div class="gif-result-stats">
+                <div class="gif-result-stat"><span data-i18n="gifResultSizeLabel">Canvas</span><strong id="webpResultDimensions">—</strong></div>
+                <div class="gif-result-stat"><span data-i18n="gifResultFramesLabel">フレーム</span><strong id="webpResultFrames">—</strong></div>
+                <div class="gif-result-stat"><span data-i18n="gifResultDurationLabel">再生時間</span><strong id="webpResultDuration">—</strong></div>
+                <div class="gif-result-stat"><span data-i18n="gifResultBytesLabel">ファイル容量</span><strong id="webpResultBytes">—</strong></div>
+              </div>
+              <div class="gif-result-actions">
+                <button class="button primary" id="saveWebpButton" type="button" disabled data-i18n="saveWebp">WebPを保存</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
       <div class="next-panel">
         <div>
-          <strong data-i18n="nextTitle">次の段階: Animated WebP出力</strong>
-          <span data-i18n="nextBody">v0.6.0で写真向けのAnimated WebPを書き出せるようにします。</span>
+          <strong data-i18n="nextTitle">次の段階: 再生順とワークフロー改善</strong>
+          <span data-i18n="nextBody">v0.7.0でReverse / Ping-pong、ループ回数、クリップボード貼り付けなどを追加します。</span>
         </div>
-        <button class="button future-button" type="button" disabled data-i18n="webpFuture">WebPは次の段階</button>
       </div>
     </section>
 
@@ -486,7 +565,7 @@
         <ol>
           <li data-i18n="helpHow1">JPEG・PNG・静止WebPを複数選択するか、画面へドロップします。</li>
           <li data-i18n="helpHow2">順番を整え、各カードの表示時間または全フレーム一括設定を調整します。</li>
-          <li data-i18n="helpHow3">Canvas設定を確認し、色数・Dithering・ループを選んでGIFを作成します。生成後は実ファイルを確認して保存します。</li>
+          <li data-i18n="helpHow3">Canvas設定を確認し、GIFまたはWebPの設定を選んで作成します。生成後は実ファイルを確認して保存します。</li>
         </ol>
         <h3 data-i18n="helpFormatsTitle">対応形式</h3>
         <p data-i18n="helpFormatsBody">JPEG / JPG、PNG、静止WebPに対応します。Animated WebP、GIF、動画、HEIC等は現在対象外です。</p>
@@ -536,33 +615,66 @@
 
       // Generic embedded-asset API retained from the template contract.
       const StandaloneAssets = (() => {
-        const records = new Map((EMBEDDED_ASSETS.assets || []).map(asset => [asset.id, asset]));
-        const urls = new Map();
-        function base64Bytes(base64) {
+        const dependencies = EMBEDDED_ASSETS.dependencies || {};
+        const urls = new Set();
+        const byteCache = new Map();
+
+        function decodeBase64Bytes(base64) {
           const raw = atob(base64 || '');
           const bytes = new Uint8Array(raw.length);
           for (let i = 0; i < raw.length; i += 1) bytes[i] = raw.charCodeAt(i);
           return bytes;
         }
-        async function bytesAsync(id) {
-          const record = records.get(id);
-          if (!record) throw new Error(`Unknown embedded asset: ${id}`);
-          const stored = base64Bytes(record.base64);
-          if (record.compression !== 'gzip') return stored;
+
+        function getAsset(dependencyId, assetKey) {
+          const asset = dependencies?.[dependencyId]?.assets?.[assetKey];
+          if (!asset) throw new Error(`Unknown embedded asset: ${dependencyId}/${assetKey}`);
+          return asset;
+        }
+
+        async function inflateAsset(asset) {
+          const stored = decodeBase64Bytes(asset.base64);
+          if (!asset.compression || asset.compression === 'none') return stored;
+          if (asset.compression !== 'gzip') throw new Error(`Unsupported embedded compression: ${asset.compression}`);
           if (typeof DecompressionStream !== 'function') throw new Error('This browser cannot inflate embedded gzip assets.');
           const stream = new Blob([stored]).stream().pipeThrough(new DecompressionStream('gzip'));
-          return new Uint8Array(await new Response(stream).arrayBuffer());
+          const expanded = new Uint8Array(await new Response(stream).arrayBuffer());
+          if (Number.isFinite(asset.originalBytes) && expanded.byteLength !== asset.originalBytes) {
+            throw new Error(`Embedded asset size mismatch: expected ${asset.originalBytes}, got ${expanded.byteLength}`);
+          }
+          return expanded;
         }
-        async function blobUrlAsync(id) {
-          if (urls.has(id)) return urls.get(id);
-          const record = records.get(id);
-          const bytes = await bytesAsync(id);
-          const url = URL.createObjectURL(new Blob([bytes], { type: record?.mime || 'application/octet-stream' }));
-          urls.set(id, url);
+
+        async function bytesAsync(dependencyId, assetKey) {
+          const cacheKey = `${dependencyId}/${assetKey}`;
+          if (!byteCache.has(cacheKey)) byteCache.set(cacheKey, inflateAsset(getAsset(dependencyId, assetKey)));
+          return new Uint8Array(await byteCache.get(cacheKey));
+        }
+
+        async function textAsync(dependencyId, assetKey) {
+          return new TextDecoder().decode(await bytesAsync(dependencyId, assetKey));
+        }
+
+        async function blobUrlAsync(dependencyId, assetKey) {
+          const asset = getAsset(dependencyId, assetKey);
+          const url = URL.createObjectURL(new Blob([await bytesAsync(dependencyId, assetKey)], { type: asset.mime || 'application/octet-stream' }));
+          urls.add(url);
           return url;
         }
-        function revokeAll() { for (const url of urls.values()) URL.revokeObjectURL(url); urls.clear(); }
-        return Object.freeze({ bytesAsync, blobUrlAsync, revokeAll });
+
+        function revoke(url) {
+          if (!url) return;
+          URL.revokeObjectURL(url);
+          urls.delete(url);
+        }
+
+        function revokeAll() {
+          for (const url of urls) URL.revokeObjectURL(url);
+          urls.clear();
+          byteCache.clear();
+        }
+
+        return Object.freeze({ bytesAsync, textAsync, blobUrlAsync, revoke, revokeAll });
       })();
       window.StandaloneAssets = StandaloneAssets;
 
@@ -588,9 +700,10 @@
           previewHeading:'アニメーションプレビュー', previewNote:'出力CanvasへFit / Fillした状態で、各フレームの表示時間どおりに確認します。', previewEmpty:'画像を追加すると、ここで出力Canvasとアニメーションを確認できます。', previewFrameLabel:'フレーム', previewTimeLabel:'再生位置', previewRestart:'最初から', previewPrevious:'前のフレーム', previewPlay:'再生 / 一時停止', previewNext:'次のフレーム', previewHelp:'プレビューは軽量画像を使いますが、Canvasサイズ・Fit / Fill・背景は最終出力と同じ計算を使います。',
           outputSettingsTitle:'出力Canvas', outputSettingsBody:'1枚目の縦横比を基準にサイズをそろえます。カスタムでは幅・高さを個別指定できます。', canvasSizeLabel:'Canvasサイズ', canvasAuto:'自動（長辺最大720px）', canvas480:'長辺480px', canvas720:'長辺720px', canvas1080:'長辺1080px', canvasOriginal:'1枚目の元サイズ相当', canvasCustom:'カスタム', canvasWidthLabel:'Canvas幅', canvasHeightLabel:'Canvas高さ', placementLabel:'画像の配置', fit:'収める', fill:'切り抜く', backgroundLabel:'背景', backgroundTransparent:'透明', backgroundWhite:'白', backgroundBlack:'黒', backgroundCustom:'カスタム色', backgroundColorLabel:'背景色', previewCanvasLabel:'正規化されたアニメーションプレビュー', resolvedCanvas:'実際のCanvas',
           gifHeading:'Animated GIFを書き出す', gifHeadingNote:'Canvas設定とフレーム時間を使い、GIFをこのブラウザ内で生成します。', gifColorsLabel:'色数', gifLoopLabel:'ループ', gifLoopInfinite:'繰り返す', gifLoopOnce:'1回だけ', gifDitherLabel:'Dithering', outputFilenameLabel:'出力ファイル名', gifLimitNote:'GIFは最大256色・1bit透明です。写真ではDitheringを有効にすると階調が自然になる場合があります。', createGif:'GIFを作成', cancelGif:'キャンセル', gifResultEmpty:'GIFを作成すると、ここで実際の生成ファイルを確認できます。', gifResultPreviewLabel:'生成したGIFのプレビュー', gifResultSizeLabel:'Canvas', gifResultFramesLabel:'フレーム', gifResultDurationLabel:'再生時間', gifResultBytesLabel:'ファイル容量', saveGif:'GIFを保存', gifPreparing:'フレーム {current} / {total} を準備しています…', gifEncoding:'フレーム {current} / {total} をGIFへ変換しています…', gifFinishing:'GIFを仕上げています…', gifDone:'GIFを作成しました', gifSaved:'GIFを保存しました', gifCancelled:'GIF作成をキャンセルしました', gifFailed:'GIFを作成できませんでした', gifStale:'設定が変更されました。もう一度GIFを作成してください。',
-          nextTitle:'次の段階: Animated WebP出力', nextBody:'v0.6.0で写真向けのAnimated WebPを書き出せるようにします。', webpFuture:'WebPは次の段階', createAnimation:'アニメーションを作成',
+          webpHeading:'Animated WebPを書き出す', webpHeadingNote:'写真や色数の多い画像を、品質・Lossless・Effortを指定してWebPへ変換します。', webpQualityLabel:'品質', webpEffortLabel:'Effort', webpLosslessLabel:'Lossless', webpLoopLabel:'ループ', webpLoopInfinite:'繰り返す', webpLoopOnce:'1回だけ', webpNote:'WebPはフルカラーとAlphaに対応します。Losslessや高いEffortは処理時間・ファイル容量が増える場合があります。', createWebp:'WebPを作成', cancelWebp:'キャンセル', webpResultEmpty:'WebPを作成すると、ここで実際の生成ファイルを確認できます。', webpResultPreviewLabel:'生成したAnimated WebPのプレビュー', saveWebp:'WebPを保存', webpPreparing:'フレーム {current} / {total} を準備しています…', webpEncoding:'フレーム {current} / {total} をWebPへ変換しています…', webpFinishing:'Animated WebPを仕上げています…', webpDone:'WebPを作成しました', webpSaved:'WebPを保存しました', webpCancelled:'WebP作成をキャンセルしました', webpFailed:'WebPを作成できませんでした', webpStale:'設定が変更されました。もう一度WebPを作成してください。',
+          nextTitle:'次の段階: 再生順とワークフロー改善', nextBody:'v0.7.0でReverse / Ping-pong、ループ回数、クリップボード貼り付けなどを追加します。', createAnimation:'アニメーションを作成',
           buildInfo:'ビルド情報', appVersion:'アプリバージョン', builtAt:'生成日時', dependencies:'内包依存', footer:'画像はこの端末内で処理されます',
-          help:'ヘルプ', close:'閉じる', helpTitle:'使い方と注意事項', helpHowTitle:'基本操作', helpHow1:'JPEG・PNG・静止WebPを複数選択するか、画面へドロップします。', helpHow2:'順番と表示時間を整えます。', helpHow3:'Canvas設定を確認し、色数・Dithering・ループを選んでGIFを作成します。生成後は実ファイルを確認して保存します。',
+          help:'ヘルプ', close:'閉じる', helpTitle:'使い方と注意事項', helpHowTitle:'基本操作', helpHow1:'JPEG・PNG・静止WebPを複数選択するか、画面へドロップします。', helpHow2:'順番と表示時間を整えます。', helpHow3:'Canvas設定を確認し、GIFまたはWebPの設定を選んで作成します。生成後は実ファイルを確認して保存します。',
           helpFormatsTitle:'対応形式', helpFormatsBody:'JPEG / JPG、PNG、静止WebPに対応します。Animated WebP、GIF、動画、HEIC等は現在対象外です。', helpLimitsTitle:'上限', helpLimitsBody:'最大200枚、1ファイル50 MiB、読み込み済み元ファイル合計500 MiB、1画像50メガピクセルです。表示時間は1フレーム20〜10,000 ms、Canvasは16〜4096pxです。',
           helpPrivacyTitle:'プライバシー', helpPrivacyBody:'選択した画像はブラウザ内だけで読み込みます。このアプリは画像を外部サーバーへ送信せず、Analyticsや外部APIも使用しません。', helpStorageTitle:'データ保持', helpStorageBody:'画像自体はブラウザストレージへ自動保存しません。ページを閉じると作業画像は破棄されます。',
           confirmTitle:'確認', cancel:'キャンセル', clearConfirmTitle:'すべての画像を消去しますか？', clearConfirmBody:'追加した画像とサムネイルをこのページから消去します。元ファイルは変更されません。', clearConfirmAction:'すべて消去',
@@ -610,9 +723,10 @@
           previewHeading:'Animation preview', previewNote:'Preview each frame after applying the output canvas, Fit / Fill, and background settings.', previewEmpty:'Add images to preview the normalized output canvas here.', previewFrameLabel:'Frame', previewTimeLabel:'Playback position', previewRestart:'Restart', previewPrevious:'Previous frame', previewPlay:'Play / pause', previewNext:'Next frame', previewHelp:'The preview uses lightweight image data, but canvas size, Fit / Fill, and background use the same geometry as final output.',
           outputSettingsTitle:'Output canvas', outputSettingsBody:'Preset sizes keep the first frame aspect ratio. Custom size lets you set width and height independently.', canvasSizeLabel:'Canvas size', canvasAuto:'Auto (long edge up to 720px)', canvas480:'480px long edge', canvas720:'720px long edge', canvas1080:'1080px long edge', canvasOriginal:'First frame original equivalent', canvasCustom:'Custom', canvasWidthLabel:'Canvas width', canvasHeightLabel:'Canvas height', placementLabel:'Image placement', fit:'Fit', fill:'Fill', backgroundLabel:'Background', backgroundTransparent:'Transparent', backgroundWhite:'White', backgroundBlack:'Black', backgroundCustom:'Custom color', backgroundColorLabel:'Background color', previewCanvasLabel:'Normalized animation preview', resolvedCanvas:'Resolved canvas',
           gifHeading:'Export Animated GIF', gifHeadingNote:'Create a GIF locally using the current canvas settings and frame timing.', gifColorsLabel:'Colors', gifLoopLabel:'Loop', gifLoopInfinite:'Repeat', gifLoopOnce:'Play once', gifDitherLabel:'Dithering', outputFilenameLabel:'Output filename', gifLimitNote:'GIF is limited to 256 colors and 1-bit transparency. Dithering can make gradients look more natural in photographs.', createGif:'Create GIF', cancelGif:'Cancel', gifResultEmpty:'Create a GIF to review the actual generated file here.', gifResultPreviewLabel:'Generated GIF preview', gifResultSizeLabel:'Canvas', gifResultFramesLabel:'Frames', gifResultDurationLabel:'Duration', gifResultBytesLabel:'File size', saveGif:'Save GIF', gifPreparing:'Preparing frame {current} / {total}…', gifEncoding:'Encoding frame {current} / {total}…', gifFinishing:'Finishing GIF…', gifDone:'GIF created', gifSaved:'GIF saved', gifCancelled:'GIF creation cancelled', gifFailed:'Could not create GIF', gifStale:'Settings changed. Create the GIF again.',
-          nextTitle:'Next: Animated WebP export', nextBody:'v0.6.0 will add Animated WebP for full-color photographic output.', webpFuture:'WebP comes next', createAnimation:'Create animation',
+          webpHeading:'Export Animated WebP', webpHeadingNote:'Encode full-color photographic output with quality, Lossless, and Effort controls.', webpQualityLabel:'Quality', webpEffortLabel:'Effort', webpLosslessLabel:'Lossless', webpLoopLabel:'Loop', webpLoopInfinite:'Repeat', webpLoopOnce:'Play once', webpNote:'WebP supports full color and alpha. Lossless mode and higher Effort may take longer or produce larger files.', createWebp:'Create WebP', cancelWebp:'Cancel', webpResultEmpty:'Create a WebP to review the actual generated file here.', webpResultPreviewLabel:'Generated Animated WebP preview', saveWebp:'Save WebP', webpPreparing:'Preparing frame {current} / {total}…', webpEncoding:'Encoding frame {current} / {total}…', webpFinishing:'Finishing Animated WebP…', webpDone:'WebP created', webpSaved:'WebP saved', webpCancelled:'WebP creation cancelled', webpFailed:'Could not create WebP', webpStale:'Settings changed. Create the WebP again.',
+          nextTitle:'Next: playback order and workflow polish', nextBody:'v0.7.0 will add Reverse / Ping-pong, custom loop counts, clipboard paste, and related workflow polish.', createAnimation:'Create animation',
           buildInfo:'Build information', appVersion:'App version', builtAt:'Built at', dependencies:'Embedded dependencies', footer:'Images are processed on this device',
-          help:'Help', close:'Close', helpTitle:'How to use & notes', helpHowTitle:'Basic workflow', helpHow1:'Choose multiple JPEG, PNG, or still WebP images, or drop them onto the page.', helpHow2:'Arrange the sequence and adjust timing.', helpHow3:'Review the canvas, choose colors, dithering, and loop behavior, then create the GIF and inspect the actual generated file before saving.',
+          help:'Help', close:'Close', helpTitle:'How to use & notes', helpHowTitle:'Basic workflow', helpHow1:'Choose multiple JPEG, PNG, or still WebP images, or drop them onto the page.', helpHow2:'Arrange the sequence and adjust timing.', helpHow3:'Review the canvas, choose GIF or WebP settings, generate the animation, and inspect the actual file before saving.',
           helpFormatsTitle:'Supported formats', helpFormatsBody:'JPEG / JPG, PNG, and still WebP are supported. Animated WebP, GIF, video, HEIC, and other formats are not supported yet.', helpLimitsTitle:'Limits', helpLimitsBody:'Up to 200 images, 50 MiB per file, 500 MiB total source files, 50 megapixels per image, 20–10,000 ms per frame, and a 16–4096 px output canvas.',
           helpPrivacyTitle:'Privacy', helpPrivacyBody:'Selected images are read only in your browser. This app does not upload images or use analytics or external APIs.', helpStorageTitle:'Data retention', helpStorageBody:'Images are not automatically stored in browser storage. Closing the page discards the working images.',
           confirmTitle:'Confirm', cancel:'Cancel', clearConfirmTitle:'Clear all images?', clearConfirmBody:'This removes the imported images and thumbnails from this page. Your original files are not changed.', clearConfirmAction:'Clear all',
@@ -663,6 +777,19 @@
           resultUrl: '',
           resultMeta: null,
           stale: false
+        },
+        webp: {
+          busy: false,
+          generation: 0,
+          worker: null,
+          workerUrl: '',
+          moduleUrl: '',
+          requestId: 0,
+          pending: new Set(),
+          resultBlob: null,
+          resultUrl: '',
+          resultMeta: null,
+          stale: false
         }
       };
       let dragSession = null;
@@ -694,6 +821,15 @@
       const gifProgressText = $('#gifProgressText');
       const gifResultImage = $('#gifResultImage');
       const outputFilename = $('#outputFilename');
+      const webpQuality = $('#webpQuality');
+      const webpEffort = $('#webpEffort');
+      const webpLossless = $('#webpLossless');
+      const webpLoopMode = $('#webpLoopMode');
+      const webpOutputFilename = $('#webpOutputFilename');
+      const webpProgress = $('#webpProgress');
+      const webpProgressWrap = $('#webpProgressWrap');
+      const webpProgressText = $('#webpProgressText');
+      const webpResultImage = $('#webpResultImage');
 
       function readStorage(key) { try { return localStorage.getItem(key); } catch { return null; } }
       function writeStorage(key, value) { try { localStorage.setItem(key, value); } catch { /* language persistence is optional */ } }
@@ -706,7 +842,7 @@
         for (const [name, replacement] of Object.entries(vars)) value = value.replaceAll(`{${name}}`, String(replacement));
         return value;
       }
-      function isBusy() { return state.importBusy || state.gif.busy; }
+      function isBusy() { return state.importBusy || state.gif.busy || state.webp.busy; }
       function makeId() {
         return crypto.randomUUID ? crypto.randomUUID() : `${Date.now()}-${Math.random().toString(16).slice(2)}`;
       }
@@ -1294,7 +1430,7 @@
 
       function sanitizeFilenameBase(value) {
         const cleaned = String(value || '').trim().replace(/[\\/:*?"<>|\u0000-\u001f]/g, '-').replace(/\.+$/g, '').trim();
-        let base = cleaned.replace(/\.gif$/i, '') || 'frame-animation';
+        let base = cleaned.replace(/\.(gif|webp)$/i, '') || 'frame-animation';
         if (/^(con|prn|aux|nul|com[1-9]|lpt[1-9])$/i.test(base)) base = `${base}-file`;
         return base.slice(0, 120);
       }
@@ -1467,6 +1603,475 @@
         AppToast.show({ message: t('gifSaved'), tone: 'success' });
       }
 
+      function webpWorkerMain() {
+        'use strict';
+
+        let webpModule = null;
+        let animation = null;
+
+        function ascii(bytes, offset, length) {
+          let value = '';
+          for (let index = 0; index < length; index += 1) value += String.fromCharCode(bytes[offset + index]);
+          return value;
+        }
+
+        function u32le(bytes, offset) {
+          return (bytes[offset] | (bytes[offset + 1] << 8) | (bytes[offset + 2] << 16) | (bytes[offset + 3] << 24)) >>> 0;
+        }
+
+        function putU16(bytes, offset, value) {
+          bytes[offset] = value & 255;
+          bytes[offset + 1] = (value >>> 8) & 255;
+        }
+
+        function putU24(bytes, offset, value) {
+          bytes[offset] = value & 255;
+          bytes[offset + 1] = (value >>> 8) & 255;
+          bytes[offset + 2] = (value >>> 16) & 255;
+        }
+
+        function putU32(bytes, offset, value) {
+          bytes[offset] = value & 255;
+          bytes[offset + 1] = (value >>> 8) & 255;
+          bytes[offset + 2] = (value >>> 16) & 255;
+          bytes[offset + 3] = (value >>> 24) & 255;
+        }
+
+        function tagBytes(tag) {
+          return Uint8Array.from([tag.charCodeAt(0), tag.charCodeAt(1), tag.charCodeAt(2), tag.charCodeAt(3)]);
+        }
+
+        function concat(parts) {
+          let length = 0;
+          for (const part of parts) length += part.byteLength;
+          const output = new Uint8Array(length);
+          let offset = 0;
+          for (const part of parts) {
+            output.set(part, offset);
+            offset += part.byteLength;
+          }
+          return output;
+        }
+
+        function makeChunk(tag, payload) {
+          const padded = payload.byteLength + (payload.byteLength & 1);
+          const output = new Uint8Array(8 + padded);
+          output.set(tagBytes(tag), 0);
+          putU32(output, 4, payload.byteLength);
+          output.set(payload, 8);
+          return output;
+        }
+
+        function extractWebpFrameChunks(input) {
+          const bytes = input instanceof Uint8Array ? input : new Uint8Array(input);
+          if (bytes.byteLength < 20 || ascii(bytes, 0, 4) !== 'RIFF' || ascii(bytes, 8, 4) !== 'WEBP') {
+            throw new Error('Static WebP encoder returned an invalid RIFF/WebP file');
+          }
+          const chunks = [];
+          let offset = 12;
+          while (offset + 8 <= bytes.byteLength) {
+            const tag = ascii(bytes, offset, 4);
+            const size = u32le(bytes, offset + 4);
+            const total = 8 + size + (size & 1);
+            if (offset + total > bytes.byteLength) throw new Error('Static WebP chunk is truncated');
+            if (tag === 'ALPH' || tag === 'VP8 ' || tag === 'VP8L') chunks.push(bytes.slice(offset, offset + total));
+            offset += total;
+          }
+          if (!chunks.some(chunk => {
+            const tag = ascii(chunk, 0, 4);
+            return tag === 'VP8 ' || tag === 'VP8L';
+          })) throw new Error('Static WebP frame has no image payload');
+          return concat(chunks);
+        }
+
+        function defaultConfig(options) {
+          return {
+            lossless: options.lossless ? 1 : 0,
+            quality: options.quality,
+            method: options.method,
+            image_hint: 0,
+            target_size: 0,
+            target_PSNR: 0,
+            segments: 4,
+            sns_strength: 50,
+            filter_strength: 60,
+            filter_sharpness: 0,
+            filter_type: 1,
+            autofilter: 0,
+            alpha_compression: 1,
+            alpha_filtering: 1,
+            alpha_quality: 100,
+            pass: 1,
+            show_compressed: 0,
+            preprocessing: 0,
+            partitions: 0,
+            partition_limit: 0,
+            emulate_jpeg_size: 0,
+            low_memory: 0,
+            near_lossless: 100,
+            exact: 1,
+            use_delta_palette: 0,
+            use_sharp_yuv: 0
+          };
+        }
+
+        function makeAnimatedWebp() {
+          if (!animation || !animation.frames.length) throw new Error('No WebP frames were encoded');
+          const vp8x = new Uint8Array(10);
+          vp8x[0] = 0x02 | (animation.alpha ? 0x10 : 0);
+          putU24(vp8x, 4, animation.width - 1);
+          putU24(vp8x, 7, animation.height - 1);
+
+          const anim = new Uint8Array(6);
+          putU32(anim, 0, animation.background >>> 0);
+          putU16(anim, 4, animation.repeat);
+
+          const body = [makeChunk('VP8X', vp8x), makeChunk('ANIM', anim)];
+          for (const frame of animation.frames) {
+            const payload = new Uint8Array(16 + frame.data.byteLength);
+            putU24(payload, 0, 0);
+            putU24(payload, 3, 0);
+            putU24(payload, 6, animation.width - 1);
+            putU24(payload, 9, animation.height - 1);
+            putU24(payload, 12, Math.max(1, Math.min(0xffffff, Math.round(frame.duration))));
+            payload[15] = 0x02;
+            payload.set(frame.data, 16);
+            body.push(makeChunk('ANMF', payload));
+          }
+
+          const riffPayload = concat([tagBytes('WEBP'), ...body]);
+          if (riffPayload.byteLength > 0xffffffff) throw new Error('Animated WebP is too large for RIFF');
+          const output = new Uint8Array(8 + riffPayload.byteLength);
+          output.set(tagBytes('RIFF'), 0);
+          putU32(output, 4, riffPayload.byteLength);
+          output.set(riffPayload, 8);
+          return output;
+        }
+
+        self.onmessage = async event => {
+          const message = event.data || {};
+          const id = message.id;
+          try {
+            if (message.type === 'init') {
+              const imported = await import(message.moduleUrl);
+              const wasmBinary = new Uint8Array(message.wasmBuffer);
+              webpModule = await imported.default({
+                wasmBinary,
+                noInitialRun: true,
+                locateFile: path => path
+              });
+              animation = {
+                width: message.width,
+                height: message.height,
+                alpha: Boolean(message.options.alpha),
+                background: message.options.background >>> 0,
+                repeat: message.options.repeat,
+                config: defaultConfig(message.options),
+                frames: []
+              };
+              self.postMessage({ id, ok: true });
+              return;
+            }
+
+            if (!webpModule || !animation) throw new Error('WebP encoder is not initialized');
+
+            if (message.type === 'frame') {
+              const rgba = new Uint8Array(message.buffer);
+              const result = webpModule.encode(rgba, animation.width, animation.height, animation.config);
+              if (!result) throw new Error('Static WebP encoding failed');
+              const frameData = extractWebpFrameChunks(result);
+              animation.frames.push({ duration: message.duration, data: frameData });
+              self.postMessage({ id, ok: true, encodedBytes: frameData.byteLength });
+              return;
+            }
+
+            if (message.type === 'finish') {
+              const output = makeAnimatedWebp();
+              webpModule = null;
+              animation = null;
+              self.postMessage({ id, ok: true, buffer: output.buffer }, [output.buffer]);
+              return;
+            }
+
+            throw new Error('Unknown WebP worker message');
+          } catch (error) {
+            self.postMessage({ id, ok: false, error: error?.message || String(error) });
+          }
+        };
+      }
+
+      async function createWebpWorker() {
+        const moduleUrl = await StandaloneAssets.blobUrlAsync('jsquash-webp', 'encoder-js');
+        state.webp.moduleUrl = moduleUrl;
+        let workerUrl = '';
+        try {
+          const wasmBytes = await StandaloneAssets.bytesAsync('jsquash-webp', 'encoder-wasm');
+          const workerSource = `(${webpWorkerMain.toString()})();`;
+          workerUrl = URL.createObjectURL(new Blob([workerSource], { type: 'text/javascript' }));
+          state.webp.workerUrl = workerUrl;
+          const worker = new Worker(workerUrl, { type: 'module' });
+          return { worker, moduleUrl, wasmBuffer: wasmBytes.slice().buffer };
+        } catch (error) {
+          if (workerUrl) URL.revokeObjectURL(workerUrl);
+          state.webp.workerUrl = '';
+          StandaloneAssets.revoke(moduleUrl);
+          state.webp.moduleUrl = '';
+          throw error;
+        }
+      }
+
+      function disposeWebpWorker(worker) {
+        worker?.terminate();
+        if (state.webp.workerUrl) {
+          URL.revokeObjectURL(state.webp.workerUrl);
+          state.webp.workerUrl = '';
+        }
+        if (state.webp.moduleUrl) {
+          StandaloneAssets.revoke(state.webp.moduleUrl);
+          state.webp.moduleUrl = '';
+        }
+      }
+
+      function webpWorkerCall(worker, type, payload = {}, transfer = []) {
+        const id = ++state.webp.requestId;
+        return new Promise((resolve, reject) => {
+          let settled = false;
+          const pending = {
+            reject(error) {
+              if (settled) return;
+              settled = true;
+              cleanup();
+              reject(error);
+            }
+          };
+
+          function cleanup() {
+            worker.removeEventListener('message', onMessage);
+            worker.removeEventListener('error', onError);
+            state.webp.pending.delete(pending);
+          }
+
+          function onMessage(event) {
+            if (event.data?.id !== id || settled) return;
+            settled = true;
+            cleanup();
+            if (event.data.ok === false) reject(new Error(event.data.error || 'WebP worker failed'));
+            else resolve(event.data);
+          }
+
+          function onError(event) {
+            if (settled) return;
+            settled = true;
+            cleanup();
+            reject(new Error(event.message || 'WebP worker failed'));
+          }
+
+          state.webp.pending.add(pending);
+          worker.addEventListener('message', onMessage);
+          worker.addEventListener('error', onError);
+          worker.postMessage({ id, type, ...payload }, transfer);
+        });
+      }
+
+      function webpBackgroundBgra() {
+        const color = resolvedBackgroundColor();
+        if (!color) return 0;
+        const match = /^#([0-9a-f]{6})$/i.exec(color);
+        if (!match) return 0;
+        const value = Number.parseInt(match[1], 16);
+        const r = (value >>> 16) & 255;
+        const g = (value >>> 8) & 255;
+        const b = value & 255;
+        const a = 255;
+        return ((a << 24) | (r << 16) | (g << 8) | b) >>> 0;
+      }
+
+      function normalizeWebpQuality(value) {
+        const numeric = Math.round(Number(value));
+        if (!Number.isFinite(numeric)) return 80;
+        return Math.min(100, Math.max(1, numeric));
+      }
+
+      function clearWebpResult({ stale = false } = {}) {
+        const hadResult = Boolean(state.webp.resultUrl);
+        if (state.webp.resultUrl) URL.revokeObjectURL(state.webp.resultUrl);
+        state.webp.resultBlob = null;
+        state.webp.resultUrl = '';
+        state.webp.resultMeta = null;
+        state.webp.stale = Boolean(stale && hadResult);
+        webpResultImage.removeAttribute('src');
+        $('#webpResultCard').hidden = true;
+        $('#webpResultEmpty').hidden = false;
+        $('#saveWebpButton').disabled = true;
+      }
+
+      function invalidateWebpResult(options = {}) {
+        state.webp.generation += 1;
+        clearWebpResult(options);
+      }
+
+      function invalidateAnimationResults(options = {}) {
+        invalidateGifResult(options);
+        invalidateWebpResult(options);
+      }
+
+      function renderWebpResult() {
+        const meta = state.webp.resultMeta;
+        if (!state.webp.resultUrl || !meta) {
+          $('#webpResultCard').hidden = true;
+          $('#webpResultEmpty').hidden = false;
+          $('#webpResultEmpty').textContent = state.webp.stale ? t('webpStale') : t('webpResultEmpty');
+          $('#saveWebpButton').disabled = true;
+          return;
+        }
+        $('#webpResultEmpty').hidden = true;
+        $('#webpResultCard').hidden = false;
+        webpResultImage.src = state.webp.resultUrl;
+        $('#webpResultDimensions').textContent = `${meta.width} × ${meta.height} px`;
+        $('#webpResultFrames').textContent = String(meta.frames);
+        $('#webpResultDuration').textContent = formatSeconds(meta.duration);
+        $('#webpResultBytes').textContent = formatBytes(meta.bytes);
+        $('#saveWebpButton').disabled = false;
+      }
+
+      function setWebpBusy(busy) {
+        state.webp.busy = busy;
+        if (busy) {
+          pausePreview({ resetElapsed: true });
+          webpProgress.max = 1;
+          webpProgress.value = 0;
+          webpProgressText.textContent = '';
+        }
+        render();
+      }
+
+      function cancelWebp({ announce = true } = {}) {
+        if (!state.webp.busy) return;
+        state.webp.generation += 1;
+        const error = Object.assign(new Error('cancelled'), { code: 'cancelled' });
+        for (const pending of [...state.webp.pending]) pending.reject(error);
+        state.webp.pending.clear();
+        disposeWebpWorker(state.webp.worker);
+        state.webp.worker = null;
+        state.webp.busy = false;
+        webpProgressWrap.hidden = true;
+        webpProgress.value = 0;
+        webpProgressText.textContent = '';
+        render();
+        if (announce) AppToast.show({ message: t('webpCancelled') });
+      }
+
+      async function createWebp() {
+        if (isBusy() || !state.frames.length) return;
+        clearWebpResult();
+        pausePreview({ resetElapsed: true });
+
+        const generation = ++state.webp.generation;
+        const frames = state.frames.slice();
+        const size = resolvedCanvasSize();
+        const snapshot = {
+          width: size.width,
+          height: size.height,
+          placement: state.canvas.placement,
+          background: resolvedBackgroundColor()
+        };
+        const quality = normalizeWebpQuality(webpQuality.value);
+        webpQuality.value = String(quality);
+        const method = Math.min(6, Math.max(0, Number(webpEffort.value) || 0));
+        const lossless = webpLossless.checked;
+        const repeat = webpLoopMode.value === 'once' ? 1 : 0;
+        const total = frames.length;
+        const totalDuration = frames.reduce((sum, frame) => sum + (frame.duration || DEFAULT_FRAME_DURATION), 0);
+
+        let worker = null;
+        setWebpBusy(true);
+
+        try {
+          const created = await createWebpWorker();
+          worker = created.worker;
+          state.webp.worker = worker;
+          await webpWorkerCall(worker, 'init', {
+            moduleUrl: created.moduleUrl,
+            wasmBuffer: created.wasmBuffer,
+            width: snapshot.width,
+            height: snapshot.height,
+            options: {
+              quality,
+              method,
+              lossless,
+              alpha: state.canvas.backgroundMode === 'transparent',
+              background: webpBackgroundBgra(),
+              repeat
+            }
+          }, [created.wasmBuffer]);
+
+          for (let index = 0; index < frames.length; index += 1) {
+            if (generation !== state.webp.generation) throw Object.assign(new Error('cancelled'), { code: 'cancelled' });
+            webpProgress.value = index / Math.max(1, total);
+            webpProgressText.textContent = t('webpPreparing', { current: index + 1, total });
+            const imageData = await renderSourceFrameImageData(frames[index], snapshot);
+            if (generation !== state.webp.generation) throw Object.assign(new Error('cancelled'), { code: 'cancelled' });
+            webpProgressText.textContent = t('webpEncoding', { current: index + 1, total });
+            const buffer = imageData.data.buffer;
+            await webpWorkerCall(worker, 'frame', { buffer, duration: frames[index].duration || DEFAULT_FRAME_DURATION }, [buffer]);
+            webpProgress.value = (index + 1) / total;
+            await new Promise(resolve => setTimeout(resolve, 0));
+          }
+
+          webpProgressText.textContent = t('webpFinishing');
+          const result = await webpWorkerCall(worker, 'finish');
+          if (generation !== state.webp.generation) throw Object.assign(new Error('cancelled'), { code: 'cancelled' });
+
+          const blob = new Blob([result.buffer], { type: 'image/webp' });
+          const url = URL.createObjectURL(blob);
+          state.webp.resultBlob = blob;
+          state.webp.resultUrl = url;
+          state.webp.stale = false;
+          state.webp.resultMeta = {
+            width: snapshot.width,
+            height: snapshot.height,
+            frames: total,
+            duration: totalDuration,
+            bytes: blob.size,
+            quality,
+            lossless,
+            method
+          };
+          renderWebpResult();
+          AppToast.show({ message: t('webpDone'), tone: 'success' });
+        } catch (error) {
+          if (error?.code !== 'cancelled' && generation === state.webp.generation) {
+            console.error(error);
+            AppToast.show({ message: t('webpFailed'), tone: 'warning' });
+          }
+        } finally {
+          if (worker && state.webp.worker === worker) {
+            disposeWebpWorker(worker);
+            state.webp.worker = null;
+          } else if (!worker && (state.webp.workerUrl || state.webp.moduleUrl)) {
+            disposeWebpWorker(null);
+          }
+          if (generation === state.webp.generation) {
+            state.webp.busy = false;
+            webpProgressWrap.hidden = true;
+            render();
+          }
+        }
+      }
+
+      function saveWebp() {
+        if (!state.webp.resultBlob || !state.webp.resultUrl) return;
+        const base = sanitizeFilenameBase(webpOutputFilename.value);
+        webpOutputFilename.value = base;
+        const anchor = document.createElement('a');
+        anchor.href = state.webp.resultUrl;
+        anchor.download = `${base}.webp`;
+        document.body.append(anchor);
+        anchor.click();
+        anchor.remove();
+        AppToast.show({ message: t('webpSaved'), tone: 'success' });
+      }
+
       function elapsedBeforeFrame(index) {
         let elapsed = 0;
         for (let i = 0; i < Math.min(index, state.frames.length); i += 1) elapsed += state.frames[i].duration || DEFAULT_FRAME_DURATION;
@@ -1572,7 +2177,7 @@
       }
       function recordHistory(before, after, label) {
         if (sameSequence(before, after)) return false;
-        invalidateGifResult({ stale: true });
+        invalidateAnimationResults({ stale: true });
         pausePreview({ resetElapsed: true });
         pushHistory({ type: 'sequence', before: before.slice(), after: after.slice(), label });
         return true;
@@ -1585,7 +2190,7 @@
       }
       function recordTimingHistory(before, after, label) {
         if (sameTiming(before, after)) return false;
-        invalidateGifResult({ stale: true });
+        invalidateAnimationResults({ stale: true });
         pausePreview({ resetElapsed: true });
         pushHistory({ type: 'timing', before, after, label });
         return true;
@@ -1597,7 +2202,7 @@
         }
       }
       function applyHistorySide(entry, side) {
-        invalidateGifResult({ stale: true });
+        invalidateAnimationResults({ stale: true });
         pausePreview({ resetElapsed: true });
         if (entry.type === 'timing') applyTimingSnapshot(entry[side]);
         else state.frames = entry[side].slice();
@@ -1763,7 +2368,8 @@
       }
       function clearAllImmediately() {
         if (state.gif.busy) cancelGif({ announce: false });
-        invalidateGifResult();
+        if (state.webp.busy) cancelWebp({ announce: false });
+        invalidateAnimationResults();
         state.generation += 1;
         releaseAllFrameResources();
         state.frames = [];
@@ -2064,6 +2670,7 @@
         $('#totalSize').textContent = formatBytes(totalSourceBytes());
         $('#emptyState').hidden = state.frames.length > 0;
         frameGrid.hidden = state.frames.length === 0;
+        dropZone.classList.toggle('is-compact', state.frames.length > 0);
         const busy = isBusy();
         $('#chooseButton').disabled = busy;
         fileInput.disabled = busy;
@@ -2086,14 +2693,23 @@
         gifLoopMode.disabled = state.gif.busy;
         gifDither.disabled = state.gif.busy;
         outputFilename.disabled = state.gif.busy;
+        $('#createWebpButton').disabled = busy || state.frames.length === 0;
+        $('#cancelWebpButton').hidden = !state.webp.busy;
+        webpProgressWrap.hidden = !state.webp.busy;
+        webpQuality.disabled = state.webp.busy;
+        webpEffort.disabled = state.webp.busy;
+        webpLossless.disabled = state.webp.busy;
+        webpLoopMode.disabled = state.webp.busy;
+        webpOutputFilename.disabled = state.webp.busy;
         renderFrames();
         renderFailures();
         updateHistoryButtons();
         renderPreviewFrame();
         renderGifResult();
+        renderWebpResult();
       }
       function updateBusy(busy) {
-        const blocked = busy || state.gif.busy;
+        const blocked = busy || state.gif.busy || state.webp.busy;
         $('#chooseButton').disabled = blocked;
         fileInput.disabled = blocked;
         $('#addMoreButton').disabled = blocked || state.frames.length >= LIMITS.frames;
@@ -2243,7 +2859,7 @@
       canvasSizeMode.addEventListener('change', () => {
         state.canvas.sizeMode = canvasSizeMode.value;
         customSizeRow.hidden = state.canvas.sizeMode !== 'custom';
-        invalidateGifResult({ stale: true });
+        invalidateAnimationResults({ stale: true });
         renderPreviewFrame();
       });
       function commitCustomCanvasSize() {
@@ -2251,7 +2867,7 @@
         state.canvas.customHeight = normalizeCanvasDimension(canvasHeightInput.value, state.canvas.customHeight);
         canvasWidthInput.value = String(state.canvas.customWidth);
         canvasHeightInput.value = String(state.canvas.customHeight);
-        invalidateGifResult({ stale: true });
+        invalidateAnimationResults({ stale: true });
         renderPreviewFrame();
       }
       canvasWidthInput.addEventListener('change', commitCustomCanvasSize);
@@ -2259,20 +2875,20 @@
       document.querySelectorAll('[data-placement]').forEach(button => {
         button.addEventListener('click', () => {
           state.canvas.placement = button.dataset.placement === 'fill' ? 'fill' : 'fit';
-          invalidateGifResult({ stale: true });
+          invalidateAnimationResults({ stale: true });
           renderPreviewFrame();
         });
       });
       backgroundMode.addEventListener('change', () => {
         state.canvas.backgroundMode = backgroundMode.value;
         backgroundColor.disabled = state.canvas.backgroundMode !== 'custom';
-        invalidateGifResult({ stale: true });
+        invalidateAnimationResults({ stale: true });
         renderPreviewFrame();
       });
       backgroundColor.addEventListener('input', () => {
         state.canvas.customColor = backgroundColor.value;
         if (state.canvas.backgroundMode === 'custom') {
-          invalidateGifResult({ stale: true });
+          invalidateAnimationResults({ stale: true });
           renderPreviewFrame();
         }
       });
@@ -2284,6 +2900,17 @@
       $('#createGifButton').addEventListener('click', createGif);
       $('#cancelGifButton').addEventListener('click', () => cancelGif());
       $('#saveGifButton').addEventListener('click', saveGif);
+
+      for (const control of [webpQuality, webpEffort, webpLossless, webpLoopMode]) {
+        control.addEventListener('change', () => {
+          if (control === webpQuality) webpQuality.value = String(normalizeWebpQuality(webpQuality.value));
+          invalidateWebpResult({ stale: true });
+        });
+      }
+      webpOutputFilename.addEventListener('blur', () => { webpOutputFilename.value = sanitizeFilenameBase(webpOutputFilename.value); });
+      $('#createWebpButton').addEventListener('click', createWebp);
+      $('#cancelWebpButton').addEventListener('click', () => cancelWebp());
+      $('#saveWebpButton').addEventListener('click', saveWebp);
 
       sortSelect.addEventListener('change', () => {
         const direction = sortSelect.value;
@@ -2353,11 +2980,15 @@
         state.generation += 1;
         pausePreview({ resetElapsed: true });
         cancelGif({ announce: false });
+        cancelWebp({ announce: false });
         if (state.gif.workerUrl) {
           URL.revokeObjectURL(state.gif.workerUrl);
           state.gif.workerUrl = '';
         }
+        disposeWebpWorker(state.webp.worker);
+        state.webp.worker = null;
         clearGifResult();
+        clearWebpResult();
         releaseAllFrameResources();
         StandaloneAssets.revokeAll();
       }, { once:true });
@@ -2367,6 +2998,7 @@
       $('#builtAt').textContent = BUILD_MANIFEST.generatedAtUtc || '—';
       $('#dependencyCount').textContent = String(BUILD_MANIFEST.dependencies?.length || 0);
       outputFilename.value = 'frame-animation';
+      webpOutputFilename.value = 'frame-animation';
       applyLanguage();
     })();
   </script>

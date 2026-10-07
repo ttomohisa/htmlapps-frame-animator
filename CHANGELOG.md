@@ -6,6 +6,26 @@ The project uses Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-10-08
+
+### Added
+
+- Animated WebP export with per-frame millisecond durations.
+- Pinned `@jsquash/webp@1.5.0` / libwebp WASM assets embedded in the standalone HTML.
+- Quality 1–100, Lossless, Effort 0–6, infinite-loop, and play-once WebP settings.
+- Local RIFF/WebP animation muxing with `VP8X`, `ANIM`, and full-canvas `ANMF` chunks.
+- Generated Animated WebP preview, dimensions, frame count, duration, file size, cancellation, and local save.
+- Exact generated-worker validation for lossy/alpha and lossless WebP, including RIFF loop and per-frame duration fields.
+- User-supplied Frame Animator SVG as the canonical app icon and favicon.
+
+### Changed
+
+- The image drop area becomes compact after at least one image is loaded while remaining a working drop target and file-picker entry point.
+- The embedded-asset helper now follows the current template dependencyId / assetKey model.
+- Shared frame, timing, and canvas changes invalidate both GIF and WebP results.
+- CSP now permits embedded WebAssembly evaluation while retaining `connect-src 'none'`.
+- The next development milestone is playback-order and workflow polish.
+
 ## [0.5.0] - 2026-10-07
 
 ### Added
@@ -106,3 +126,4 @@ The project uses Semantic Versioning.
 ### Notes
 
 - v0.1.0 intentionally does not implement frame reordering, timing, animation preview, or GIF/WebP export yet. Those capabilities are staged in `DEVELOPMENT_PLAN.md`.
+

@@ -1,4 +1,31 @@
 {
   "$schema": "./schemas/dependencies.schema.json",
-  "dependencies": []
+  "dependencies": [
+    {
+      "id": "jsquash-webp",
+      "package": "@jsquash/webp",
+      "version": "1.5.0",
+      "license": "Apache-2.0",
+      "homepage": "https://github.com/jamsinclair/jSquash",
+      "assets": [
+        {
+          "key": "encoder-js",
+          "path": "codec/enc/webp_enc.js",
+          "mime": "text/javascript",
+          "stripSourceMapComment": true,
+          "compression": "gzip"
+        },
+        {
+          "key": "encoder-wasm",
+          "path": "codec/enc/webp_enc.wasm",
+          "mime": "application/wasm",
+          "compression": "gzip"
+        }
+      ],
+      "updates": {
+        "enabled": true,
+        "policy": "manual"
+      }
+    }
+  ]
 }
