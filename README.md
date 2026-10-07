@@ -2,7 +2,7 @@
 
 Frame Animator is a Browser Kitty utility for turning multiple local still images into an animated GIF or WebP without uploading the source images.
 
-> Current development version: **v0.7.0**. Image import, sequence editing, timing, canvas normalization, shared playback controls, Animated GIF export, and Animated WebP export are implemented.
+> Current development version: **v0.8.0**. The full image-to-animation workflow is implemented, with smartphone staging, performance cleanup, and failure recovery added in this milestone.
 
 ## Current features
 
@@ -52,6 +52,14 @@ Frame Animator is a Browser Kitty utility for turning multiple local still image
 - Format-aware filename handling: visible .gif / .webp suffix plus extension sanitization
 - Large initial image drop zone that becomes compact after images are loaded while remaining clickable and droppable
 - User-supplied Frame Animator SVG used for both the app icon and favicon
+- Smartphone-only Frames / Preview / Export staged navigation at 640 px and below
+- Safe-area-aware mobile layout and 44 px touch targets
+- 320 / 360 / 390 px responsive hardening, including single-column export options at narrow width
+- Lazy thumbnail decoding and prompt temporary-canvas release for large frame lists
+- Single-frame timing edits avoid rebuilding the entire frame-card DOM
+- Frame position semantics with `aria-posinset` / `aria-setsize`
+- Preview automatically pauses when the document becomes hidden
+- Recoverable GIF/WebP failure states that keep project data intact and allow retry without reload
 - Japanese and English in the same HTML; the language switch uses compact EN / JA labels
 - Responsive desktop and smartphone layout
 - No runtime CDN, analytics, telemetry, or external API
@@ -78,7 +86,7 @@ The app uses a restrictive Content Security Policy with `connect-src 'none'`. It
 
 Imported image bytes are not automatically persisted to localStorage or IndexedDB. Closing the page discards the working image set.
 
-## Input support in v0.7.0
+## Input support in v0.8.0
 
 Supported:
 
@@ -98,7 +106,7 @@ Not supported yet:
 - PSD
 - PDF
 
-## Limits in v0.7.0
+## Limits in v0.8.0
 
 - 200 images
 - 50 MiB per source file
