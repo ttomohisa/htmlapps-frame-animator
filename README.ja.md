@@ -2,7 +2,7 @@
 
 Frame Animatorは、複数のローカル画像からAnimated GIF / WebPを作るためのBrowser Kittyツールです。選択した画像を変換サーバーへアップロードせず、ブラウザ内で処理する構成を目指します。
 
-> 現在の開発版は **v0.4.0** です。画像読み込み、フレーム順編集、表示時間、ライブプレビュー、出力Canvas統一まで実装しています。GIF / WebP生成は後続マイルストーンで追加する予定で、未実装機能を完成済みとして表示しません。
+> 現在の開発版は **v0.5.0** です。画像読み込み、フレーム順編集、表示時間、Canvas統一、ライブプレビュー、Animated GIF出力まで実装しています。Animated WebP出力は次のマイルストーンで追加します。
 
 ## 現在できること
 
@@ -30,6 +30,18 @@ Frame Animatorは、複数のローカル画像からAnimated GIF / WebPを作�
 - 透明 / 白 / 黒 / カスタム色の背景
 - 透明部分をチェッカーボードで確認
 - プレビュー画像は必要なフレームだけ都度デコードして解放し、全フレームのフルRGBAを保持しない
+- GIF89aをブラウザ内で生成する内蔵エンコーダ
+- 64 / 128 / 256色のGIF出力
+- 写真やグラデーションの階調を補うFloyd–Steinberg Dithering（初期ON）
+- 無限ループ / 1回だけ
+- 各フレームの表示時間をGIFへ反映
+- 元画像を1枚ずつフル解像度で正規化し、RGBAをWorkerへTransfer
+- 色量子化・Dithering・LZW圧縮をBlob Workerで処理
+- 進捗表示とキャンセル
+- 実際に生成したGIFを保存前に再生確認
+- Canvas・フレーム数・再生時間・ファイル容量の表示
+- 編集可能なファイル名と安全な`.gif`保存
+- 出力へ影響する設定変更後は古いGIF結果を無効化
 - 日本語 / 英語を同じHTMLに内包し、言語切替はEN / JAの短い表示
 - PC / スマートフォン対応のレスポンシブUI
 - 実行時CDN、Analytics、Telemetry、外部APIなし
@@ -56,7 +68,7 @@ CSPは `connect-src 'none'` を使用し、Analytics、Telemetry、実行時CDN�
 
 読み込んだ画像そのものをlocalStorageやIndexedDBへ自動保存しません。ページを閉じると作業中の画像セットは破棄されます。
 
-## v0.4.0の対応入力
+## v0.5.0の対応入力
 
 対応:
 
@@ -76,7 +88,7 @@ CSPは `connect-src 'none'` を使用し、Analytics、Telemetry、実行時CDN�
 - PSD
 - PDF
 
-## v0.4.0の上限
+## v0.5.0の上限
 
 - 最大200枚
 - 1ファイル50 MiB
@@ -120,4 +132,4 @@ powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File .\scripts\check-
 
 MIT。詳細は [LICENSE](LICENSE) を参照してください。
 
-第三者ライブラリの情報は [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) に記載します。v0.4.0ではランタイム第三者依存を宣言していません。
+第三者ライブラリの情報は [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) に記載します。v0.5.0ではランタイム第三者依存を宣言していません。
