@@ -307,6 +307,7 @@ async function exerciseCancelAndRetry(browser, baseUrl) {
   await page.goto(baseUrl, { waitUntil: 'load' });
   await loadFiles(page, Array.from({ length: 8 }, (_, i) => filePayload(`cancel-${i + 1}.png`, 128, 96, 30 + i)));
   await waitFrames(page, 8);
+  await page.waitForFunction(() => !document.querySelector('#createGifButton')?.disabled, null, { timeout: 10_000 });
 
   await page.locator('#createGifButton').click();
   await page.locator('#cancelGifButton').waitFor({ state: 'visible', timeout: 10_000 });
