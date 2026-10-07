@@ -6,6 +6,27 @@ The project uses Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.8.0] - 2026-10-08
+
+### Added
+
+- Smartphone-only Frames / Preview / Export staged navigation at widths up to 640 px.
+- Keyboard navigation and tab/tabpanel semantics for the smartphone workflow.
+- Safe-area-aware header, main content, footer, and sticky workflow navigation.
+- 44 px mobile touch targets for primary controls and frame actions.
+- Persistent retryable GIF/WebP failure states.
+- Frame position accessibility metadata with `aria-posinset` and `aria-setsize`.
+
+### Changed
+
+- 360 px and narrower layouts use one-column export options and one-column frame cards.
+- Frame thumbnails use lazy loading and asynchronous decoding.
+- Temporary thumbnail canvases are immediately shrunk after the thumbnail Blob is created.
+- Editing one frame duration updates timing/preview UI without rebuilding all frame cards.
+- Live preview pauses when the page becomes hidden.
+- Mobile workflow scroll respects `prefers-reduced-motion`.
+- Clearing all frames resets the smartphone workflow to Frames, avoiding stale empty-page state.
+
 ## [0.7.0] - 2026-10-08
 
 ### Added
