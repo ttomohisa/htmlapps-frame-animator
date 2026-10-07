@@ -656,11 +656,13 @@
           busy: false,
           generation: 0,
           worker: null,
+          workerUrl: '',
           requestId: 0,
           pending: new Set(),
           resultBlob: null,
           resultUrl: '',
-          resultMeta: null
+          resultMeta: null,
+          stale: false
         }
       };
       let dragSession = null;
@@ -1235,8 +1237,15 @@
         const source = `(${gifWorkerMain.toString()})();`;
         const url = URL.createObjectURL(new Blob([source], { type: 'text/javascript' }));
         const worker = new Worker(url);
-        URL.revokeObjectURL(url);
+        state.gif.workerUrl = url;
         return worker;
+      }
+      function disposeGifWorker(worker) {
+        worker?.terminate();
+        if (state.gif.workerUrl) {
+          URL.revokeObjectURL(state.gif.workerUrl);
+          state.gif.workerUrl = '';
+        }
       }
 
       function gifWorkerCall(worker, type, payload = {}, transfer = []) {
@@ -1294,11 +1303,11 @@
         state.gif.resultBlob = null;
         state.gif.resultUrl = '';
         state.gif.resultMeta = null;
+        state.gif.stale = Boolean(stale && hadResult);
         gifResultImage.removeAttribute('src');
         $('#gifResultCard').hidden = true;
         $('#gifResultEmpty').hidden = false;
         $('#saveGifButton').disabled = true;
-        if (stale && hadResult) AppToast.show({ message: t('gifStale'), tone: 'warning' });
       }
 
       function invalidateGifResult(options = {}) {
@@ -1329,6 +1338,7 @@
         if (!state.gif.resultUrl || !meta) {
           $('#gifResultCard').hidden = true;
           $('#gifResultEmpty').hidden = false;
+          $('#gifResultEmpty').textContent = state.gif.stale ? t('gifStale') : t('gifResultEmpty');
           $('#saveGifButton').disabled = true;
           return;
         }
@@ -1348,7 +1358,7 @@
         const error = Object.assign(new Error('cancelled'), { code: 'cancelled' });
         for (const pending of [...state.gif.pending]) pending.reject(error);
         state.gif.pending.clear();
-        state.gif.worker?.terminate();
+        disposeGifWorker(state.gif.worker);
         state.gif.worker = null;
         state.gif.busy = false;
         gifProgressWrap.hidden = true;
@@ -1410,6 +1420,7 @@
           const url = URL.createObjectURL(blob);
           state.gif.resultBlob = blob;
           state.gif.resultUrl = url;
+          state.gif.stale = false;
           state.gif.resultMeta = {
             width: snapshot.width,
             height: snapshot.height,
@@ -1426,7 +1437,7 @@
           }
         } finally {
           if (state.gif.worker === worker) {
-            worker.terminate();
+            disposeGifWorker(worker);
             state.gif.worker = null;
           }
           if (generation === state.gif.generation) {
@@ -1554,7 +1565,7 @@
       }
       function recordHistory(before, after, label) {
         if (sameSequence(before, after)) return false;
-        invalidateGifResult();
+        invalidateGifResult({ stale: true });
         pausePreview({ resetElapsed: true });
         pushHistory({ type: 'sequence', before: before.slice(), after: after.slice(), label });
         return true;
@@ -1567,7 +1578,7 @@
       }
       function recordTimingHistory(before, after, label) {
         if (sameTiming(before, after)) return false;
-        invalidateGifResult();
+        invalidateGifResult({ stale: true });
         pausePreview({ resetElapsed: true });
         pushHistory({ type: 'timing', before, after, label });
         return true;
@@ -1579,7 +1590,7 @@
         }
       }
       function applyHistorySide(entry, side) {
-        invalidateGifResult();
+        invalidateGifResult({ stale: true });
         pausePreview({ resetElapsed: true });
         if (entry.type === 'timing') applyTimingSnapshot(entry[side]);
         else state.frames = entry[side].slice();
@@ -2333,6 +2344,10 @@
         state.generation += 1;
         pausePreview({ resetElapsed: true });
         cancelGif({ announce: false });
+        if (state.gif.workerUrl) {
+          URL.revokeObjectURL(state.gif.workerUrl);
+          state.gif.workerUrl = '';
+        }
         clearGifResult();
         releaseAllFrameResources();
         StandaloneAssets.revokeAll();
