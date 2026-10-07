@@ -190,7 +190,8 @@ async function exerciseDesktop(browser, baseUrl) {
   await page.locator('#languageButton').click();
 
   const broken = { name: 'broken-zero-byte.png', mimeType: 'image/png', buffer: Buffer.alloc(0) };
-  await loadFiles(page, [broken, filePayload('追加画像.png', 80, 60, 5)]);
+  const corrupt = { name: 'corrupt-nonzero.png', mimeType: 'image/png', buffer: Buffer.from('not-a-valid-png') };
+  await loadFiles(page, [broken, corrupt, filePayload('追加画像.png', 80, 60, 5)]);
   await waitFrames(page, 5);
   assert(await visible(page.locator('#importReport')), 'Partial import failure report is not visible');
   assert((await page.locator('#importReport').textContent()).length > 0, 'Partial import failure report is empty');
@@ -227,6 +228,17 @@ async function exerciseDesktop(browser, baseUrl) {
   const webp = parseWebP(webpBytes);
   assert(webp.frames === 8, `Expected 8 ANMF frames, got ${webp.frames}`);
   assert(webp.loop === 3, `Expected WebP loop count 3, got ${webp.loop}`);
+
+  await page.locator('#playbackOrder').selectOption('forward');
+  await page.waitForFunction(() => {
+    const gifCard = document.querySelector('#gifResultCard');
+    const webpCard = document.querySelector('#webpResultCard');
+    const gifSave = document.querySelector('#saveGifButton');
+    const webpSave = document.querySelector('#saveWebpButton');
+    return gifCard?.hidden && webpCard?.hidden && gifSave?.disabled && webpSave?.disabled;
+  }, null, { timeout: 10_000 });
+  assert(/もう一度|again/i.test(await page.locator('#gifResultEmpty').textContent()), 'GIF stale-result message did not appear');
+  assert(/もう一度|again/i.test(await page.locator('#webpResultEmpty').textContent()), 'WebP stale-result message did not appear');
 
   assert(external.length === 0, `External runtime requests detected: ${external.join(', ')}`);
   assert(errors.length === 0, `Desktop page errors: ${errors.join(' | ')}`);
@@ -273,6 +285,39 @@ async function exerciseMobile(browser, baseUrl) {
 
   assert(external.length === 0, `External runtime requests detected on mobile: ${external.join(', ')}`);
   assert(errors.length === 0, `Mobile page errors: ${errors.join(' | ')}`);
+  await context.close();
+}
+
+async function exerciseClipboardPaste(browser, baseUrl) {
+  const context = await makeContext(browser, { width: 1100, height: 800 });
+  const page = await context.newPage();
+  const external = [];
+  const errors = [];
+  watchNetwork(page, external, errors);
+  await page.goto(baseUrl, { waitUntil: 'load' });
+
+  const png = createPng(48, 32, 19);
+  const bytes = Array.from(png);
+  await page.evaluate(payload => {
+    const data = new Uint8Array(payload);
+    const file = new File([data], 'clipboard-source.png', { type: 'image/png', lastModified: Date.now() });
+    const transfer = new DataTransfer();
+    transfer.items.add(file);
+    const event = new ClipboardEvent('paste', { clipboardData: transfer, bubbles: true, cancelable: true });
+    document.dispatchEvent(event);
+  }, bytes);
+
+  await waitFrames(page, 1);
+  const name = (await page.locator('.frame-name').first().textContent()) || '';
+  assert(/^clipboard-\d{14}-1\.png$/.test(name), `Clipboard import filename was not normalized: ${name}`);
+
+  const input = page.locator('#outputFilename');
+  await input.fill('clipboard.gif');
+  await input.blur();
+  assert(await input.inputValue() === 'clipboard', 'GIF filename extension sanitization did not strip .gif');
+
+  assert(external.length === 0, `External runtime requests detected during clipboard test: ${external.join(', ')}`);
+  assert(errors.length === 0, `Clipboard page errors: ${errors.join(' | ')}`);
   await context.close();
 }
 
@@ -424,6 +469,7 @@ async function main() {
   try {
     await exerciseDesktop(browser, baseUrl);
     await exerciseMobile(browser, baseUrl);
+    await exerciseClipboardPaste(browser, baseUrl);
     await exerciseLargeList(browser, baseUrl);
     await exerciseCancelAndRetry(browser, baseUrl);
     await exerciseForcedFailure(browser, baseUrl);
