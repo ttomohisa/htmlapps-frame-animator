@@ -51,7 +51,7 @@ Exit: uneven frame timings preview correctly without fixed-FPS rounding.
 
 Exit: preview geometry matches normalization output for mixed aspect ratios.
 
-## v0.5.0 — Animated GIF export
+## v0.5.0 — Animated GIF export ✅
 
 - Encoder abstraction
 - Worker
