@@ -6,6 +6,25 @@ The project uses Semantic Versioning.
 
 ## [Unreleased]
 
+## [0.4.0] - 2026-10-07
+
+### Added
+
+- Output-canvas normalization for mixed image sizes and aspect ratios.
+- Auto canvas sizing using the first frame aspect ratio with a long edge up to 720 px without upscaling smaller first frames.
+- 480 / 720 / 1080 long-edge presets, original-equivalent sizing, and 16–4096 px custom width/height.
+- Fit placement to preserve the complete image and Fill placement to center-crop while filling the canvas.
+- Transparent, white, black, and custom-color backgrounds.
+- Checkerboard transparency preview and resolved canvas-size readout.
+- Shared geometry helpers for canvas sizing and Fit / Fill placement.
+- On-demand lightweight preview decoding with ImageBitmap cleanup.
+
+### Changed
+
+- Live animation preview now renders onto the normalized output canvas instead of directly displaying thumbnail images.
+- Preset canvas sizes automatically follow the first active frame aspect ratio when sequence order changes.
+- Preview copy now distinguishes lightweight preview pixels from the geometry that will be reused for final encoding.
+
 ## [0.3.0] - 2026-10-07
 
 ### Added
