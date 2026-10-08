@@ -165,10 +165,14 @@ RC review: lifted dragging and FLIP-style movement of adjacent cards; single GIF
 
 Final Windows/Chromium Playwright audit: **PASS**. The generated Animated WebP had 8 decodable frames with **4 distinct sampled frame-pixel hashes**, confirming frame content changes rather than only ANMF presence. Mouse drag/reorder, export-format switching, GIF/WebP save, error recovery, and direct `file://` paths also passed. The generated `frame-animator.html` was synchronized from this passing build.
 
-## v1.0.0 — Stable
+## v1.0.0 — Stable ✅
 
-Release when this flow is dependable:
+Release-ready core workflow:
 
 **Add images → arrange → set timing → preview → create GIF/WebP → review generated file → save**
+
+Stable acceptance checks are automated against the embedded standalone HTML, including mouse drag, 320/360/390 px smartphone bottom navigation, variable-frame playback, GIF/WebP exports and decoded animation frames, clipboard paste, error recovery, direct file:// operation, and runtime network isolation.
+
+The final release refreshes user-facing README files (following the PDF Organizer documentation structure), aligns the version and security/notices metadata, and regenerates the standalone HTML and screenshots from the passing browser build. The user merges the pull request manually; publication is a separate step.
 
 Do not delay v1.0.0 merely because additional editor features are imaginable.
