@@ -206,6 +206,12 @@ async function exerciseDesktop(browser, baseUrl) {
   assert(await durationInputs.nth(0).inputValue() === '20', '20ms duration was not accepted');
   assert(await durationInputs.nth(1).inputValue() === '10000', '10000ms duration was not accepted');
 
+  const initialFormat = await page.evaluate(() => ({
+    gifVisible: !document.querySelector('#gifExportPanel').hidden,
+    webpHidden: document.querySelector('#webpExportPanel').hidden
+  }));
+  assert(initialFormat.gifVisible && initialFormat.webpHidden, 'Export format did not default to GIF');
+
   await page.locator('#playbackOrder').selectOption('pingpong');
   await page.locator('#playbackLoopMode').selectOption('custom');
   await setNumber(page.locator('#playbackLoopCount'), 3);
@@ -219,6 +225,8 @@ async function exerciseDesktop(browser, baseUrl) {
   const gifBytes = await saveDownload(page, '#saveGifButton', gifPath);
   assert(gifRepeat(gifBytes) === 2, 'GIF custom play count 3 should store Netscape repeat count 2');
 
+  await page.locator('#exportWebpTab').click();
+  assert(await visible(page.locator('#webpExportPanel')) && !(await visible(page.locator('#gifExportPanel'))), 'WebP format selection did not hide GIF settings');
   await page.locator('#createWebpButton').click();
   await page.locator('#webpResultCard').waitFor({ state: 'visible', timeout: 60_000 });
   assert((await page.locator('#webpResultFrames').textContent()).trim() === '8', 'Generated WebP frame count did not match Ping-pong sequence');
@@ -229,6 +237,36 @@ async function exerciseDesktop(browser, baseUrl) {
   assert(webp.frames === 8, `Expected 8 ANMF frames, got ${webp.frames}`);
   assert(webp.loop === 3, `Expected WebP loop count 3, got ${webp.loop}`);
 
+  const decoded = await page.evaluate(async data => {
+    if (typeof ImageDecoder === 'undefined') return { supported: false };
+    const decoder = new ImageDecoder({ data: new Uint8Array(data), type: 'image/webp' });
+    await decoder.tracks.ready;
+    const count = decoder.tracks.selectedTrack.frameCount;
+    const signatures = [];
+    for (let index = 0; index < Math.min(count, 4); index += 1) {
+      const { image } = await decoder.decode({ frameIndex: index });
+      const canvas = document.createElement('canvas');
+      canvas.width = image.displayWidth;
+      canvas.height = image.displayHeight;
+      const context = canvas.getContext('2d', { willReadFrequently: true });
+      context.drawImage(image, 0, 0);
+      image.close();
+      const rgba = context.getImageData(0, 0, canvas.width, canvas.height).data;
+      let checksum = 2166136261;
+      for (let pixel = 0; pixel < rgba.length; pixel += 37) {
+        checksum = Math.imul((checksum ^ rgba[pixel]) >>> 0, 16777619) >>> 0;
+      }
+      signatures.push(checksum);
+    }
+    decoder.close();
+    return { supported: true, count, unique: new Set(signatures).size };
+  }, Array.from(webpBytes));
+  assert(decoded.supported, 'Chromium ImageDecoder is unavailable for Animated WebP visual verification');
+  assert(decoded.count === 8, `Chromium decoded ${decoded.count} WebP frames, expected 8`);
+  assert(decoded.unique > 1, 'Animated WebP frames decoded to identical visual content');
+
+  await page.locator('#exportGifTab').click();
+  assert(await visible(page.locator('#gifExportPanel')) && !(await visible(page.locator('#webpExportPanel'))), 'GIF format selection did not restore GIF settings');
   await page.locator('#playbackOrder').selectOption('forward');
   await page.waitForFunction(() => {
     const gifCard = document.querySelector('#gifResultCard');
@@ -242,6 +280,27 @@ async function exerciseDesktop(browser, baseUrl) {
 
   assert(external.length === 0, `External runtime requests detected: ${external.join(', ')}`);
   assert(errors.length === 0, `Desktop page errors: ${errors.join(' | ')}`);
+  await context.close();
+}
+
+async function exerciseFrameDragging(browser, baseUrl) {
+  const context = await makeContext(browser, { width: 1280, height: 900 });
+  const page = await context.newPage();
+  await page.goto(baseUrl, { waitUntil: 'load' });
+  await loadFiles(page, [1, 2, 3, 4].map(i => filePayload(`drag-${i}.png`, 80, 64, i)));
+  await waitFrames(page, 4);
+  await page.waitForFunction(() => !document.querySelector('#frameGrid [data-action="drag"]')?.disabled);
+  const before = await page.locator('.frame-name').allTextContents();
+  const handle = await page.locator('.frame-card').first().locator('[data-action="drag"]').boundingBox();
+  const target = await page.locator('.frame-card').nth(2).boundingBox();
+  assert(handle && target, 'Frame drag bounds unavailable');
+  await page.mouse.move(handle.x + handle.width / 2, handle.y + handle.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(target.x + target.width / 2, target.y + target.height / 2, { steps: 12 });
+  assert(await page.locator('.frame-card.is-dragging').count() === 1, 'Dragged frame did not show lifted state');
+  await page.mouse.up();
+  const after = await page.locator('.frame-name').allTextContents();
+  assert(before.join('|') !== after.join('|'), 'Pointer dragging did not reorder frame cards');
   await context.close();
 }
 
@@ -468,6 +527,7 @@ async function main() {
   const browser = await chromium.launch({ headless: true });
   try {
     await exerciseDesktop(browser, baseUrl);
+    await exerciseFrameDragging(browser, baseUrl);
     await exerciseMobile(browser, baseUrl);
     await exerciseClipboardPaste(browser, baseUrl);
     await exerciseLargeList(browser, baseUrl);
