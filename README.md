@@ -15,18 +15,18 @@ No registration or installation is needed to use the ready-made HTML.
 ### Open the single HTML file
 
 1. Download [frame-animator.html](frame-animator.html) from this repository.
-2. Open it in a current browser, such as Chrome or Edge (including directly from \`file://\`).
+2. Open it in a current browser, such as Chrome or Edge (including directly from `file://`).
 3. Add images and create an animation. The downloaded HTML can be opened offline.
 
 ### Build your own offline copy (advanced)
 
 On Windows, download or clone this repository, then run:
 
-\`\`\`powershell
+```powershell
 ./build-standalone.ps1
-\`\`\`
+```
 
-The first build downloads the exact pinned WebP encoder package and embeds the necessary JavaScript/WASM in the output. After building, open \`dist/index.html\` directly without a network connection. Windows PowerShell and \`tar.exe\` are required for the build; Node.js and Playwright are used only for the optional automated browser tests.
+The first build downloads the exact pinned WebP encoder package and embeds the necessary JavaScript/WASM in the output. After building, open `dist/index.html` directly without a network connection. Windows PowerShell and `tar.exe` are required for the build; Node.js and Playwright are used only for the optional automated browser tests.
 
 The repository also contains a GitHub Pages deployment workflow. Whether a public demo is available depends on the repository's GitHub Pages settings; an active demo URL is not assumed here.
 
@@ -52,7 +52,7 @@ The repository also contains a GitHub Pages deployment workflow. Whether a publi
 
 1. Choose multiple JPEG, PNG, or still WebP images, drop them onto the app, or paste an image.
 2. Change the order using the card drag handle or previous/next buttons. Duplicate or remove frames as needed.
-3. Set a common duration or edit each card's duration. \`Undo\` and \`Redo\` can reverse edits.
+3. Set a common duration or edit each card's duration. `Undo` and `Redo` can reverse edits.
 4. Select the output canvas size, Fit/Fill behavior, and background.
 5. Play the preview and choose Forward, Reverse, or Ping-pong and the repeat count.
 6. Select **GIF** or **Animated WebP**, adjust format-specific settings, and create the result.
@@ -70,15 +70,15 @@ If you change a setting that affects an existing output, regenerate the file bef
 
 | Shortcut | Action |
 | --- | --- |
-| \`Ctrl\` / \`⌘\` + \`Z\` | Undo |
-| \`Ctrl\` / \`⌘\` + \`Shift\` + \`Z\` | Redo |
-| \`Ctrl\` / \`⌘\` + \`Y\` | Redo |
+| `Ctrl` / `⌘` + `Z` | Undo |
+| `Ctrl` / `⌘` + `Shift` + `Z` | Redo |
+| `Ctrl` / `⌘` + `Y` | Redo |
 
 Buttons for moving frames remain available without dragging.
 
 ## Input support and limits
 
-**Supported inputs:** JPEG/JPG, PNG, and *still* WebP. Unsupported inputs include animated GIF, Animated WebP, APNG, HEIC/HEIF, AVIF, SVG, video, PDF, and PSD. Export formats are Animated GIF (\`.gif\`) and Animated WebP (\`.webp\`); MP4 is not generated.
+**Supported inputs:** JPEG/JPG, PNG, and *still* WebP. Unsupported inputs include animated GIF, Animated WebP, APNG, HEIC/HEIF, AVIF, SVG, video, PDF, and PSD. Export formats are Animated GIF (`.gif`) and Animated WebP (`.webp`); MP4 is not generated.
 
 | Item | Application limit |
 | --- | --- |
@@ -94,7 +94,7 @@ These are application safeguards; device memory and browser capabilities may imp
 
 ## Development and build
 
-\`\`\`text
+```text
 .
 ├─ src/index.template.html           # App implementation and localized UI
 ├─ app.config.json                   # App identity and version
@@ -107,20 +107,20 @@ These are application safeguards; device memory and browser capabilities may imp
 └─ dist/                              # Generated build outputs
    ├─ index.html
    └─ index.self-extract.html
-\`\`\`
+```
 
 To validate the build and repository contracts on Windows:
 
-\`\`\`powershell
+```powershell
 ./scripts/check-repository.ps1
-\`\`\`
+```
 
-The browser regression script (\`scripts/rc-browser-test.mjs\`) uses Playwright and Chromium, and is also exercised by a GitHub Actions workflow. See [APP_SPEC.md](APP_SPEC.md), [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md), and [CONTRIBUTING.md](CONTRIBUTING.md) for implementation and contribution details.
+The browser regression script (`scripts/rc-browser-test.mjs`) uses Playwright and Chromium, and is also exercised by a GitHub Actions workflow. See [APP_SPEC.md](APP_SPEC.md), [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md), and [CONTRIBUTING.md](CONTRIBUTING.md) for implementation and contribution details.
 
 ## Privacy and offline operation
 
 - Selected files are decoded, resized, animated, and saved **in your browser**. The application does not upload their contents.
-- The generated HTML embeds its WebP encoder and other runtime assets. Its Content Security Policy includes \`connect-src 'none'\`; no runtime CDN, analytics, telemetry, or conversion API is used.
+- The generated HTML embeds its WebP encoder and other runtime assets. Its Content Security Policy includes `connect-src 'none'`; no runtime CDN, analytics, telemetry, or conversion API is used.
 - Images are not automatically written to localStorage or IndexedDB. Reloading/closing the page discards the working images; the language preference may be stored locally.
 - Opening a hosted page requires downloading the HTML itself. To use the tool without any connection, open the standalone HTML locally.
 
