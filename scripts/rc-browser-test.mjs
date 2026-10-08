@@ -230,7 +230,7 @@ async function captureReleaseScreenshots(browser, baseUrl) {
   await waitFrames(mobile,3);
   await mobile.locator('#mobileTabPreview').click();
   await waitToastGone(mobile);
-  await mobile.evaluate(() => scrollTo(0,0));
+  await mobile.evaluate(() => document.querySelector('#mobilePagePreview').scrollIntoView({ block:'start', behavior:'instant' }));
   await mobile.screenshot({ path:join(assetsDir,'screenshot-mobile.png'), fullPage:false });
   await mctx.close();
 }
