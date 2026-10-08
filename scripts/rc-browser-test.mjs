@@ -291,6 +291,7 @@ async function exerciseFrameDragging(browser, baseUrl) {
   await waitFrames(page, 4);
   await page.waitForFunction(() => !document.querySelector('#frameGrid [data-action="drag"]')?.disabled);
   const before = await page.locator('.frame-name').allTextContents();
+  await page.locator('.frame-card').first().locator('[data-action="drag"]').scrollIntoViewIfNeeded();
   const handle = await page.locator('.frame-card').first().locator('[data-action="drag"]').boundingBox();
   const target = await page.locator('.frame-card').nth(2).boundingBox();
   assert(handle && target, 'Frame drag bounds unavailable');
