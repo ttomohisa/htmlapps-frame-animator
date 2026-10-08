@@ -1,8 +1,9 @@
 # Frame Animator
 
+[![GitHub Pages](https://github.com/ttomohisa/htmlapps-frame-animator/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/ttomohisa/htmlapps-frame-animator/actions/workflows/deploy-pages.yml)
 [![Validate standalone HTML](https://github.com/ttomohisa/htmlapps-frame-animator/actions/workflows/build-standalone.yml/badge.svg)](https://github.com/ttomohisa/htmlapps-frame-animator/actions/workflows/build-standalone.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Single HTML](https://img.shields.io/badge/distribution-single%20HTML-16624F)](frame-animator.html)
+[![Single HTML](https://img.shields.io/badge/distribution-single%20HTML-16624F)](https://ttomohisa.github.io/htmlapps-frame-animator/)
 
 [English README](README.md)
 
@@ -10,7 +11,22 @@ Frame Animatorは、JPEG・PNG・静止WebP画像を並べ、表示時間を調�
 
 完成済みの単一HTMLを使うだけなら、登録やインストールは不要です。
 
+## 🚀 デモ
+
+### [GitHub PagesでFrame Animatorを開く](https://ttomohisa.github.io/htmlapps-frame-animator/)
+
+GitHub Pagesから最初のHTMLを読み込んだ後は、画像の読み込み・フレーム編集・プレビュー・GIF/WebP作成・保存をブラウザ内で処理します。選択した画像をアプリがサーバーへアップロードすることはありません。
+
+[![Frame Animatorの画面](assets/screenshot.png)](https://ttomohisa.github.io/htmlapps-frame-animator/)
+
+GitHub Pagesは`main`ブランチから公開しています。PR #9のv1.0.0は、**PRがマージされ、Pagesへのデプロイが成功した後**に公開サイトへ反映されます。
+
 ## すぐに使う
+
+### Webで使う
+
+[GitHub PagesでFrame Animatorを開く](https://ttomohisa.github.io/htmlapps-frame-animator/)だけで使えます。登録やインストールは不要です。
+
 
 ### 単一HTMLを開く
 
@@ -28,15 +44,15 @@ Windowsでリポジトリをダウンロードまたはクローンし、次を�
 
 初回ビルド時に、固定バージョンのWebPエンコーダを取得して必要なJavaScript/WASMをHTMLへ内包します。生成された `dist/index.html` は、その後ネット接続なしで直接開けます。ビルドにはWindows PowerShellと `tar.exe` を使用します。Node.jsとPlaywrightは任意のブラウザ自動テストでのみ使います。
 
-GitHub Pagesへの公開用ワークフローも用意していますが、実際の公開URLはPagesの設定に依存します。未確認のデモURLを公開済みとして案内しません。
+このリポジトリではGitHub Pagesが有効になっており、`main`ブランチからの公開ワークフローを使用しています。公開版は上記デモリンクで開けます。単一HTML版はオフライン利用にも対応します。
 
 ## スクリーンショット
 
 | PC（日本語） | PC（英語） |
 | --- | --- |
-| ![日本語のFrame Animator](assets/screenshot.png) | ![英語のFrame Animator](assets/screenshot-en.png) |
+| [![日本語のFrame Animator](assets/screenshot.png)](https://ttomohisa.github.io/htmlapps-frame-animator/) | [![英語のFrame Animator](assets/screenshot-en.png)](https://ttomohisa.github.io/htmlapps-frame-animator/) |
 
-![スマートフォンのFrame Animator](assets/screenshot-mobile.png)
+[![スマートフォンのFrame Animator](assets/screenshot-mobile.png)](https://ttomohisa.github.io/htmlapps-frame-animator/)
 
 ## 主な機能
 
@@ -91,6 +107,16 @@ Animated WebPは**MP4動画ではなく、動く画像**です。一部の画像
 | 回数指定ループ | 2〜100回（ほかに1回／無限） |
 
 これはアプリが設けた安全上限です。端末メモリやブラウザによっては、上限より小さい処理でも失敗する場合があります。読み込めない画像の理由は、正常に読み込めた画像とは分けて表示します。
+
+## GitHub Pagesで公開する
+
+このリポジトリの[「Deploy standalone app to GitHub Pages」ワークフロー](https://github.com/ttomohisa/htmlapps-frame-animator/actions/workflows/deploy-pages.yml)は、`main`へのプッシュ時と手動実行時に動きます。
+
+1. **Settings → Pages → Build and deployment** で公開ソースを **GitHub Actions** に設定します。
+2. PRをレビューして`main`にマージするか、**Actions**からデプロイワークフローを手動実行します。
+3. ワークフローが必要なHTMLを生成・検証し、`dist`をGitHub Pagesへ公開します。公開先は[Frame AnimatorのGitHub Pages](https://ttomohisa.github.io/htmlapps-frame-animator/)です。
+
+PR PreviewとGitHub Pagesの公開サイトは別です。公開版の更新は、`main`からのデプロイが成功した後に行われます。
 
 ## 開発とビルド
 
