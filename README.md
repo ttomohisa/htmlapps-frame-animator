@@ -88,6 +88,12 @@ See [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md) for the milestone breakdown.
 
 ![Frame Animator mobile](assets/screenshot-mobile.png)
 
+## Animated WebP playback
+
+Animated WebP is an **animated image**, not an MP4 video. Some image viewers or operating-system previews display only a still frame. Check the generated result in Frame Animator or in a supported browser such as Chrome or Edge.
+
+The export view lets you choose GIF or Animated WebP without stacking both format panels. Switching formats preserves each format's settings and generated result until they become stale.
+
 ## Privacy
 
 Imported images stay in the browser. Frame Animator does not upload selected files or use an application backend for conversion.
