@@ -111,7 +111,7 @@ v0.8 implementation notes: smartphone staged navigation is enabled only at <=640
 
 v0.8 verification notes: source JavaScript parsed successfully; mobile empty-state/tab reset, safe-area/touch-target CSS, lazy thumbnail decoding, result/Worker Blob URL cleanup, and retryable encoder failure paths were audited; the authoritative standalone build succeeded before the generated root HTML was synchronized.
 
-## v0.9.0 — Release candidate
+## v0.9.0 — Release candidate ✅
 
 Stop feature work.
 
@@ -135,10 +135,44 @@ Regression matrix:
 
 Prepare final README, Japanese README, favicon, screenshots, changelog, license/notices, and green CI.
 
-## v1.0.0 — Stable
 
-Release when this flow is dependable:
+v0.9 RC browser audit completed in Chromium against the generated standalone HTML:
+
+- mixed JPEG/PNG/WebP-compatible import path, partial failure, long/Unicode filenames, natural filename sort, and 20 / 10,000 ms timing boundaries
+- zero-byte and non-zero corrupt PNG rejection with valid same-batch files retained
+- clipboard image paste through the standard import path and format-aware filename sanitization
+- generated GIF/WebP stale-result invalidation after playback settings change
+- Forward / Reverse / Ping-pong plus custom finite loop metadata
+- generated GIF preview/download and Netscape loop-extension validation
+- generated Animated WebP preview/download plus RIFF / ANIM / ANMF structural validation
+- 390 / 360 / 320 px staged smartphone workflow with no horizontal overflow
+- 200-frame import and single-frame timing update
+- GIF cancellation followed by successful retry
+- forced GIF/WebP Worker failure followed by retryable recovery without losing frames
+- direct `file://` standalone operation for both GIF and Animated WebP
+- no external HTTP(S) runtime request during the tested local workflows
+- fresh Japanese desktop, English desktop, and smartphone screenshots captured from the RC build
+
+RC regression findings fixed before sign-off:
+
+1. **Controls remained disabled after import completion.** `updateBusy(false)` did not restore all canvas/playback/export controls after `importBusy` cleared. The busy-state synchronizer now restores the full control set.
+2. **Animated WebP failed from direct `file://` use.** Chromium rejected the Emscripten encoder's dynamic import from a `blob:null/...` module URL. The embedded WebP encoder JS is now transformed and concatenated into the classic Worker source, with WASM bytes still supplied directly from the standalone asset bundle and no runtime fetch.
+3. **The Frames empty state could remain visible after import.** Author CSS overrode the HTML `hidden` attribute. A global `[hidden]{display:none!important}` rule now makes hidden state authoritative.
+
+Final RC screenshot audit confirmed the supplied icon/favicon, clean populated frame list, English/Japanese UI, and smartphone Preview stage without transient toast overlays.
+
+RC review: lifted dragging and FLIP-style movement of adjacent cards; single GIF/WebP format selector; removal of obsolete v0.7.0 copy; non-stretching export settings. Additional regression tests compare the actual decoded pixel content of separate Animated WebP frames rather than relying solely on RIFF/ANMF frame metadata.
+
+Final Windows/Chromium Playwright audit: **PASS**. The generated Animated WebP had 8 decodable frames with **4 distinct sampled frame-pixel hashes**, confirming frame content changes rather than only ANMF presence. Mouse drag/reorder, export-format switching, GIF/WebP save, error recovery, and direct `file://` paths also passed. The generated `frame-animator.html` was synchronized from this passing build.
+
+## v1.0.0 — Stable ✅
+
+Release-ready core workflow:
 
 **Add images → arrange → set timing → preview → create GIF/WebP → review generated file → save**
+
+Stable acceptance checks are automated against the embedded standalone HTML, including mouse drag, 320/360/390 px smartphone bottom navigation, variable-frame playback, GIF/WebP exports and decoded animation frames, clipboard paste, error recovery, direct file:// operation, and runtime network isolation.
+
+The final release refreshes user-facing README files (following the PDF Organizer documentation structure), aligns the version and security/notices metadata, and regenerates the standalone HTML and screenshots from the passing browser build. The user merges the pull request manually; publication is a separate step.
 
 Do not delay v1.0.0 merely because additional editor features are imaginable.

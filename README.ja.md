@@ -1,156 +1,173 @@
 # Frame Animator
 
-Frame Animatorは、複数のローカル画像からAnimated GIF / WebPを作るためのBrowser Kittyツールです。選択した画像を変換サーバーへアップロードせず、ブラウザ内で処理する構成を目指します。
+[![GitHub Pages](https://github.com/ttomohisa/htmlapps-frame-animator/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/ttomohisa/htmlapps-frame-animator/actions/workflows/deploy-pages.yml)
+[![Validate standalone HTML](https://github.com/ttomohisa/htmlapps-frame-animator/actions/workflows/build-standalone.yml/badge.svg)](https://github.com/ttomohisa/htmlapps-frame-animator/actions/workflows/build-standalone.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Single HTML](https://img.shields.io/badge/distribution-single%20HTML-16624F)](https://ttomohisa.github.io/htmlapps-frame-animator/)
 
-> 現在の開発版は **v0.8.0** です。画像からGIF / WebPを作る一連の機能に加え、スマートフォン導線、性能、失敗後の復旧を強化しています。
+[English README](README.md)
 
-## 現在できること
+Frame Animatorは、JPEG・PNG・静止WebP画像を並べ、表示時間を調整して**動くGIFやAnimated WebP**を作成するブラウザツールです。画像を変換サーバーにアップロードせず、追加から書き出しまで端末内で処理します。
 
-- JPEG / PNG / 静止WebPを複数読み込み
-- ファイル選択、Drag & Drop、既存一覧への追加
-- サムネイル、ファイル名、画像サイズ、メガピクセル、元ファイル容量の確認
-- Animated WebPを検出できる場合は静止画として扱わず明示的に拒否
-- 最大200枚、1ファイル50 MiB、合計500 MiB、1画像50 MPの安全ガード
-- 一部の画像だけ失敗した場合、正常画像を残したまま失敗理由を分離表示
-- 全画像消去前の確認
-- 専用ハンドルによるマウス / タッチのドラッグ並べ替え
-- ドラッグを使わなくても操作できる前へ / 後ろへボタン
-- フレームの複製・削除
-- 読み込みや順序変更を対象にしたUndo / Redoとキーボードショートカット
-- ファイル名の自然順による昇順 / 降順ソート
-- 各フレーム20〜10,000 ms・10 ms刻み、初期500 msの表示時間
-- 100 / 200 / 500 / 1000 msプリセットまたは自由入力を全フレームへ一括適用
-- 現在のフレーム列から合計再生時間を表示
-- 実際の各フレーム表示時間で動くライブプレビュー
-- 再生 / 一時停止、最初から、前のフレーム、次のフレーム
-- 表示時間変更もUndo / Redo対象
-- サイズ・縦横比が異なる画像を1つの出力Canvasへ統一
-- 自動 / 長辺480 / 720 / 1080px / 元サイズ相当 / カスタム
-- 画像全体を見せる「収める」とCanvasを埋める「切り抜く」
-- 透明 / 白 / 黒 / カスタム色の背景
-- 透明部分をチェッカーボードで確認
-- プレビュー画像は必要なフレームだけ都度デコードして解放し、全フレームのフルRGBAを保持しない
-- GIF89aをブラウザ内で生成する内蔵エンコーダ
-- 64 / 128 / 256色のGIF出力
-- 写真やグラデーションの階調を補うFloyd–Steinberg Dithering（初期ON）
-- 無限ループ / 1回だけ
-- 各フレームの表示時間をGIFへ反映
-- 元画像を1枚ずつフル解像度で正規化し、RGBAをWorkerへTransfer
-- 色量子化・Dithering・LZW圧縮をBlob Workerで処理
-- 進捗表示とキャンセル
-- 実際に生成したGIFを保存前に再生確認
-- Canvas・フレーム数・再生時間・ファイル容量の表示
-- 編集可能なファイル名と安全な`.gif`保存
-- 出力へ影響する設定変更後は古いGIF結果を無効化
-- 固定した @jsquash/webp 1.5.0 / libwebp WASMによるAnimated WebP出力
-- WebP品質1〜100、Lossless、Effort 0〜6
-- 各フレームのミリ秒単位の表示時間をAnimated WebPへ保持
-- WebPの無限ループ / 1回だけ
-- 実際に生成したWebPを保存前に確認
-- プレビュー・GIF・WebP共通のForward / Reverse / Ping-pong再生順
-- 端点を重複させないPing-pongシーケンス
-- 無限 / 1回 / 2〜100回の共通ループ設定
-- JPEG / PNG / 静止WebPのクリップボード貼り付け
-- Canvasサイズと派生フレーム数に基づく高負荷処理の事前警告
-- `.gif` / `.webp`の固定サフィックスと誤入力拡張子の自動整理
-- 最初は大きく、画像読み込み後はコンパクトになる画像追加欄（クリック追加・Drag & Dropは継続利用可能）
-- ユーザー指定SVGをアプリアイコンとfaviconの両方に使用
-- 640px以下では「フレーム / プレビュー / 書き出し」の段階表示
-- safe area対応とスマホ主要操作44px以上のタップ領域
-- 320 / 360 / 390pxを意識した狭幅レイアウト。360px以下では書き出し設定を1列化
-- 大量フレーム向けのサムネイル遅延デコードと一時Canvasの早期解放
-- 1フレームの表示時間変更では全フレームカードを作り直さない再描画最適化
-- `aria-posinset` / `aria-setsize`によるフレーム位置情報
-- ページが非表示になったときのプレビュー自動停止
-- GIF / WebP生成失敗後も画像や設定を維持し、リロードせず設定変更・再試行できるエラー状態
-- 日本語 / 英語を同じHTMLに内包し、言語切替はEN / JAの短い表示
-- PC / スマートフォン対応のレスポンシブUI
-- 実行時CDN、Analytics、Telemetry、外部APIなし
+完成済みの単一HTMLを使うだけなら、登録やインストールは不要です。
 
-## 完成時の操作フロー
+## 🚀 デモ
 
-v1.0.0では次の流れを完成させます。
+### [GitHub PagesでFrame Animatorを開く](https://ttomohisa.github.io/htmlapps-frame-animator/)
 
-1. 画像を追加
-2. フレームを並べ替え
-3. 全体または各フレームの表示時間を設定
-4. 出力サイズとFit / Fillを設定
-5. Forward / Reverse / Ping-pongをプレビュー
-6. Animated WebPまたはGIFを作成
-7. 実際に生成されたファイルを確認して保存
+GitHub Pagesから最初のHTMLを読み込んだ後は、画像の読み込み・フレーム編集・プレビュー・GIF/WebP作成・保存をブラウザ内で処理します。選択した画像をアプリがサーバーへアップロードすることはありません。
 
-段階的な実装内容は [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md) を参照してください。
+[![Frame Animatorの画面](assets/screenshot.png)](https://ttomohisa.github.io/htmlapps-frame-animator/)
 
-## プライバシー
+GitHub Pagesは`main`ブランチから公開しています。PR #9のv1.0.0は、**PRがマージされ、Pagesへのデプロイが成功した後**に公開サイトへ反映されます。
 
-読み込んだ画像はブラウザ内に留まります。Frame Animatorは選択ファイルをアップロードせず、変換用バックエンドも使用しません。
+## すぐに使う
 
-CSPは `connect-src 'none'` を使用し、Analytics、Telemetry、実行時CDN、外部フォント、外部APIを利用しません。
+### Webで使う
 
-読み込んだ画像そのものをlocalStorageやIndexedDBへ自動保存しません。ページを閉じると作業中の画像セットは破棄されます。
+[GitHub PagesでFrame Animatorを開く](https://ttomohisa.github.io/htmlapps-frame-animator/)だけで使えます。登録やインストールは不要です。
 
-## v0.8.0の対応入力
 
-対応:
+### 単一HTMLを開く
 
-- JPEG / JPG
-- PNG
-- 静止WebP
+1. このリポジトリの [frame-animator.html](frame-animator.html) をダウンロードします。
+2. ChromeやEdgeなどの現行ブラウザで開きます（`file://` から直接開けます）。
+3. 画像を追加してアニメーションを作成します。ダウンロードしたHTMLはオフラインでも使用できます。
 
-未対応:
+### オフライン版を自分でビルドする（上級者向け）
 
-- Animated WebP
-- GIF
-- APNG
-- 動画
-- HEIC / HEIF
-- AVIF
-- SVG
-- PSD
-- PDF
-
-## v0.8.0の上限
-
-- 最大200枚
-- 1ファイル50 MiB
-- 読み込み済み元ファイル合計500 MiB
-- 1画像50メガピクセル
-- 1フレーム20〜10,000 ms、10 ms刻み
-- 出力Canvasの幅・高さ16〜4096px
-
-これらはアプリ側の安全ガードであり、すべてのブラウザや端末の絶対的な上限を示すものではありません。
-
-## ブラウザ
-
-主対象は現行Chrome / Edgeです。Firefox、Safari、iOS Safari、Android Chromeも開発中に確認対象とします。
-
-最終的な単一HTML版は `file://` で直接開いて主要機能を利用できることを要件とします。
-
-## 単一HTMLビルド
-
-このリポジトリは現在のBrowser Kitty `htmlapps-template` のビルド契約に従います。
-
-Windows PowerShell:
+Windowsでリポジトリをダウンロードまたはクローンし、次を実行します。
 
 ```powershell
 ./build-standalone.ps1
 ```
 
-通常ビルドでは、読みやすい単一HTML、gzip自己展開版、テンプレート規約に従ったリポジトリ直下の配布用HTMLを生成します。
+初回ビルド時に、固定バージョンのWebPエンコーダを取得して必要なJavaScript/WASMをHTMLへ内包します。生成された `dist/index.html` は、その後ネット接続なしで直接開けます。ビルドにはWindows PowerShellと `tar.exe` を使用します。Node.jsとPlaywrightは任意のブラウザ自動テストでのみ使います。
 
-完了前には以下を実行します。
+このリポジトリではGitHub Pagesが有効になっており、`main`ブランチからの公開ワークフローを使用しています。公開版は上記デモリンクで開けます。単一HTML版はオフライン利用にも対応します。
 
-```powershell
-powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File .\scripts\check-powershell-syntax.ps1
-powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File .\scripts\check-repository.ps1
+## スクリーンショット
+
+| PC（日本語） | PC（英語） |
+| --- | --- |
+| [![日本語のFrame Animator](assets/screenshot.png)](https://ttomohisa.github.io/htmlapps-frame-animator/) | [![英語のFrame Animator](assets/screenshot-en.png)](https://ttomohisa.github.io/htmlapps-frame-animator/) |
+
+[![スマートフォンのFrame Animator](assets/screenshot-mobile.png)](https://ttomohisa.github.io/htmlapps-frame-animator/)
+
+## 主な機能
+
+- **画像を追加して並べ替える** — 複数選択、ドラッグ＆ドロップ、クリップボード貼り付けに対応。カードのドラッグ、前へ・後ろへボタン、ファイル名順で並び替えられます。
+- **表示時間を調整する** — 全フレームへの一括設定や、各画像の20〜10,000msの個別設定に対応。順序や時間の変更は元に戻す・やり直すができます。
+- **再生して確かめる** — 再生・一時停止・コマ送りに加え、Forward（順方向）、Reverse（逆方向）、Ping-pong（往復）を選択。無限・1回・回数指定の再生に対応します。
+- **画像の大きさをそろえる** — Canvasサイズを指定し、余白を残す「収める」／切り抜く「切り抜く」、透明・白・黒・任意色の背景を選べます。
+- **GIFかWebPを選んで書き出す** — GIFは色数とDithering、WebPは品質・Lossless・Effortを調整できます。進捗表示とキャンセルにも対応します。
+- **保存前に確認する** — 生成されたGIF/WebPそのものをプレビュー。サイズ・フレーム数・再生時間・容量を確認し、ファイル名を指定して保存できます。
+- **スマホでも端末内処理** — 下部固定の「フレーム／プレビュー／書き出し」切替、日本語／英語UI、外部アップロードなし。
+
+## 使い方
+
+1. JPEG・PNG・静止WebPを複数選択して追加します。ドロップや画像の貼り付けでも追加できます。
+2. カードのハンドルをドラッグして順番を変更します。前へ・後ろへボタン、複製・削除も使えます。
+3. 全体の表示時間を一括設定するか、各カードの表示時間を調整します。必要なら「元に戻す」で取り消せます。
+4. 出力Canvasのサイズ、画像の配置（収める／切り抜く）、背景を設定します。
+5. プレビューを再生し、順方向・逆方向・往復とループ回数を決めます。
+6. **GIF**または**Animated WebP**を選び、形式別の設定を確認して作成します。
+7. 実際に生成したファイルを結果欄で確認し、ファイル名を変更して保存します。
+
+スマートフォンでは画面下部の**「フレーム／プレビュー／書き出し」**で作業画面を切り替えます。カードのドラッグ用ハンドルは通常の縦スクロールと区別しています。
+
+### 再生と形式の注意点
+
+Animated WebPは**MP4動画ではなく、動く画像**です。一部の画像ビューアーでは最初の1コマしか表示されません。保存したWebPが動かない場合は、対応ブラウザで開いて確認してください。
+
+再生方向やループ回数はGIF/WebPで共通です。エンコード品質などの設定は形式ごとに異なります。出力に影響する設定を変更した場合は再生成が必要です。書き出しに失敗しても、読み込んだ画像を残したまま再試行できます。
+
+### キーボード操作
+
+| キー | 操作 |
+| --- | --- |
+| `Ctrl` / `⌘` + `Z` | 元に戻す |
+| `Ctrl` / `⌘` + `Shift` + `Z` | やり直す |
+| `Ctrl` / `⌘` + `Y` | やり直す |
+
+ドラッグができない場合も、カードの前へ・後ろへボタンで並び替えられます。
+
+## 対応形式と上限
+
+**読み込み対応：** JPEG/JPG、PNG、静止WebP。GIF・Animated WebP・APNG・HEIC/HEIF・AVIF・SVG・動画・PDF・PSDの読み込みには対応しません。書き出しはAnimated GIF（`.gif`）とAnimated WebP（`.webp`）です。MP4には書き出しません。
+
+| 項目 | アプリ側の上限 |
+| --- | --- |
+| フレーム数 | 200枚 |
+| 画像ファイル | 1枚50 MiB |
+| 読み込み済みファイル合計 | 500 MiB |
+| 1枚の画像 | 50メガピクセル |
+| 表示時間 | 20〜10,000ms、10ms刻み |
+| 出力Canvas | 幅・高さそれぞれ16〜4096px |
+| 回数指定ループ | 2〜100回（ほかに1回／無限） |
+
+これはアプリが設けた安全上限です。端末メモリやブラウザによっては、上限より小さい処理でも失敗する場合があります。読み込めない画像の理由は、正常に読み込めた画像とは分けて表示します。
+
+## GitHub Pagesで公開する
+
+このリポジトリの[「Deploy standalone app to GitHub Pages」ワークフロー](https://github.com/ttomohisa/htmlapps-frame-animator/actions/workflows/deploy-pages.yml)は、`main`へのプッシュ時と手動実行時に動きます。
+
+1. **Settings → Pages → Build and deployment** で公開ソースを **GitHub Actions** に設定します。
+2. PRをレビューして`main`にマージするか、**Actions**からデプロイワークフローを手動実行します。
+3. ワークフローが必要なHTMLを生成・検証し、`dist`をGitHub Pagesへ公開します。公開先は[Frame AnimatorのGitHub Pages](https://ttomohisa.github.io/htmlapps-frame-animator/)です。
+
+PR PreviewとGitHub Pagesの公開サイトは別です。公開版の更新は、`main`からのデプロイが成功した後に行われます。
+
+## 開発とビルド
+
+```text
+.
+├─ src/index.template.html           # アプリ本体と日英UI
+├─ app.config.json                   # アプリ情報とバージョン
+├─ dependencies.json                 # 内包する依存の指定
+├─ dependencies.lock.json            # 依存ファイルのハッシュ
+├─ build-standalone.ps1              # Windows用ビルド
+├─ frame-animator.html               # リポジトリ直下の単一HTML
+├─ scripts/rc-browser-test.mjs       # Chromium回帰テスト
+├─ assets/                            # faviconとスクリーンショット
+└─ dist/                              # ビルドで生成
+   ├─ index.html
+   └─ index.self-extract.html
 ```
 
-## 開発
+Windowsでビルドとリポジトリ構成を検証します。
 
-製品仕様と受入条件は [APP_SPEC.md](APP_SPEC.md)、段階的な開発計画は [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md) を正とします。
+```powershell
+./scripts/check-repository.ps1
+```
+
+ブラウザの回帰テストはPlaywright/Chromiumを使い、GitHub Actionsでも実行します。詳しい仕様・実装計画・開発方法は [APP_SPEC.md](APP_SPEC.md)、[DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md)、[CONTRIBUTING.md](CONTRIBUTING.md) を確認してください。
+
+## プライバシーとオフライン動作
+
+- 追加した画像の読み込み・変換・保存は**ブラウザ内で実行**します。アプリから画像の内容をアップロードしません。
+- WebPエンコーダなど必要な実行時資産は生成HTMLに内包します。CSPは `connect-src 'none'` を含み、実行時CDN、Analytics、Telemetry、変換APIを使用しません。
+- 画像そのものをlocalStorageやIndexedDBへ自動保存しません。ページの再読み込み・終了時には作業画像を破棄します。言語設定などは端末に保存されることがあります。
+- Web公開版では最初のHTML読み込みに通信が必要です。ネット接続を使わず利用したい場合は、単一HTMLを端末内で開いてください。
+
+## 対応ブラウザと制限事項
+
+主な検証対象は現行のChromeとEdgeです。Firefox、Safari、iOS Safari、Android Chromeはベストエフォートです。特に大きなWASM変換ではブラウザや端末によって利用可否・性能に差があります。
+
+動画の読み込み、画像の部分編集、トランジション・音声の追加、MP4出力には対応しません。高解像度画像や多数のフレームでは、順次処理する設計でもメモリ不足になることがあります。
+
+## 依存ライブラリ
+
+| 実行時の依存 | 固定バージョン | ライセンス | 用途 |
+| --- | --- | --- | --- |
+| [@jsquash/webp](https://github.com/jamsinclair/jSquash) / libwebp | 1.5.0 | Apache-2.0（ラッパー）、libwebp再配布条件 | Animated WebPを端末内で生成 |
+
+GIFのエンコーダとカードのドラッグ処理はアプリ内で実装しています。詳細は [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) を参照してください。
+
+## 開発への参加
+
+不具合や改善案はGitHub Issuesで受け付けます。変更への参加方法は [CONTRIBUTING.md](CONTRIBUTING.md)、脆弱性の報告方法は [SECURITY.md](SECURITY.md) を確認してください。
 
 ## ライセンス
 
-MIT。詳細は [LICENSE](LICENSE) を参照してください。
-
-第三者ライブラリの情報は [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) に記載します。v0.8.0では、ローカルWebP生成のため固定した `@jsquash/webp@1.5.0` とlibwebpエンコーダ資産を単一HTMLへ内包します。
+Copyright © 2026 ttomohisa。[MIT License](LICENSE)。

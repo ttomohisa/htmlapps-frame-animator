@@ -6,6 +6,57 @@ The project uses Semantic Versioning.
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-10-08
+
+### Stable release
+
+- Finalized the complete local still-image to Animated GIF/Animated WebP workflow: import, reorder, set timing, preview, export, inspect and save.
+- Stabilized lifted-card dragging with a placeholder and smooth movement of neighboring cards.
+- Aligned smartphone bottom navigation with Browser Kitty's Signal Screen visual conventions, using SVG icons and larger tap targets.
+- Published concise Japanese and English README documentation following PDF Organizer's practical quick-start, features, usage, build, privacy, and limitations structure.
+- Updated the stable app version, specification, security policy, and third-party notices.
+- Added Windows Chromium browser regression coverage for dragging, mobile geometry, clipboard, GIF/WebP playback and downloads, encoder failures, file:// operation, and no-network processing.
+- Regenerated distribution HTML and desktop/mobile screenshots from the verified build.
+
+### Compatibility
+
+- Supports JPEG/JPG, PNG, and still WebP inputs; outputs animated GIF or Animated WebP. No MP4 output or animated-image input.
+- Retains pinned @jsquash/webp@1.5.0, Content Security Policy connect-src 'none', and standalone/offline operation.
+
+
+## [0.9.0] - 2026-10-08
+
+### RC review fixes (after first preview)
+
+- Lifted frame cards follow the pointer during drag; neighboring cards animate into their reordered positions.
+- GIF and Animated WebP now use a single export-format selector instead of two stacked export panels.
+- Fixed the export settings column stretching vertically to match the generated preview.
+- Removed obsolete v0.7.0 upcoming-feature copy.
+- Clarified that Animated WebP is an animated image, and some image viewers display only one still frame.
+- Added browser regression coverage for card dragging, export-format switching, and decoded Animated WebP frame differences.
+
+
+### Changed
+
+- Entered release-candidate feature freeze for v1.0.0.
+- Added an automated Chromium RC regression suite covering desktop, mobile, 200-frame import, GIF/WebP generation, cancellation/retry, forced encoder failure recovery, direct local-file usage, and runtime network checks.
+- RC browser tests generate fresh Japanese desktop, English desktop, and smartphone screenshots from the built standalone HTML.
+- README files now describe the complete RC workflow and include current screenshots.
+
+### Verified
+
+- Mixed image import, partial failure handling, long/Unicode filenames, natural sort, and 20/10,000 ms frame durations.
+- Zero-byte and non-zero corrupt PNG rejection while valid files in the same batch remain usable.
+- Clipboard image paste through the normal import-validation path.
+- GIF/WebP stale-result invalidation after output-affecting settings change.
+- Forward / Reverse / Ping-pong playback and custom finite loops.
+- Generated GIF download structure and Netscape loop metadata.
+- Generated Animated WebP RIFF/ANIM/ANMF structure and finite loop metadata.
+- 390 / 360 / 320 px smartphone staged navigation without horizontal overflow.
+- 200-frame import and single-frame timing update.
+- GIF cancel then retry, and forced GIF/WebP Worker failure recovery without losing source frames.
+- Direct local-file workflow and no external HTTP(S) runtime requests during the tested flows.
+
 ## [0.8.0] - 2026-10-08
 
 ### Added
