@@ -1,8 +1,9 @@
 # Frame Animator
 
+[![GitHub Pages](https://github.com/ttomohisa/htmlapps-frame-animator/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/ttomohisa/htmlapps-frame-animator/actions/workflows/deploy-pages.yml)
 [![Validate standalone HTML](https://github.com/ttomohisa/htmlapps-frame-animator/actions/workflows/build-standalone.yml/badge.svg)](https://github.com/ttomohisa/htmlapps-frame-animator/actions/workflows/build-standalone.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Single HTML](https://img.shields.io/badge/distribution-single%20HTML-16624F)](frame-animator.html)
+[![Single HTML](https://img.shields.io/badge/distribution-single%20HTML-16624F)](https://ttomohisa.github.io/htmlapps-frame-animator/)
 
 [日本語版 README](README.ja.md)
 
@@ -10,7 +11,22 @@ Frame Animator turns a sequence of JPEG, PNG, or still WebP images into an **ani
 
 No registration or installation is needed to use the ready-made HTML.
 
+## 🚀 Live demo
+
+### [Open Frame Animator on GitHub Pages](https://ttomohisa.github.io/htmlapps-frame-animator/)
+
+GitHub Pages delivers the initial HTML. Once loaded, image decoding, frame editing, preview, GIF/WebP encoding, and saving run in your browser. Images you select are not uploaded by the app.
+
+[![Frame Animator desktop screenshot](assets/screenshot-en.png)](https://ttomohisa.github.io/htmlapps-frame-animator/)
+
+The public GitHub Pages site is deployed from `main`. The v1.0.0 changes in PR #9 become available there **after that PR is merged and the Pages workflow successfully deploys**.
+
 ## Quick start
+
+### Use the web demo
+
+[Open Frame Animator on GitHub Pages](https://ttomohisa.github.io/htmlapps-frame-animator/). No account or installation is needed.
+
 
 ### Open the single HTML file
 
@@ -28,15 +44,15 @@ On Windows, download or clone this repository, then run:
 
 The first build downloads the exact pinned WebP encoder package and embeds the necessary JavaScript/WASM in the output. After building, open `dist/index.html` directly without a network connection. Windows PowerShell and `tar.exe` are required for the build; Node.js and Playwright are used only for the optional automated browser tests.
 
-The repository also contains a GitHub Pages deployment workflow. Whether a public demo is available depends on the repository's GitHub Pages settings; an active demo URL is not assumed here.
+GitHub Pages is enabled for this repository and the deployment workflow is configured on `main`. See the live-demo link above; the single HTML file is available for offline use.
 
 ## Screenshots
 
 | Desktop (Japanese) | Desktop (English) |
 | --- | --- |
-| ![Frame Animator desktop in Japanese](assets/screenshot.png) | ![Frame Animator desktop in English](assets/screenshot-en.png) |
+| [![Frame Animator desktop in Japanese](assets/screenshot.png)](https://ttomohisa.github.io/htmlapps-frame-animator/) | [![Frame Animator desktop in English](assets/screenshot-en.png)](https://ttomohisa.github.io/htmlapps-frame-animator/) |
 
-![Frame Animator mobile](assets/screenshot-mobile.png)
+[![Frame Animator mobile](assets/screenshot-mobile.png)](https://ttomohisa.github.io/htmlapps-frame-animator/)
 
 ## Features
 
@@ -91,6 +107,16 @@ Buttons for moving frames remain available without dragging.
 | Custom play count | 2–100 plays (plus once/infinite) |
 
 These are application safeguards; device memory and browser capabilities may impose additional limits. Invalid images are reported separately while successfully imported images remain usable.
+
+## Publish with GitHub Pages
+
+This repository's [Deploy standalone app to GitHub Pages](https://github.com/ttomohisa/htmlapps-frame-animator/actions/workflows/deploy-pages.yml) workflow runs when changes are pushed to `main` or when triggered manually.
+
+1. In **Settings → Pages → Build and deployment**, use **GitHub Actions** as the publishing source.
+2. Merge an approved PR into `main`, or run the deployment workflow manually from **Actions**.
+3. The workflow builds and verifies the fully embedded HTML, uploads the generated `dist` site, and deploys to [the GitHub Pages URL](https://ttomohisa.github.io/htmlapps-frame-animator/).
+
+The PR Preview is separate from GitHub Pages. The public site's version updates only after a successful deployment from `main`.
 
 ## Development and build
 
