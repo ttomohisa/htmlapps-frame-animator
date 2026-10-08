@@ -8,6 +8,16 @@ The project uses Semantic Versioning.
 
 ## [0.9.0] - 2026-10-08
 
+### RC review fixes (after first preview)
+
+- Lifted frame cards follow the pointer during drag; neighboring cards animate into their reordered positions.
+- GIF and Animated WebP now use a single export-format selector instead of two stacked export panels.
+- Fixed the export settings column stretching vertically to match the generated preview.
+- Removed obsolete v0.7.0 upcoming-feature copy.
+- Clarified that Animated WebP is an animated image, and some image viewers display only one still frame.
+- Added browser regression coverage for card dragging, export-format switching, and decoded Animated WebP frame differences.
+
+
 ### Changed
 
 - Entered release-candidate feature freeze for v1.0.0.
