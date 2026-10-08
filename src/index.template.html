@@ -2999,7 +2999,7 @@
           pointerId: event.pointerId,
           frameId: card.dataset.frameId,
           card,
-          handle,
+          handle: frameGrid,
           grabX: event.clientX - rect.left,
           grabY: event.clientY - rect.top,
           x: 0,
@@ -3008,7 +3008,8 @@
           changed: false
         };
         card.classList.add('is-dragging');
-        handle.setPointerCapture?.(event.pointerId);
+        // Capture on the stable grid: reparenting the dragged card would release capture on its handle.
+        frameGrid.setPointerCapture?.(event.pointerId);
       }
       function animateShiftedCards(oldPositions, draggedCard) {
         if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
