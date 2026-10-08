@@ -70,9 +70,9 @@
     .summary-actions{display:flex;gap:8px;flex-wrap:wrap}
     .empty-state{display:grid;place-items:center;min-height:180px;padding:30px 18px;text-align:center;border:1px dashed var(--line);border-radius:12px}
     .empty-state h4{margin:0 0 5px;font-size:15px}.empty-state p{margin:0;color:var(--muted);font-size:12px}
-    .frame-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+    .frame-grid{position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
     .frame-card{min-width:0;border:1px solid var(--line);border-radius:13px;background:var(--surface);overflow:hidden;transition:border-color .14s ease,box-shadow .14s ease,opacity .14s ease}
-    .frame-card.is-dragging{position:relative;z-index:12;opacity:.96;border-color:var(--accent);box-shadow:0 18px 42px rgba(10,30,22,.26);cursor:grabbing;will-change:transform}
+    .frame-card.is-dragging{position:fixed;z-index:70;opacity:.98;border-color:var(--accent);box-shadow:0 20px 44px rgba(10,30,22,.28);cursor:grabbing;pointer-events:none;transform:scale(1.025);transform-origin:center;will-change:left,top} .frame-drag-placeholder{min-width:0;border:2px dashed var(--accent);border-radius:13px;background:var(--accent-soft)}
     .thumb-wrap{position:relative;aspect-ratio:4/3;background:linear-gradient(45deg,#e9e9e5 25%,transparent 25%) 0 0/16px 16px,linear-gradient(-45deg,#e9e9e5 25%,transparent 25%) 0 8px/16px 16px,linear-gradient(45deg,transparent 75%,#e9e9e5 75%) 8px -8px/16px 16px,linear-gradient(-45deg,transparent 75%,#e9e9e5 75%) -8px 0/16px 16px,#f7f7f4}
     .thumb-wrap img{width:100%;height:100%;display:block;object-fit:contain;pointer-events:none}
     .frame-number{position:absolute;left:8px;top:8px;padding:3px 7px;border-radius:999px;background:rgba(20,24,21,.78);color:#fff;font-size:10px;font-weight:800;backdrop-filter:blur(5px)}
@@ -174,13 +174,13 @@
     @media(max-width:900px){.frame-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
     @media(max-width:640px){
       .header-inner{padding-left:max(10px,env(safe-area-inset-left));padding-right:max(10px,env(safe-area-inset-right))}
-      .main{padding:16px max(12px,env(safe-area-inset-right)) calc(38px + env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
-      footer{padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right));padding-bottom:calc(30px + env(safe-area-inset-bottom))}
+      .main{padding:16px max(12px,env(safe-area-inset-right)) calc(108px + env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
+      footer{padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right));padding-bottom:calc(96px + env(safe-area-inset-bottom))}
       .page-intro{display:block}.local-badge{margin-top:11px}.panel-body{padding:13px}.drop-zone{min-height:190px;padding:22px 14px}
-      .mobile-workflow-nav{position:sticky;top:calc(var(--header-height) + env(safe-area-inset-top));z-index:24;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin:0 0 12px;padding:5px;border:1px solid var(--line);border-radius:12px;background:color-mix(in srgb,var(--bg) 94%,transparent);backdrop-filter:blur(14px);box-shadow:var(--shadow-sm)}
+      .mobile-workflow-nav{position:fixed;inset:auto 0 0;z-index:50;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin:0;padding:6px max(12px,env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));border-top:1px solid var(--line);background:var(--surface);box-shadow:0 -5px 24px rgba(25,28,24,.09)}
       .mobile-workflow-nav[hidden]{display:none}.mobile-workflow-tab{min-width:0;min-height:44px;padding:7px 5px;border:0;border-radius:9px;background:transparent;color:var(--muted);font:inherit;font-size:11px;font-weight:800;cursor:pointer}
       .mobile-workflow-tab[aria-selected="true"]{background:var(--surface);color:var(--accent);box-shadow:var(--shadow-sm)}
-      [data-mobile-page]{scroll-margin-top:calc(var(--header-height) + 68px + env(safe-area-inset-top))}
+      [data-mobile-page]{scroll-margin-top:calc(var(--header-height) + 12px + env(safe-area-inset-top))}
       .button,.sort-select,.output-select,.size-input,.duration-control,.duration-input,.segment-button,.background-color,.timing-preset{min-height:44px}
       .frame-action{height:44px}.language-button,.header-icon-button{min-width:44px;min-height:44px}
       .frame-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.summary-bar{align-items:flex-start}.summary-actions{width:100%}.summary-actions .button{flex:1 1 auto}.summary-actions .sort-select{flex:1 1 150px;max-width:none}
@@ -189,7 +189,7 @@
       .gif-layout{grid-template-columns:1fr}.gif-option-grid{grid-template-columns:1fr 1fr}.gif-result-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.gif-result-preview{min-height:220px}.gif-create-row{align-items:stretch}.gif-create-row .button{min-height:44px}
       .next-panel{grid-template-columns:1fr}.future-button{width:100%}.build-grid{grid-template-columns:1fr}
       dialog{width:calc(100vw - 16px);max-height:calc(100dvh - 16px);border-radius:16px}.dialog-shell{max-height:calc(100dvh - 16px)}.dialog-head{position:sticky;top:0;background:var(--surface);z-index:1}
-      .dialog-body{padding-bottom:calc(20px + env(safe-area-inset-bottom))}.app-toast{right:10px;bottom:calc(10px + env(safe-area-inset-bottom));max-width:calc(100vw - 20px)}
+      .dialog-body{padding-bottom:calc(20px + env(safe-area-inset-bottom))}.app-toast{right:10px;bottom:calc(86px + env(safe-area-inset-bottom));max-width:calc(100vw - 20px)}
     }
     @media(max-width:360px){.header-inner{padding-left:max(8px,env(safe-area-inset-left));padding-right:max(8px,env(safe-area-inset-right))}.brand-mark{width:34px;height:34px}.brand-name{font-size:15px}.brand-meta{display:none}.frame-grid{grid-template-columns:1fr}.gif-option-grid{grid-template-columns:1fr}.mobile-workflow-nav{gap:3px;padding:4px}.mobile-workflow-tab{font-size:10px}.preview-transport{grid-template-columns:repeat(4,minmax(44px,1fr))}}
     @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
@@ -2990,41 +2990,50 @@
       }
 
       function beginFrameDrag(event, handle) {
-        if (isBusy() || state.frames.length < 2 || (event.pointerType === 'mouse' && event.button !== 0)) return;
+        if (dragSession || isBusy() || state.frames.length < 2 || (event.pointerType === 'mouse' && event.button !== 0)) return;
         const card = handle.closest('.frame-card');
         if (!card) return;
         event.preventDefault();
         const rect = card.getBoundingClientRect();
+        const placeholder = document.createElement('div');
+        placeholder.className = 'frame-drag-placeholder';
+        placeholder.setAttribute('aria-hidden', 'true');
+        placeholder.style.height = rect.height + 'px';
+        card.before(placeholder);
         dragSession = {
           pointerId: event.pointerId,
           frameId: card.dataset.frameId,
           card,
-          handle: frameGrid,
+          placeholder,
           grabX: event.clientX - rect.left,
           grabY: event.clientY - rect.top,
-          x: 0,
-          y: 0,
-          before: state.frames.slice(),
-          changed: false
+          before: state.frames.slice()
         };
+        card.style.left = rect.left + 'px';
+        card.style.top = rect.top + 'px';
+        card.style.width = rect.width + 'px';
+        card.style.height = rect.height + 'px';
         card.classList.add('is-dragging');
-        // Capture on the stable grid: reparenting the dragged card would release capture on its handle.
+        document.body.append(card);
+        // The grid stays mounted and owns capture; the lifted card no longer changes the grid geometry.
         frameGrid.setPointerCapture?.(event.pointerId);
       }
-      function animateShiftedCards(oldPositions, draggedCard) {
-        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      function animateShiftedCards(oldPositions) {
         for (const card of frameGrid.children) {
-          if (card === draggedCard) continue;
+          if (card.classList.contains('frame-drag-placeholder')) continue;
+          // FLIP must begin at the *current* visual position even if an earlier move is animating.
+          // Cancel the previous animation before reading the new untransformed layout position.
+          card.getAnimations().forEach(animation => animation.cancel());
           const previous = oldPositions.get(card);
-          if (!previous) continue;
+          if (!previous || window.matchMedia('(prefers-reduced-motion: reduce)').matches) continue;
           const next = card.getBoundingClientRect();
           const dx = previous.left - next.left;
           const dy = previous.top - next.top;
           if (Math.abs(dx) < 1 && Math.abs(dy) < 1) continue;
           card.animate([
-            { transform: `translate3d(${dx}px,${dy}px,0)` },
+            { transform: 'translate3d(' + dx + 'px,' + dy + 'px,0)' },
             { transform: 'translate3d(0,0,0)' }
-          ], { duration: 170, easing: 'cubic-bezier(.2,.8,.2,1)' });
+          ], { duration: 185, easing: 'cubic-bezier(.2,.8,.2,1)' });
         }
       }
       function moveDraggedFrame(event) {
@@ -3033,47 +3042,48 @@
         event.preventDefault();
         if (event.clientY < 72) window.scrollBy(0, -14);
         else if (event.clientY > window.innerHeight - 72) window.scrollBy(0, 14);
-        const draggedCard = session.card;
-        const rect = draggedCard.getBoundingClientRect();
-        const baseLeft = rect.left - session.x;
-        const baseTop = rect.top - session.y;
-        session.x = event.clientX - session.grabX - baseLeft;
-        session.y = event.clientY - session.grabY - baseTop;
-        draggedCard.style.transform = `translate3d(${session.x}px,${session.y}px,0) scale(1.025)`;
-        draggedCard.style.pointerEvents = 'none';
-        const targetCard = document.elementFromPoint(event.clientX, event.clientY)?.closest?.('.frame-card');
-        draggedCard.style.pointerEvents = '';
-        if (!targetCard || targetCard === draggedCard) return;
-        const from = frameIndexById(session.frameId);
-        const to = frameIndexById(targetCard.dataset.frameId);
-        if (from < 0 || to < 0 || from === to) return;
-        const oldPositions = new Map(Array.from(frameGrid.children, card => [card, card.getBoundingClientRect()]));
-        const [frame] = state.frames.splice(from, 1);
-        state.frames.splice(to, 0, frame);
-        if (from < to) targetCard.after(draggedCard);
-        else targetCard.before(draggedCard);
-        session.changed = true;
-        updateFrameCardPositions();
-        // The card stays under the finger while its reserved grid slot changes.
-        const newRect = draggedCard.getBoundingClientRect();
-        session.x += (rect.left - newRect.left);
-        session.y += (rect.top - newRect.top);
-        draggedCard.style.transform = `translate3d(${session.x}px,${session.y}px,0) scale(1.025)`;
-        animateShiftedCards(oldPositions, draggedCard);
+        session.card.style.left = (event.clientX - session.grabX) + 'px';
+        session.card.style.top = (event.clientY - session.grabY) + 'px';
+
+        const gridRect = frameGrid.getBoundingClientRect();
+        if (event.clientY < gridRect.top - 40 || event.clientY > gridRect.bottom + 40) return;
+        const x = event.clientX - gridRect.left;
+        const y = event.clientY - gridRect.top;
+        const slots = Array.from(frameGrid.children);
+        // Offset positions are layout coordinates, unaffected by the neighboring cards' FLIP transforms.
+        let nearest = null;
+        let bestDistance = Infinity;
+        for (const slot of slots) {
+          const dx = (slot.offsetLeft + slot.offsetWidth / 2 - x) / Math.max(1, slot.offsetWidth);
+          const dy = (slot.offsetTop + slot.offsetHeight / 2 - y) / Math.max(1, slot.offsetHeight);
+          const distance = dx * dx + dy * dy;
+          if (distance < bestDistance) { nearest = slot; bestDistance = distance; }
+        }
+        if (!nearest || nearest === session.placeholder) return;
+        const from = slots.indexOf(session.placeholder);
+        const to = slots.indexOf(nearest);
+        if (from === to) return;
+        const oldPositions = new Map(slots.filter(slot => slot !== session.placeholder).map(slot => [slot, slot.getBoundingClientRect()]));
+        if (from < to) nearest.after(session.placeholder);
+        else nearest.before(session.placeholder);
+        animateShiftedCards(oldPositions);
       }
       function endFrameDrag(event, cancelled = false) {
         const session = dragSession;
         if (!session || event.pointerId !== session.pointerId) return;
         dragSession = null;
-        const card = session.card;
-        try { session.handle.releasePointerCapture?.(event.pointerId); } catch { /* already released */ }
-        card.classList.remove('is-dragging');
-        card.style.transform = '';
-        card.style.pointerEvents = '';
-        if (cancelled) state.frames = session.before.slice();
-        if (!cancelled && session.changed) recordHistory(session.before, state.frames, 'drag');
+        try { frameGrid.releasePointerCapture?.(event.pointerId); } catch { /* capture already released */ }
+        const orderedIds = Array.from(frameGrid.children, node => node === session.placeholder ? session.frameId : node.dataset.frameId);
+        session.placeholder.replaceWith(session.card);
+        session.card.classList.remove('is-dragging');
+        for (const prop of ['left','top','width','height']) session.card.style[prop] = '';
+        session.card.style.removeProperty('pointer-events');
+        if (!cancelled) {
+          const framesById = new Map(state.frames.map(frame => [frame.id, frame]));
+          state.frames = orderedIds.map(id => framesById.get(id));
+          if (recordHistory(session.before, state.frames, 'drag')) showUndoToast(t('reordered'));
+        }
         render();
-        if (!cancelled && session.changed) showUndoToast(t('reordered'));
       }
 
       const AppToast = (() => {
