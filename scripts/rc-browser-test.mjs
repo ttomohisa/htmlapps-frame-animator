@@ -160,6 +160,81 @@ async function saveDownload(page, buttonSelector, destination) {
   return readFileSync(destination);
 }
 
+
+/** Generate local sample frames for README screenshots, separate from the synthetic regression fixtures. */
+async function createScreenshotFrames(page, count = 4) {
+  const files = [];
+  for (let i = 0; i < count; i += 1) {
+    const encoded = await page.evaluate(step => {
+      const c = document.createElement('canvas');
+      c.width = 900; c.height = 600;
+      const g = c.getContext('2d');
+      const sky = g.createLinearGradient(0,0,0,600);
+      sky.addColorStop(0,'#c6e1db');sky.addColorStop(.56,'#f4e1c3');sky.addColorStop(1,'#f7f0df');
+      g.fillStyle=sky;g.fillRect(0,0,900,600);
+      const sx=630-step*35, sy=220-step*16;
+      const glow=g.createRadialGradient(sx,sy,5,sx,sy,150);
+      glow.addColorStop(0,'rgba(237,184,108,.5)');glow.addColorStop(1,'rgba(237,184,108,0)');
+      g.fillStyle=glow;g.fillRect(sx-150,sy-150,300,300);
+      g.fillStyle='#edbd7b';g.beginPath();g.arc(sx,sy,57,0,Math.PI*2);g.fill();
+      g.fillStyle='rgba(255,255,255,.7)';
+      for(const [x,y,k] of [[185+step*12,134,1],[765+step*7,102,.7]]) {
+        g.beginPath();g.ellipse(x,y,75*k,17*k,0,0,Math.PI*2);g.fill();
+        g.beginPath();g.ellipse(x+18*k,y-11*k,39*k,20*k,0,0,Math.PI*2);g.fill();
+      }
+      function hill(points,color) {
+        g.beginPath();g.moveTo(0,600);
+        for(const [x,y] of points)g.lineTo(x,y);
+        g.lineTo(900,600);g.closePath();g.fillStyle=color;g.fill();
+      }
+      hill([[0,347],[105,308],[235,341],[353,287],[474,316],[620,277],[745,315],[900,282]],'#92b8aa');
+      hill([[0,426],[108,393],[228,418],[350,365],[476,393],[618,352],[750,389],[900,355]],'#5a8375');
+      const water=g.createLinearGradient(0,430,0,600);
+      water.addColorStop(0,'#88b7af');water.addColorStop(1,'#396d62');
+      g.fillStyle=water;g.fillRect(0,430,900,170);
+      g.strokeStyle='rgba(255,241,206,.52)';g.lineWidth=3;
+      for(let n=0;n<8;n++) {
+        const y=449+n*20+step*2;
+        g.beginPath();g.moveTo(44+(n%3)*40,y);
+        g.bezierCurveTo(230,y-6,400,y+6,610,y);
+        g.bezierCurveTo(730,y-5,800,y+5,861,y-1);g.stroke();
+      }
+      hill([[0,505],[90,510],[185,547],[265,600]],'#285a4c');
+      hill([[678,600],[775,528],[858,506],[900,512]],'#285a4c');
+      g.strokeStyle='#244c40';g.lineWidth=5;g.lineCap='round';
+      for(const [x,y] of [[50,485],[90,466],[136,499],[798,484],[839,466],[875,502]]) {
+        g.beginPath();g.moveTo(x,600);g.quadraticCurveTo(x-16,535,x+step*3,y);g.stroke();
+      }
+      return c.toDataURL('image/png').split(',')[1];
+    }, i);
+    files.push({name: 'coast-' + String(i+1).padStart(2,'0') + '.png', mimeType:'image/png', buffer:Buffer.from(encoded,'base64')});
+  }
+  return files;
+}
+async function captureReleaseScreenshots(browser, baseUrl) {
+  const dctx = await makeContext(browser, { width: 1440, height: 1000 });
+  const desktop = await dctx.newPage();
+  await desktop.goto(baseUrl, { waitUntil:'load' });
+  await loadFiles(desktop, await createScreenshotFrames(desktop));
+  await waitFrames(desktop, 4);
+  await waitToastGone(desktop);
+  await desktop.evaluate(() => scrollTo(0,0));
+  await desktop.screenshot({ path:join(assetsDir,'screenshot.png'), fullPage:false });
+  await desktop.locator('#languageButton').click();
+  await desktop.screenshot({ path:join(assetsDir,'screenshot-en.png'), fullPage:false });
+  await dctx.close();
+  const mctx = await makeContext(browser, { width:390, height:844 });
+  const mobile = await mctx.newPage();
+  await mobile.goto(baseUrl, { waitUntil:'load' });
+  await loadFiles(mobile, await createScreenshotFrames(mobile,3));
+  await waitFrames(mobile,3);
+  await mobile.locator('#mobileTabPreview').click();
+  await waitToastGone(mobile);
+  await mobile.evaluate(() => scrollTo(0,0));
+  await mobile.screenshot({ path:join(assetsDir,'screenshot-mobile.png'), fullPage:false });
+  await mctx.close();
+}
+
 async function exerciseDesktop(browser, baseUrl) {
   const context = await makeContext(browser, { width: 1440, height: 1000 });
   const page = await context.newPage();
@@ -180,13 +255,8 @@ async function exerciseDesktop(browser, baseUrl) {
   assert(!(await visible(page.locator('#emptyState'))), 'Frames empty state remained visible after importing frames');
   await waitToastGone(page);
 
-  await page.evaluate(() => scrollTo(0, 0));
-  await page.screenshot({ path: join(assetsDir, 'screenshot.png'), fullPage: false });
-
   await page.locator('#languageButton').click();
   assert((await page.locator('#languageButton').textContent()).trim() === 'JA', 'English mode did not expose JA switch label');
-  await page.evaluate(() => scrollTo(0, 0));
-  await page.screenshot({ path: join(assetsDir, 'screenshot-en.png'), fullPage: false });
   await page.locator('#languageButton').click();
 
   const broken = { name: 'broken-zero-byte.png', mimeType: 'image/png', buffer: Buffer.alloc(0) };
@@ -401,7 +471,6 @@ async function exerciseMobile(browser, baseUrl) {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.locator('#mobileTabPreview').click();
   await waitToastGone(page);
-  await page.screenshot({ path: join(assetsDir, 'screenshot-mobile.png'), fullPage: false });
 
   assert(external.length === 0, `External runtime requests detected on mobile: ${external.join(', ')}`);
   assert(errors.length === 0, `Mobile page errors: ${errors.join(' | ')}`);
@@ -597,7 +666,8 @@ async function main() {
     await exerciseCancelAndRetry(browser, baseUrl);
     await exerciseForcedFailure(browser, baseUrl);
     await exerciseFileUrl(browser);
-    console.log('[OK] Frame Animator RC browser regression passed.');
+    await captureReleaseScreenshots(browser, baseUrl);
+    console.log('[OK] Frame Animator v1.0.0 browser regression passed.');
   } finally {
     await browser.close();
     await new Promise(resolveClose => server.close(resolveClose));
