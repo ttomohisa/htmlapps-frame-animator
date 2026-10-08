@@ -127,7 +127,11 @@
     .preview-transport .button{min-width:0;padding:8px}.preview-transport svg{width:17px;height:17px}
     .preview-help{margin:0;color:var(--muted);font-size:11px}
     .gif-layout{display:grid;grid-template-columns:minmax(280px,.72fr) minmax(0,1.28fr);gap:16px}
-    .gif-settings{display:grid;gap:12px}
+    .gif-settings{display:grid;gap:12px;align-content:start;align-self:start}
+    .export-format{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:16px;padding:5px;border:1px solid var(--line);border-radius:12px;background:var(--surface-muted)}
+    .export-format button{min-width:0;min-height:46px;border:1px solid transparent;border-radius:9px;background:transparent;color:var(--muted);font:inherit;font-size:13px;font-weight:800;cursor:pointer}
+    .export-format button[aria-selected="true"]{border-color:var(--accent);background:var(--surface);color:var(--accent);box-shadow:var(--shadow-sm)}
+    .export-format button:disabled{opacity:.5;cursor:wait}
     .gif-option-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
     .gif-switch{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:40px;padding:8px 10px;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
     .gif-switch span{font-size:12px;font-weight:720}.gif-switch input{width:18px;height:18px;accent-color:var(--accent)}
@@ -138,7 +142,7 @@
     .gif-create-row{display:flex;gap:8px;align-items:center}.gif-create-row .button.primary{flex:1 1 auto}
     .gif-progress-wrap{display:grid;gap:6px;padding:11px;border:1px solid var(--line);border-radius:10px;background:var(--surface-muted)}
     .gif-progress-wrap[hidden]{display:none}.gif-progress{width:100%;height:9px;accent-color:var(--accent)}.gif-progress-text{color:var(--muted);font-size:11px}
-    .gif-result{display:grid;gap:12px;min-height:100%}.gif-result-empty{display:grid;place-items:center;min-height:280px;padding:24px;border:1px dashed var(--line);border-radius:12px;color:var(--muted);text-align:center;font-size:12px}
+    .gif-result{display:grid;gap:12px;align-content:start;align-self:start}.gif-result-empty{display:grid;place-items:center;min-height:280px;padding:24px;border:1px dashed var(--line);border-radius:12px;color:var(--muted);text-align:center;font-size:12px}
     .gif-result-card{display:grid;gap:12px}.gif-result-card[hidden]{display:none}
     .gif-result-preview{display:grid;place-items:center;min-height:280px;overflow:hidden;padding:12px;border:1px solid var(--line);border-radius:12px;background-color:#fff;background-image:linear-gradient(45deg,#d8dad6 25%,transparent 25%),linear-gradient(-45deg,#d8dad6 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#d8dad6 75%),linear-gradient(-45deg,transparent 75%,#d8dad6 75%);background-size:20px 20px;background-position:0 0,0 10px,10px -10px,-10px 0}
     .gif-result-preview img{display:block;max-width:100%;max-height:480px;width:auto;height:auto}
@@ -438,7 +442,12 @@
       </div>
     </section></div>
 
-    <div id="mobilePageExport" data-mobile-page="export" role="tabpanel" aria-labelledby="mobileTabExport"><section class="panel" aria-labelledby="gifHeading">
+    <div id="mobilePageExport" data-mobile-page="export" role="tabpanel" aria-labelledby="mobileTabExport">
+    <div class="export-format" role="tablist" data-i18n-aria-label="exportFormatLabel" id="exportFormatSelector">
+      <button type="button" role="tab" id="exportGifTab" aria-selected="true" aria-controls="gifExportPanel" data-format="gif" data-i18n="exportGifOption">GIF</button>
+      <button type="button" role="tab" id="exportWebpTab" aria-selected="false" aria-controls="webpExportPanel" data-format="webp" data-i18n="exportWebpOption">Animated WebP</button>
+    </div>
+    <section class="panel" id="gifExportPanel" role="tabpanel" aria-labelledby="exportGifTab">
       <div class="panel-head">
         <div>
           <h3 id="gifHeading" data-i18n="gifHeading">Animated GIFを書き出す</h3>
@@ -499,7 +508,7 @@
       </div>
     </section>
 
-    <section class="panel" aria-labelledby="webpHeading">
+    <section class="panel" id="webpExportPanel" role="tabpanel" aria-labelledby="exportWebpTab" hidden>
       <div class="panel-head">
         <div>
           <h3 id="webpHeading" data-i18n="webpHeading">Animated WebPを書き出す</h3>
@@ -561,12 +570,6 @@
               </div>
             </div>
           </div>
-        </div>
-      </div>
-      <div class="next-panel">
-        <div>
-          <strong data-i18n="nextTitle">次の段階: 再生順とワークフロー改善</strong>
-          <span data-i18n="nextBody">v0.7.0でReverse / Ping-pong、ループ回数、クリップボード貼り付けなどを追加します。</span>
         </div>
       </div>
     </section>
@@ -734,7 +737,7 @@
           outputSettingsTitle:'出力Canvas', outputSettingsBody:'1枚目の縦横比を基準にサイズをそろえます。カスタムでは幅・高さを個別指定できます。', canvasSizeLabel:'Canvasサイズ', canvasAuto:'自動（長辺最大720px）', canvas480:'長辺480px', canvas720:'長辺720px', canvas1080:'長辺1080px', canvasOriginal:'1枚目の元サイズ相当', canvasCustom:'カスタム', canvasWidthLabel:'Canvas幅', canvasHeightLabel:'Canvas高さ', placementLabel:'画像の配置', fit:'収める', fill:'切り抜く', backgroundLabel:'背景', backgroundTransparent:'透明', backgroundWhite:'白', backgroundBlack:'黒', backgroundCustom:'カスタム色', backgroundColorLabel:'背景色', previewCanvasLabel:'正規化されたアニメーションプレビュー', resolvedCanvas:'実際のCanvas',
           gifHeading:'Animated GIFを書き出す', gifHeadingNote:'Canvas設定とフレーム時間を使い、GIFをこのブラウザ内で生成します。', gifColorsLabel:'色数', gifLoopLabel:'ループ', gifLoopInfinite:'繰り返す', gifLoopOnce:'1回だけ', gifDitherLabel:'Dithering', outputFilenameLabel:'出力ファイル名', gifLimitNote:'GIFは最大256色・1bit透明です。写真ではDitheringを有効にすると階調が自然になる場合があります。', createGif:'GIFを作成', cancelGif:'キャンセル', gifResultEmpty:'GIFを作成すると、ここで実際の生成ファイルを確認できます。', gifResultPreviewLabel:'生成したGIFのプレビュー', gifResultSizeLabel:'Canvas', gifResultFramesLabel:'フレーム', gifResultDurationLabel:'再生時間', gifResultBytesLabel:'ファイル容量', saveGif:'GIFを保存', gifPreparing:'フレーム {current} / {total} を準備しています…', gifEncoding:'フレーム {current} / {total} をGIFへ変換しています…', gifFinishing:'GIFを仕上げています…', gifDone:'GIFを作成しました', gifSaved:'GIFを保存しました', gifCancelled:'GIF作成をキャンセルしました', gifFailed:'GIFを作成できませんでした', gifFailedRecovery:'GIFを作成できませんでした。出力サイズやフレーム数を小さくするか、設定を変更してもう一度お試しください。', gifStale:'設定が変更されました。もう一度GIFを作成してください。', heavyJobTitle:'処理負荷の確認', heavyJobBody:'{format}を{frames}フレーム・{width}×{height}pxで作成します。端末のメモリを多く使用し、処理に時間がかかる可能性があります。続行しますか？', continueExport:'続行',
           webpHeading:'Animated WebPを書き出す', webpHeadingNote:'写真や色数の多い画像を、品質・Lossless・Effortを指定してWebPへ変換します。', webpQualityLabel:'品質', webpEffortLabel:'Effort', webpLosslessLabel:'Lossless', webpLoopLabel:'ループ', webpLoopInfinite:'繰り返す', webpLoopOnce:'1回だけ', webpNote:'WebPはフルカラーとAlphaに対応します。Losslessや高いEffortは処理時間・ファイル容量が増える場合があります。', createWebp:'WebPを作成', cancelWebp:'キャンセル', webpResultEmpty:'WebPを作成すると、ここで実際の生成ファイルを確認できます。', webpResultPreviewLabel:'生成したAnimated WebPのプレビュー', saveWebp:'WebPを保存', webpPreparing:'フレーム {current} / {total} を準備しています…', webpEncoding:'フレーム {current} / {total} をWebPへ変換しています…', webpFinishing:'Animated WebPを仕上げています…', webpDone:'WebPを作成しました', webpSaved:'WebPを保存しました', webpCancelled:'WebP作成をキャンセルしました', webpFailed:'WebPを作成できませんでした', webpFailedRecovery:'WebPを作成できませんでした。出力サイズ・品質・Lossless・Effortなどを変更して、もう一度お試しください。', webpStale:'設定が変更されました。もう一度WebPを作成してください。',
-          nextTitle:'次の段階: 再生順とワークフロー改善', nextBody:'v0.7.0でReverse / Ping-pong、ループ回数、クリップボード貼り付けなどを追加します。', createAnimation:'アニメーションを作成',
+          exportFormatLabel:'書き出す形式', exportGifOption:'GIF', exportWebpOption:'Animated WebP',
           buildInfo:'ビルド情報', appVersion:'アプリバージョン', builtAt:'生成日時', dependencies:'内包依存', footer:'画像はこの端末内で処理されます',
           help:'ヘルプ', close:'閉じる', helpTitle:'使い方と注意事項', helpHowTitle:'基本操作', helpHow1:'JPEG・PNG・静止WebPを複数選択、画面へドロップ、またはクリップボードから画像を貼り付けます。', helpHow2:'順番と表示時間を整えます。', helpHow3:'Canvas設定を確認し、GIFまたはWebPの設定を選んで作成します。生成後は実ファイルを確認して保存します。',
           helpFormatsTitle:'対応形式', helpFormatsBody:'JPEG / JPG、PNG、静止WebPに対応します。Animated WebP、GIF、動画、HEIC等は現在対象外です。', helpLimitsTitle:'上限', helpLimitsBody:'最大200枚、1ファイル50 MiB、読み込み済み元ファイル合計500 MiB、1画像50メガピクセルです。表示時間は1フレーム20〜10,000 ms、Canvasは16〜4096pxです。',
@@ -797,7 +800,8 @@
           loopCount: 2
         },
         ui: {
-          mobilePage: 'frames'
+          mobilePage: 'frames',
+          exportFormat: 'gif'
         },
         preview: {
           index: 0,
@@ -877,6 +881,7 @@
       const webpProgressWrap = $('#webpProgressWrap');
       const webpProgressText = $('#webpProgressText');
       const webpResultImage = $('#webpResultImage');
+      const exportFormatSelector = $('#exportFormatSelector');
 
       function readStorage(key) { try { return localStorage.getItem(key); } catch { return null; } }
       function writeStorage(key, value) { try { localStorage.setItem(key, value); } catch { /* language persistence is optional */ } }
@@ -2874,6 +2879,23 @@
         $('#undoButton').disabled = isBusy() || state.undoStack.length === 0;
         $('#redoButton').disabled = isBusy() || state.redoStack.length === 0;
       }
+      function applyExportFormat() {
+        const format = state.ui.exportFormat;
+        $('#gifExportPanel').hidden = format !== 'gif';
+        $('#webpExportPanel').hidden = format !== 'webp';
+        for (const tab of exportFormatSelector.querySelectorAll('[data-format]')) {
+          const selected = tab.dataset.format === format;
+          tab.setAttribute('aria-selected', String(selected));
+          tab.tabIndex = selected ? 0 : -1;
+          tab.disabled = isBusy();
+        }
+      }
+      function setExportFormat(format) {
+        if (isBusy() || !['gif', 'webp'].includes(format)) return;
+        state.ui.exportFormat = format;
+        applyExportFormat();
+      }
+
       function render() {
         $('#frameCount').textContent = new Intl.NumberFormat(language).format(state.frames.length);
         $('#totalDuration').textContent = formatSeconds(totalDurationMs());
@@ -2922,6 +2944,7 @@
         renderPreviewFrame();
         renderGifResult();
         renderWebpResult();
+        applyExportFormat();
         applyMobileWorkflow();
       }
       function updateBusy(busy) {
@@ -3060,6 +3083,20 @@
         $('#footerName').textContent = language === 'ja' ? APP_CONFIG.nameJa : APP_CONFIG.name;
         render();
       }
+
+      exportFormatSelector.addEventListener('click', event => {
+        const tab = event.target.closest('[data-format]');
+        if (tab) setExportFormat(tab.dataset.format);
+      });
+      exportFormatSelector.addEventListener('keydown', event => {
+        const tabs = Array.from(exportFormatSelector.querySelectorAll('[data-format]'));
+        const index = tabs.indexOf(document.activeElement);
+        if (index < 0 || !['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) return;
+        event.preventDefault();
+        const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+        setExportFormat(tabs[next].dataset.format);
+        tabs[next].focus();
+      });
 
       mobileWorkflowNav.addEventListener('click', event => {
         const tab = event.target.closest('[data-mobile-target]');
