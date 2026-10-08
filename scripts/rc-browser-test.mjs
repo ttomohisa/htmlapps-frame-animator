@@ -264,6 +264,7 @@ async function exerciseDesktop(browser, baseUrl) {
   assert(decoded.supported, 'Chromium ImageDecoder is unavailable for Animated WebP visual verification');
   assert(decoded.count === 8, `Chromium decoded ${decoded.count} WebP frames, expected 8`);
   assert(decoded.unique > 1, 'Animated WebP frames decoded to identical visual content');
+  console.log(`[OK] Animated WebP pixels: ${decoded.count} frames, ${decoded.unique} distinct sample hashes.`);
 
   await page.locator('#exportGifTab').click();
   assert(await visible(page.locator('#gifExportPanel')) && !(await visible(page.locator('#webpExportPanel'))), 'GIF format selection did not restore GIF settings');
