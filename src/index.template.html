@@ -174,12 +174,16 @@
     @media(max-width:900px){.frame-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
     @media(max-width:640px){
       .header-inner{padding-left:max(10px,env(safe-area-inset-left));padding-right:max(10px,env(safe-area-inset-right))}
-      .main{padding:16px max(12px,env(safe-area-inset-right)) calc(108px + env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
+      .main{padding:16px max(12px,env(safe-area-inset-right)) 38px max(12px,env(safe-area-inset-left))}
       footer{padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right));padding-bottom:calc(96px + env(safe-area-inset-bottom))}
       .page-intro{display:block}.local-badge{margin-top:11px}.panel-body{padding:13px}.drop-zone{min-height:190px;padding:22px 14px}
-      .mobile-workflow-nav{position:fixed;inset:auto 0 0;z-index:50;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:5px;margin:0;padding:6px max(12px,env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));border-top:1px solid var(--line);background:var(--surface);box-shadow:0 -5px 24px rgba(25,28,24,.09)}
-      .mobile-workflow-nav[hidden]{display:none}.mobile-workflow-tab{min-width:0;min-height:44px;padding:7px 5px;border:0;border-radius:9px;background:transparent;color:var(--muted);font:inherit;font-size:11px;font-weight:800;cursor:pointer}
-      .mobile-workflow-tab[aria-selected="true"]{background:var(--surface);color:var(--accent);box-shadow:var(--shadow-sm)}
+      /* Signal Screen mobile action bar: edge-to-edge, blurred surface and clear primary action. */
+      .mobile-workflow-nav{position:fixed;inset:auto 0 0;z-index:50;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0;padding:9px max(12px,env(safe-area-inset-right)) calc(9px + env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));border-top:1px solid var(--line);background:rgba(245,245,242,.95);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px)}
+      .mobile-workflow-nav[hidden]{display:none}
+      .mobile-workflow-tab{display:flex;align-items:center;justify-content:center;gap:6px;min-width:0;min-height:50px;padding:9px 6px;border:1px solid var(--line);border-radius:13px;background:var(--surface);color:var(--muted);font:inherit;font-size:12px;font-weight:760;cursor:pointer}
+      .mobile-workflow-tab svg{width:18px;height:18px;flex:0 0 auto}
+      .mobile-workflow-tab[aria-selected="true"]{border-color:var(--accent);background:var(--accent);color:#fff}
+      .mobile-workflow-tab:hover:not([aria-selected="true"]){background:var(--surface-muted);border-color:var(--line-strong)}
       [data-mobile-page]{scroll-margin-top:calc(var(--header-height) + 12px + env(safe-area-inset-top))}
       .button,.sort-select,.output-select,.size-input,.duration-control,.duration-input,.segment-button,.background-color,.timing-preset{min-height:44px}
       .frame-action{height:44px}.language-button,.header-icon-button{min-width:44px;min-height:44px}
@@ -191,7 +195,7 @@
       dialog{width:calc(100vw - 16px);max-height:calc(100dvh - 16px);border-radius:16px}.dialog-shell{max-height:calc(100dvh - 16px)}.dialog-head{position:sticky;top:0;background:var(--surface);z-index:1}
       .dialog-body{padding-bottom:calc(20px + env(safe-area-inset-bottom))}.app-toast{right:10px;bottom:calc(86px + env(safe-area-inset-bottom));max-width:calc(100vw - 20px)}
     }
-    @media(max-width:360px){.header-inner{padding-left:max(8px,env(safe-area-inset-left));padding-right:max(8px,env(safe-area-inset-right))}.brand-mark{width:34px;height:34px}.brand-name{font-size:15px}.brand-meta{display:none}.frame-grid{grid-template-columns:1fr}.gif-option-grid{grid-template-columns:1fr}.mobile-workflow-nav{gap:3px;padding:4px}.mobile-workflow-tab{font-size:10px}.preview-transport{grid-template-columns:repeat(4,minmax(44px,1fr))}}
+    @media(max-width:360px){.header-inner{padding-left:max(8px,env(safe-area-inset-left));padding-right:max(8px,env(safe-area-inset-right))}.brand-mark{width:34px;height:34px}.brand-name{font-size:15px}.brand-meta{display:none}.frame-grid{grid-template-columns:1fr}.gif-option-grid{grid-template-columns:1fr}.mobile-workflow-nav{gap:5px}.mobile-workflow-tab{gap:4px;padding:8px 4px;font-size:11px}.mobile-workflow-tab svg{width:16px;height:16px}.preview-transport{grid-template-columns:repeat(4,minmax(44px,1fr))}}
     @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
   </style>
 </head>
@@ -259,9 +263,18 @@
     </section>
 
     <nav class="mobile-workflow-nav" id="mobileWorkflowNav" role="tablist" data-i18n-aria-label="mobileWorkflow" hidden>
-      <button class="mobile-workflow-tab" id="mobileTabFrames" type="button" role="tab" data-mobile-target="frames" aria-controls="mobilePageFrames" aria-selected="true" data-i18n="mobileFrames">フレーム</button>
-      <button class="mobile-workflow-tab" id="mobileTabPreview" type="button" role="tab" data-mobile-target="preview" aria-controls="mobilePagePreview" aria-selected="false" data-i18n="mobilePreview">プレビュー</button>
-      <button class="mobile-workflow-tab" id="mobileTabExport" type="button" role="tab" data-mobile-target="export" aria-controls="mobilePageExport" aria-selected="false" data-i18n="mobileExport">書き出し</button>
+      <button class="mobile-workflow-tab" id="mobileTabFrames" type="button" role="tab" data-mobile-target="frames" aria-controls="mobilePageFrames" aria-selected="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="3" width="7" height="7" rx="1.3"/><rect x="14" y="3" width="7" height="7" rx="1.3"/><rect x="3" y="14" width="7" height="7" rx="1.3"/><rect x="14" y="14" width="7" height="7" rx="1.3"/></svg>
+        <span data-i18n="mobileFrames">フレーム</span>
+      </button>
+      <button class="mobile-workflow-tab" id="mobileTabPreview" type="button" role="tab" data-mobile-target="preview" aria-controls="mobilePagePreview" aria-selected="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="m10 8 6 4-6 4Z" stroke-linejoin="round"/></svg>
+        <span data-i18n="mobilePreview">プレビュー</span>
+      </button>
+      <button class="mobile-workflow-tab" id="mobileTabExport" type="button" role="tab" data-mobile-target="export" aria-controls="mobilePageExport" aria-selected="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12m-4-4 4 4 4-4M4 17v3h16v-3"/></svg>
+        <span data-i18n="mobileExport">書き出し</span>
+      </button>
     </nav>
 
     <div id="mobilePageFrames" data-mobile-page="frames" role="tabpanel" aria-labelledby="mobileTabFrames"><section class="panel" aria-labelledby="framesHeading">
