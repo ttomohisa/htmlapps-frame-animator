@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   chromium:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
@@ -27,7 +27,7 @@ jobs:
       - name: Install Chromium test runner
         run: |
           npm install --no-save --no-package-lock playwright@1.56.1
-          npx playwright install --with-deps chromium
+          npx playwright install chromium
       - name: Exercise drag, mobile, animation and offline regressions
         run: node scripts/rc-browser-test.mjs
       - name: Attach screenshot evidence
