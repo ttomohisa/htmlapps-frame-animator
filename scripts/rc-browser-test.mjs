@@ -328,6 +328,8 @@ async function exerciseMobile(browser, baseUrl) {
   const errors = [];
   watchNetwork(page, external, errors);
   await page.goto(baseUrl, { waitUntil: 'load' });
+  assert((await page.locator('#versionBadge').textContent())?.trim() === 'v1.0.0', 'Standalone UI must display stable v1.0.0');
+  assert(await page.evaluate(() => JSON.parse(document.querySelector('#app-config').textContent).version === '1.0.0'), 'Embedded standalone app-config version mismatch');
   await loadFiles(page, [
     filePayload('mobile-1.png', 80, 120, 11),
     filePayload('mobile-2.png', 120, 80, 12),
