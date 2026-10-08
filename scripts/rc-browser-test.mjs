@@ -296,8 +296,18 @@ async function exerciseFrameDragging(browser, baseUrl) {
   assert(handle && target, 'Frame drag bounds unavailable');
   await page.mouse.move(handle.x + handle.width / 2, handle.y + handle.height / 2);
   await page.mouse.down();
+  const liftedOnPress = await page.locator('.frame-card.is-dragging').count();
   await page.mouse.move(target.x + target.width / 2, target.y + target.height / 2, { steps: 12 });
-  assert(await page.locator('.frame-card.is-dragging').count() === 1, 'Dragged frame did not show lifted state');
+  const liftedOnMove = await page.locator('.frame-card.is-dragging').count();
+  const dragDiagnostics = await page.evaluate(() => ({
+    cardCount: document.querySelectorAll('.frame-card').length,
+    order: [...document.querySelectorAll('.frame-name')].map(el => el.textContent),
+    gridHasCapture: [...document.querySelectorAll('.frame-grid')].map(el => ({ id: el.id, pointerCapture: el.hasPointerCapture(1) })),
+    draggingCount: document.querySelectorAll('.frame-card.is-dragging').length
+  }));
+  console.log('RC_DRAG_DIAGNOSTIC', JSON.stringify({ liftedOnPress, liftedOnMove, dragDiagnostics }));
+  assert(liftedOnPress === 1, 'Dragged frame did not lift on pointerdown');
+  assert(liftedOnMove === 1, 'Dragged frame did not stay lifted through pointermove');
   await page.mouse.up();
   const after = await page.locator('.frame-name').allTextContents();
   assert(before.join('|') !== after.join('|'), 'Pointer dragging did not reorder frame cards');
