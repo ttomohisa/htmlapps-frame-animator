@@ -1,0 +1,35 @@
+name: Frame Animator RC UX and WebP verification
+
+on:
+  push:
+    branches:
+      - release/frame-animator-v0.9.0
+    paths:
+      - .github/workflows/rc-ux-webp-verification.yml
+      - scripts/rc-browser-test.mjs
+
+permissions:
+  contents: read
+
+jobs:
+  browser:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: release/frame-animator-v0.9.0
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+      - name: Build and check standalone
+        shell: pwsh
+        run: ./scripts/check-repository.ps1
+      - name: Install Playwright and Chromium
+        shell: pwsh
+        run: |
+          npm install --no-save --package-lock=false playwright@1.55.0
+          npx playwright install chromium
+      - name: Run updated RC browser audit
+        shell: pwsh
+        run: node ./scripts/rc-browser-test.mjs
