@@ -339,26 +339,61 @@ async function exerciseMobile(browser, baseUrl) {
   const mobileNavGeometry = await page.evaluate(() => {
     const nav = document.querySelector('#mobileWorkflowNav');
     const rect = nav.getBoundingClientRect();
-    return { position: getComputedStyle(nav).position, bottomGap: window.innerHeight - rect.bottom, top: rect.top };
+    const style = getComputedStyle(nav);
+    const buttons = Array.from(nav.querySelectorAll('.mobile-workflow-tab'));
+    return {
+      position: style.position,
+      bottomGap: window.innerHeight - rect.bottom,
+      top: rect.top,
+      blurred: style.backdropFilter.includes('blur') || style.webkitBackdropFilter?.includes('blur'),
+      buttons: buttons.map(button => ({
+        height: button.getBoundingClientRect().height,
+        width: button.getBoundingClientRect().width,
+        icons: button.querySelectorAll('svg[aria-hidden="true"]').length
+      })),
+      activeBg: getComputedStyle(buttons[0]).backgroundColor,
+      inactiveBg: getComputedStyle(buttons[1]).backgroundColor
+    };
   });
   assert(mobileNavGeometry.position === 'fixed' && Math.abs(mobileNavGeometry.bottomGap) <= 1 && mobileNavGeometry.top > 0,
     'Mobile workflow navigation must stay fixed at the bottom, not above the cards');
+  assert(mobileNavGeometry.blurred, 'Mobile nav must use the Signal Screen frosted full-width bottom bar');
+  assert(mobileNavGeometry.buttons.length === 3
+    && mobileNavGeometry.buttons.every(tab => tab.height >= 50 && tab.width > 74 && tab.icons === 1),
+    'All three mobile tabs must provide large SVG-labeled tap targets');
+  assert(mobileNavGeometry.activeBg === 'rgb(22, 98, 79)' && mobileNavGeometry.inactiveBg !== mobileNavGeometry.activeBg,
+    'Signal Screen-style primary color must identify the selected workflow step');
   assert(await visible(page.locator('#mobilePageFrames')), 'Frames mobile page should be visible initially');
   assert(!(await visible(page.locator('#mobilePagePreview'))), 'Preview mobile page should be hidden initially');
 
   await page.locator('#mobileTabPreview').click();
   assert(await visible(page.locator('#mobilePagePreview')), 'Preview mobile page did not activate');
+  assert(await page.locator('#mobileTabPreview').getAttribute('aria-selected') === 'true', 'Preview tab did not get selected state');
+  await page.locator('#mobileTabExport').click();
+  assert(await visible(page.locator('#mobilePageExport')), 'Export tab did not activate');
+  assert(!(await visible(page.locator('#mobilePagePreview'))), 'Previous mobile page remains visible after switching to export');
+  await page.locator('#mobileTabPreview').click();
   assert(!(await visible(page.locator('#mobilePageFrames'))), 'Frames mobile page remained visible after tab switch');
 
   const widths = [390, 360, 320];
   for (const width of widths) {
     await page.setViewportSize({ width, height: 844 });
     await page.waitForTimeout(50);
-    const geometry = await page.evaluate(() => ({
-      scrollWidth: document.documentElement.scrollWidth,
-      innerWidth: window.innerWidth
-    }));
+    const geometry = await page.evaluate(() => {
+      const nav = document.querySelector('#mobileWorkflowNav');
+      const rect = nav.getBoundingClientRect();
+      const tabs = Array.from(nav.querySelectorAll('button')).map(button => button.getBoundingClientRect());
+      return {
+        scrollWidth: document.documentElement.scrollWidth,
+        innerWidth: window.innerWidth,
+        navBottom: window.innerHeight - rect.bottom,
+        tapHeights: tabs.map(tab => tab.height),
+        tabsFit: tabs.every(tab => tab.left >= 0 && tab.right <= window.innerWidth)
+      };
+    });
     assert(geometry.scrollWidth <= geometry.innerWidth, `Horizontal overflow at ${width}px: ${JSON.stringify(geometry)}`);
+    assert(Math.abs(geometry.navBottom) <= 1 && geometry.tabsFit && geometry.tapHeights.every(height => height >= 50),
+      `Bottom nav overlaps/offscreen or tap target too small at ${width}px: ${JSON.stringify(geometry)}`);
   }
 
   await page.setViewportSize({ width: 390, height: 844 });
