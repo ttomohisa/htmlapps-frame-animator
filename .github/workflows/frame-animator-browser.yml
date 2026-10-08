@@ -7,6 +7,15 @@ on:
       - 'scripts/rc-browser-test.mjs'
       - 'build-standalone.ps1'
       - '.github/workflows/frame-animator-browser.yml'
+  push:
+    branches:
+      - 'release/**'
+    paths:
+      - 'src/index.template.html'
+      - 'app.config.json'
+      - 'README.md'
+      - 'README.ja.md'
+      - '.github/workflows/frame-animator-browser.yml'
   workflow_dispatch:
 
 permissions:
@@ -14,6 +23,7 @@ permissions:
 
 jobs:
   chromium:
+    if: github.event_name != 'push'
     runs-on: windows-latest
     timeout-minutes: 25
     steps:
@@ -40,3 +50,39 @@ jobs:
             assets/screenshot-en.png
             assets/screenshot-mobile.png
           if-no-files-found: ignore
+
+  release-assets:
+    if: github.event_name == 'push' && startsWith(github.ref_name, 'release/')
+    runs-on: windows-latest
+    timeout-minutes: 25
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout release branch
+        uses: actions/checkout@v6
+        with:
+          ref: ${{ github.ref_name }}
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Build release standalone HTML
+        shell: pwsh
+        run: ./scripts/check-repository.ps1
+      - name: Install Chromium test runner
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1
+          npx playwright install chromium
+      - name: Verify final UI and refresh release screenshots
+        run: node scripts/rc-browser-test.mjs
+      - name: Commit generated release assets
+        shell: pwsh
+        run: |
+          git add -- frame-animator.html assets/screenshot.png assets/screenshot-en.png assets/screenshot-mobile.png
+          $changed = git diff --cached --name-only
+          if ($changed) {
+            git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m 'build: sync standalone HTML and screenshots [skip ci]'
+            git push origin "HEAD:$env:GITHUB_REF_NAME"
+          } else {
+            Write-Host "Release HTML and screenshots are already current."
+          }
