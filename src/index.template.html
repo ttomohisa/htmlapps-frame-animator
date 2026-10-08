@@ -72,7 +72,7 @@
     .empty-state h4{margin:0 0 5px;font-size:15px}.empty-state p{margin:0;color:var(--muted);font-size:12px}
     .frame-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
     .frame-card{min-width:0;border:1px solid var(--line);border-radius:13px;background:var(--surface);overflow:hidden;transition:border-color .14s ease,box-shadow .14s ease,opacity .14s ease}
-    .frame-card.is-dragging{opacity:.68;border-color:var(--accent);box-shadow:0 10px 28px rgba(25,28,24,.16)}
+    .frame-card.is-dragging{position:relative;z-index:12;opacity:.96;border-color:var(--accent);box-shadow:0 18px 42px rgba(10,30,22,.26);cursor:grabbing;will-change:transform}
     .thumb-wrap{position:relative;aspect-ratio:4/3;background:linear-gradient(45deg,#e9e9e5 25%,transparent 25%) 0 0/16px 16px,linear-gradient(-45deg,#e9e9e5 25%,transparent 25%) 0 8px/16px 16px,linear-gradient(45deg,transparent 75%,#e9e9e5 75%) 8px -8px/16px 16px,linear-gradient(-45deg,transparent 75%,#e9e9e5 75%) -8px 0/16px 16px,#f7f7f4}
     .thumb-wrap img{width:100%;height:100%;display:block;object-fit:contain;pointer-events:none}
     .frame-number{position:absolute;left:8px;top:8px;padding:3px 7px;border-radius:999px;background:rgba(20,24,21,.78);color:#fff;font-size:10px;font-weight:800;backdrop-filter:blur(5px)}
@@ -760,7 +760,7 @@
           outputSettingsTitle:'Output canvas', outputSettingsBody:'Preset sizes keep the first frame aspect ratio. Custom size lets you set width and height independently.', canvasSizeLabel:'Canvas size', canvasAuto:'Auto (long edge up to 720px)', canvas480:'480px long edge', canvas720:'720px long edge', canvas1080:'1080px long edge', canvasOriginal:'First frame original equivalent', canvasCustom:'Custom', canvasWidthLabel:'Canvas width', canvasHeightLabel:'Canvas height', placementLabel:'Image placement', fit:'Fit', fill:'Fill', backgroundLabel:'Background', backgroundTransparent:'Transparent', backgroundWhite:'White', backgroundBlack:'Black', backgroundCustom:'Custom color', backgroundColorLabel:'Background color', previewCanvasLabel:'Normalized animation preview', resolvedCanvas:'Resolved canvas',
           gifHeading:'Export Animated GIF', gifHeadingNote:'Create a GIF locally using the current canvas settings and frame timing.', gifColorsLabel:'Colors', gifLoopLabel:'Loop', gifLoopInfinite:'Repeat', gifLoopOnce:'Play once', gifDitherLabel:'Dithering', outputFilenameLabel:'Output filename', gifLimitNote:'GIF is limited to 256 colors and 1-bit transparency. Dithering can make gradients look more natural in photographs.', createGif:'Create GIF', cancelGif:'Cancel', gifResultEmpty:'Create a GIF to review the actual generated file here.', gifResultPreviewLabel:'Generated GIF preview', gifResultSizeLabel:'Canvas', gifResultFramesLabel:'Frames', gifResultDurationLabel:'Duration', gifResultBytesLabel:'File size', saveGif:'Save GIF', gifPreparing:'Preparing frame {current} / {total}…', gifEncoding:'Encoding frame {current} / {total}…', gifFinishing:'Finishing GIF…', gifDone:'GIF created', gifSaved:'GIF saved', gifCancelled:'GIF creation cancelled', gifFailed:'Could not create GIF', gifFailedRecovery:'Could not create the GIF. Reduce the output size or frame count, or change the settings and try again.', gifStale:'Settings changed. Create the GIF again.', heavyJobTitle:'Confirm processing load', heavyJobBody:'Create {format} with {frames} frames at {width}×{height}px. This may use substantial memory and take longer on this device. Continue?', continueExport:'Continue',
           webpHeading:'Export Animated WebP', webpHeadingNote:'Encode full-color photographic output with quality, Lossless, and Effort controls.', webpQualityLabel:'Quality', webpEffortLabel:'Effort', webpLosslessLabel:'Lossless', webpLoopLabel:'Loop', webpLoopInfinite:'Repeat', webpLoopOnce:'Play once', webpNote:'WebP supports full color and alpha. Lossless mode and higher Effort may take longer or produce larger files.', createWebp:'Create WebP', cancelWebp:'Cancel', webpResultEmpty:'Create a WebP to review the actual generated file here.', webpResultPreviewLabel:'Generated Animated WebP preview', saveWebp:'Save WebP', webpPreparing:'Preparing frame {current} / {total}…', webpEncoding:'Encoding frame {current} / {total}…', webpFinishing:'Finishing Animated WebP…', webpDone:'WebP created', webpSaved:'WebP saved', webpCancelled:'WebP creation cancelled', webpFailed:'Could not create WebP', webpFailedRecovery:'Could not create the WebP. Adjust output size, quality, Lossless, or Effort, then try again.', webpStale:'Settings changed. Create the WebP again.',
-          nextTitle:'Next: playback order and workflow polish', nextBody:'v0.7.0 will add Reverse / Ping-pong, custom loop counts, clipboard paste, and related workflow polish.', createAnimation:'Create animation',
+          exportFormatLabel:'Export format', exportGifOption:'GIF', exportWebpOption:'Animated WebP',
           buildInfo:'Build information', appVersion:'App version', builtAt:'Built at', dependencies:'Embedded dependencies', footer:'Images are processed on this device',
           help:'Help', close:'Close', helpTitle:'How to use & notes', helpHowTitle:'Basic workflow', helpHow1:'Choose multiple JPEG, PNG, or still WebP images, drop them onto the page, or paste an image from the clipboard.', helpHow2:'Arrange the sequence and adjust timing.', helpHow3:'Review the canvas, choose GIF or WebP settings, generate the animation, and inspect the actual file before saving.',
           helpFormatsTitle:'Supported formats', helpFormatsBody:'JPEG / JPG, PNG, and still WebP are supported. Animated WebP, GIF, video, HEIC, and other formats are not supported yet.', helpLimitsTitle:'Limits', helpLimitsBody:'Up to 200 images, 50 MiB per file, 500 MiB total source files, 50 megapixels per image, 20–10,000 ms per frame, and a 16–4096 px output canvas.',
@@ -2994,34 +2994,81 @@
         const card = handle.closest('.frame-card');
         if (!card) return;
         event.preventDefault();
-        dragSession = { pointerId: event.pointerId, frameId: card.dataset.frameId, before: state.frames.slice(), changed: false };
+        const rect = card.getBoundingClientRect();
+        dragSession = {
+          pointerId: event.pointerId,
+          frameId: card.dataset.frameId,
+          card,
+          handle,
+          grabX: event.clientX - rect.left,
+          grabY: event.clientY - rect.top,
+          x: 0,
+          y: 0,
+          before: state.frames.slice(),
+          changed: false
+        };
         card.classList.add('is-dragging');
         handle.setPointerCapture?.(event.pointerId);
       }
+      function animateShiftedCards(oldPositions, draggedCard) {
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+        for (const card of frameGrid.children) {
+          if (card === draggedCard) continue;
+          const previous = oldPositions.get(card);
+          if (!previous) continue;
+          const next = card.getBoundingClientRect();
+          const dx = previous.left - next.left;
+          const dy = previous.top - next.top;
+          if (Math.abs(dx) < 1 && Math.abs(dy) < 1) continue;
+          card.animate([
+            { transform: `translate3d(${dx}px,${dy}px,0)` },
+            { transform: 'translate3d(0,0,0)' }
+          ], { duration: 170, easing: 'cubic-bezier(.2,.8,.2,1)' });
+        }
+      }
       function moveDraggedFrame(event) {
-        if (!dragSession || event.pointerId !== dragSession.pointerId) return;
+        const session = dragSession;
+        if (!session || event.pointerId !== session.pointerId) return;
         event.preventDefault();
         if (event.clientY < 72) window.scrollBy(0, -14);
         else if (event.clientY > window.innerHeight - 72) window.scrollBy(0, 14);
+        const draggedCard = session.card;
+        const rect = draggedCard.getBoundingClientRect();
+        const baseLeft = rect.left - session.x;
+        const baseTop = rect.top - session.y;
+        session.x = event.clientX - session.grabX - baseLeft;
+        session.y = event.clientY - session.grabY - baseTop;
+        draggedCard.style.transform = `translate3d(${session.x}px,${session.y}px,0) scale(1.025)`;
+        draggedCard.style.pointerEvents = 'none';
         const targetCard = document.elementFromPoint(event.clientX, event.clientY)?.closest?.('.frame-card');
-        if (!targetCard || targetCard.dataset.frameId === dragSession.frameId) return;
-        const from = frameIndexById(dragSession.frameId);
+        draggedCard.style.pointerEvents = '';
+        if (!targetCard || targetCard === draggedCard) return;
+        const from = frameIndexById(session.frameId);
         const to = frameIndexById(targetCard.dataset.frameId);
         if (from < 0 || to < 0 || from === to) return;
-        const draggedCard = Array.from(frameGrid.children).find(card => card.dataset.frameId === dragSession.frameId);
+        const oldPositions = new Map(Array.from(frameGrid.children, card => [card, card.getBoundingClientRect()]));
         const [frame] = state.frames.splice(from, 1);
         state.frames.splice(to, 0, frame);
-        if (draggedCard) {
-          if (from < to) targetCard.after(draggedCard);
-          else targetCard.before(draggedCard);
-        }
-        dragSession.changed = true;
+        if (from < to) targetCard.after(draggedCard);
+        else targetCard.before(draggedCard);
+        session.changed = true;
         updateFrameCardPositions();
+        // The card stays under the finger while its reserved grid slot changes.
+        const newRect = draggedCard.getBoundingClientRect();
+        session.x += (rect.left - newRect.left);
+        session.y += (rect.top - newRect.top);
+        draggedCard.style.transform = `translate3d(${session.x}px,${session.y}px,0) scale(1.025)`;
+        animateShiftedCards(oldPositions, draggedCard);
       }
       function endFrameDrag(event, cancelled = false) {
-        if (!dragSession || event.pointerId !== dragSession.pointerId) return;
         const session = dragSession;
+        if (!session || event.pointerId !== session.pointerId) return;
         dragSession = null;
+        const card = session.card;
+        try { session.handle.releasePointerCapture?.(event.pointerId); } catch { /* already released */ }
+        card.classList.remove('is-dragging');
+        card.style.transform = '';
+        card.style.pointerEvents = '';
         if (cancelled) state.frames = session.before.slice();
         if (!cancelled && session.changed) recordHistory(session.before, state.frames, 'drag');
         render();
