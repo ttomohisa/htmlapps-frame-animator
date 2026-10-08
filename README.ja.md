@@ -15,18 +15,18 @@ Frame Animatorは、JPEG・PNG・静止WebP画像を並べ、表示時間を調�
 ### 単一HTMLを開く
 
 1. このリポジトリの [frame-animator.html](frame-animator.html) をダウンロードします。
-2. ChromeやEdgeなどの現行ブラウザで開きます（\`file://\` から直接開けます）。
+2. ChromeやEdgeなどの現行ブラウザで開きます（`file://` から直接開けます）。
 3. 画像を追加してアニメーションを作成します。ダウンロードしたHTMLはオフラインでも使用できます。
 
 ### オフライン版を自分でビルドする（上級者向け）
 
 Windowsでリポジトリをダウンロードまたはクローンし、次を実行します。
 
-\`\`\`powershell
+```powershell
 ./build-standalone.ps1
-\`\`\`
+```
 
-初回ビルド時に、固定バージョンのWebPエンコーダを取得して必要なJavaScript/WASMをHTMLへ内包します。生成された \`dist/index.html\` は、その後ネット接続なしで直接開けます。ビルドにはWindows PowerShellと \`tar.exe\` を使用します。Node.jsとPlaywrightは任意のブラウザ自動テストでのみ使います。
+初回ビルド時に、固定バージョンのWebPエンコーダを取得して必要なJavaScript/WASMをHTMLへ内包します。生成された `dist/index.html` は、その後ネット接続なしで直接開けます。ビルドにはWindows PowerShellと `tar.exe` を使用します。Node.jsとPlaywrightは任意のブラウザ自動テストでのみ使います。
 
 GitHub Pagesへの公開用ワークフローも用意していますが、実際の公開URLはPagesの設定に依存します。未確認のデモURLを公開済みとして案内しません。
 
@@ -70,15 +70,15 @@ Animated WebPは**MP4動画ではなく、動く画像**です。一部の画像
 
 | キー | 操作 |
 | --- | --- |
-| \`Ctrl\` / \`⌘\` + \`Z\` | 元に戻す |
-| \`Ctrl\` / \`⌘\` + \`Shift\` + \`Z\` | やり直す |
-| \`Ctrl\` / \`⌘\` + \`Y\` | やり直す |
+| `Ctrl` / `⌘` + `Z` | 元に戻す |
+| `Ctrl` / `⌘` + `Shift` + `Z` | やり直す |
+| `Ctrl` / `⌘` + `Y` | やり直す |
 
 ドラッグができない場合も、カードの前へ・後ろへボタンで並び替えられます。
 
 ## 対応形式と上限
 
-**読み込み対応：** JPEG/JPG、PNG、静止WebP。GIF・Animated WebP・APNG・HEIC/HEIF・AVIF・SVG・動画・PDF・PSDの読み込みには対応しません。書き出しはAnimated GIF（\`.gif\`）とAnimated WebP（\`.webp\`）です。MP4には書き出しません。
+**読み込み対応：** JPEG/JPG、PNG、静止WebP。GIF・Animated WebP・APNG・HEIC/HEIF・AVIF・SVG・動画・PDF・PSDの読み込みには対応しません。書き出しはAnimated GIF（`.gif`）とAnimated WebP（`.webp`）です。MP4には書き出しません。
 
 | 項目 | アプリ側の上限 |
 | --- | --- |
@@ -94,7 +94,7 @@ Animated WebPは**MP4動画ではなく、動く画像**です。一部の画像
 
 ## 開発とビルド
 
-\`\`\`text
+```text
 .
 ├─ src/index.template.html           # アプリ本体と日英UI
 ├─ app.config.json                   # アプリ情報とバージョン
@@ -107,20 +107,20 @@ Animated WebPは**MP4動画ではなく、動く画像**です。一部の画像
 └─ dist/                              # ビルドで生成
    ├─ index.html
    └─ index.self-extract.html
-\`\`\`
+```
 
 Windowsでビルドとリポジトリ構成を検証します。
 
-\`\`\`powershell
+```powershell
 ./scripts/check-repository.ps1
-\`\`\`
+```
 
 ブラウザの回帰テストはPlaywright/Chromiumを使い、GitHub Actionsでも実行します。詳しい仕様・実装計画・開発方法は [APP_SPEC.md](APP_SPEC.md)、[DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md)、[CONTRIBUTING.md](CONTRIBUTING.md) を確認してください。
 
 ## プライバシーとオフライン動作
 
 - 追加した画像の読み込み・変換・保存は**ブラウザ内で実行**します。アプリから画像の内容をアップロードしません。
-- WebPエンコーダなど必要な実行時資産は生成HTMLに内包します。CSPは \`connect-src 'none'\` を含み、実行時CDN、Analytics、Telemetry、変換APIを使用しません。
+- WebPエンコーダなど必要な実行時資産は生成HTMLに内包します。CSPは `connect-src 'none'` を含み、実行時CDN、Analytics、Telemetry、変換APIを使用しません。
 - 画像そのものをlocalStorageやIndexedDBへ自動保存しません。ページの再読み込み・終了時には作業画像を破棄します。言語設定などは端末に保存されることがあります。
 - Web公開版では最初のHTML読み込みに通信が必要です。ネット接続を使わず利用したい場合は、単一HTMLを端末内で開いてください。
 
