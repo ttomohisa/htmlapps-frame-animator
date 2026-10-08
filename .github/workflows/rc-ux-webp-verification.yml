@@ -10,7 +10,7 @@ on:
       - src/index.template.html
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   browser:
@@ -34,3 +34,13 @@ jobs:
       - name: Run updated RC browser audit
         shell: pwsh
         run: node ./scripts/rc-browser-test.mjs
+
+      - name: Commit generated root HTML and remove one-shot workflow
+        shell: pwsh
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add frame-animator.html
+          git rm .github/workflows/rc-ux-webp-verification.yml
+          git commit -m "build: sync RC reviewed Frame Animator HTML"
+          git push origin HEAD:release/frame-animator-v0.9.0
