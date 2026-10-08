@@ -299,9 +299,23 @@ async function exerciseFrameDragging(browser, baseUrl) {
   await page.mouse.move(handle.x + handle.width / 2, handle.y + handle.height / 2);
   await page.mouse.down();
   assert(await page.locator('.frame-card.is-dragging').count() === 1, 'Dragged frame did not lift on pointerdown');
+  const lift = await page.evaluate(() => {
+    const card = document.querySelector('.frame-card.is-dragging');
+    const slot = document.querySelector('#frameGrid .frame-drag-placeholder');
+    return { liftedToBody: card?.parentElement === document.body, position: card && getComputedStyle(card).position, placeholders: document.querySelectorAll('.frame-drag-placeholder').length, occupiedSlot: Boolean(slot?.offsetWidth && slot?.offsetHeight) };
+  });
+  assert(lift.liftedToBody && lift.position === 'fixed' && lift.placeholders === 1 && lift.occupiedSlot,
+    'Dragging must lift the card from the grid and reserve exactly one stable slot');
   await page.mouse.move(target.x + target.width / 2, target.y + target.height / 2, { steps: 12 });
   assert(await page.locator('.frame-card.is-dragging').count() === 1, 'Dragged frame did not stay lifted during reorder');
+  // Cross the same cells again: ongoing shift animations must not steal the hit target or duplicate slots.
+  await page.mouse.move(handle.x + handle.width / 2, handle.y + handle.height / 2, { steps: 12 });
+  await page.mouse.move(target.x + target.width / 2, target.y + target.height / 2, { steps: 12 });
+  assert(await page.locator('#frameGrid .frame-drag-placeholder').count() === 1, 'Drag placeholder became unstable on reverse movement');
+  assert(await page.locator('#frameGrid .frame-card').count() === 3, 'Neighboring cards were lost or duplicated during drag');
   await page.mouse.up();
+  assert(await page.locator('.frame-drag-placeholder, .frame-card.is-dragging').count() === 0, 'Drag overlay or placeholder was left behind after release');
+  assert(await page.locator('#frameGrid .frame-card').count() === 4, 'Dropped card did not rejoin the grid');
   const after = await page.locator('.frame-name').allTextContents();
   assert(before.join('|') !== after.join('|'), 'Pointer dragging did not reorder frame cards');
   await context.close();
@@ -322,6 +336,13 @@ async function exerciseMobile(browser, baseUrl) {
   await waitFrames(page, 3);
 
   assert(await visible(page.locator('#mobileWorkflowNav')), 'Mobile workflow navigation is not visible at 390px');
+  const mobileNavGeometry = await page.evaluate(() => {
+    const nav = document.querySelector('#mobileWorkflowNav');
+    const rect = nav.getBoundingClientRect();
+    return { position: getComputedStyle(nav).position, bottomGap: window.innerHeight - rect.bottom, top: rect.top };
+  });
+  assert(mobileNavGeometry.position === 'fixed' && Math.abs(mobileNavGeometry.bottomGap) <= 1 && mobileNavGeometry.top > 0,
+    'Mobile workflow navigation must stay fixed at the bottom, not above the cards');
   assert(await visible(page.locator('#mobilePageFrames')), 'Frames mobile page should be visible initially');
   assert(!(await visible(page.locator('#mobilePagePreview'))), 'Preview mobile page should be hidden initially');
 
