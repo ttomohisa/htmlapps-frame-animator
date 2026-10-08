@@ -1,169 +1,147 @@
 # Frame Animator
 
-Frame Animator is a Browser Kitty utility for turning multiple local still images into an animated GIF or WebP without uploading the source images.
+[![Validate standalone HTML](https://github.com/ttomohisa/htmlapps-frame-animator/actions/workflows/build-standalone.yml/badge.svg)](https://github.com/ttomohisa/htmlapps-frame-animator/actions/workflows/build-standalone.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Single HTML](https://img.shields.io/badge/distribution-single%20HTML-16624F)](frame-animator.html)
 
-> Current development version: **v0.9.0 RC**. Feature work is frozen while the complete image-to-GIF/WebP workflow is being regression-tested for v1.0.0.
+[日本語版 README](README.ja.md)
 
-## Current features
+Frame Animator turns a sequence of JPEG, PNG, or still WebP images into an **animated GIF or Animated WebP**. Arrange the images, adjust the timing, preview the motion, and save the result—all in your browser, without uploading your images to a conversion server.
 
-- Import multiple JPEG, PNG, and still WebP images
-- File selection, Drag & Drop, and adding more images to the current session
-- Thumbnail list with filename, dimensions, megapixels, and source size
-- Reject detectable Animated WebP instead of silently treating it as one still frame
-- Safety guards: 200 frames, 50 MiB per file, 500 MiB source total, 50 MP per image
-- Partial failure reporting: valid images remain usable when another image fails
-- Explicit confirmation before clearing all imported images
-- Reorder frames by mouse/touch drag from a dedicated handle
-- Earlier/later buttons as a non-drag reordering path
-- Duplicate and delete individual frames
-- Undo / Redo for imports and sequence edits, including keyboard shortcuts
-- Natural filename sorting in ascending or descending order
-- Per-frame duration from 20–10,000 ms in 10 ms steps, defaulting to 500 ms
-- Apply 100 / 200 / 500 / 1000 ms presets or a custom duration to every frame
-- Total animation duration based on the current sequence
-- Live variable-duration preview with Play / Pause, Restart, Previous, and Next
-- Timing edits participate in Undo / Redo and resume playback when edited during playback
-- Normalize mixed source sizes onto one output canvas
-- Auto / 480 / 720 / 1080 / original-equivalent / custom canvas sizing
-- Fit or Fill placement with centered geometry
-- Transparent / white / black / custom-color backgrounds
-- Checkerboard transparency preview
-- On-demand preview decode with ImageBitmap cleanup; no full-sequence RGBA retention
-- Local GIF89a encoder running color reduction, dithering, and LZW compression in a Blob Worker
-- 64 / 128 / 256-color GIF output
-- Floyd–Steinberg dithering, enabled by default for smoother photographic gradients
-- Infinite-loop or play-once GIF output
-- GIF timing from the current per-frame durations
-- Full-resolution source frames normalized one at a time and transferred to the Worker
-- Encoding progress and cancellation
-- Actual generated GIF preview with dimensions, frame count, duration, and file size
-- Editable/sanitized output filename and local GIF download
-- Stale-result invalidation when an output-affecting setting changes
-- Animated WebP export using pinned @jsquash/webp 1.5.0 / libwebp WASM
-- Quality 1–100, Lossless, and Effort 0–6 controls
-- Variable per-frame millisecond timing preserved in the Animated WebP container
-- Infinite-loop and play-once Animated WebP
-- Actual generated WebP preview and local save
-- Shared Forward / Reverse / Ping-pong playback order for preview, GIF, and WebP
-- Ping-pong sequence without duplicate endpoints
-- Infinite / once / custom 2–100 play-count setting shared by both export formats
-- Clipboard image paste for JPEG / PNG / still WebP
-- High-load export warning based on resolved canvas size and derived frame count
-- Format-aware filename handling: visible .gif / .webp suffix plus extension sanitization
-- Large initial image drop zone that becomes compact after images are loaded while remaining clickable and droppable
-- User-supplied Frame Animator SVG used for both the app icon and favicon
-- Smartphone-only Frames / Preview / Export staged navigation at 640 px and below
-- Safe-area-aware mobile layout and 44 px touch targets
-- 320 / 360 / 390 px responsive hardening, including single-column export options at narrow width
-- Lazy thumbnail decoding and prompt temporary-canvas release for large frame lists
-- Single-frame timing edits avoid rebuilding the entire frame-card DOM
-- Frame position semantics with `aria-posinset` / `aria-setsize`
-- Preview automatically pauses when the document becomes hidden
-- Recoverable GIF/WebP failure states that keep project data intact and allow retry without reload
-- Japanese and English in the same HTML; the language switch uses compact EN / JA labels
-- Responsive desktop and smartphone layout
-- No runtime CDN, analytics, telemetry, or external API
+No registration or installation is needed to use the ready-made HTML.
 
-## Workflow
+## Quick start
 
-The current RC supports this complete flow:
+### Open the single HTML file
 
-1. Add images.
-2. Reorder frames.
-3. Set global or per-frame timing.
-4. Choose output size and Fit / Fill.
-5. Preview Forward / Reverse / Ping-pong motion.
-6. Create Animated WebP or GIF.
-7. Review the generated file and save it.
+1. Download [frame-animator.html](frame-animator.html) from this repository.
+2. Open it in a current browser, such as Chrome or Edge (including directly from \`file://\`).
+3. Add images and create an animation. The downloaded HTML can be opened offline.
 
-See [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md) for the milestone breakdown.
+### Build your own offline copy (advanced)
+
+On Windows, download or clone this repository, then run:
+
+\`\`\`powershell
+./build-standalone.ps1
+\`\`\`
+
+The first build downloads the exact pinned WebP encoder package and embeds the necessary JavaScript/WASM in the output. After building, open \`dist/index.html\` directly without a network connection. Windows PowerShell and \`tar.exe\` are required for the build; Node.js and Playwright are used only for the optional automated browser tests.
+
+The repository also contains a GitHub Pages deployment workflow. Whether a public demo is available depends on the repository's GitHub Pages settings; an active demo URL is not assumed here.
 
 ## Screenshots
 
-### Desktop
-
-![Frame Animator desktop](assets/screenshot-en.png)
-
-### Mobile
+| Desktop (Japanese) | Desktop (English) |
+| --- | --- |
+| ![Frame Animator desktop in Japanese](assets/screenshot.png) | ![Frame Animator desktop in English](assets/screenshot-en.png) |
 
 ![Frame Animator mobile](assets/screenshot-mobile.png)
 
-## Animated WebP playback
+## Features
 
-Animated WebP is an **animated image**, not an MP4 video. Some image viewers or operating-system previews display only a still frame. Check the generated result in Frame Animator or in a supported browser such as Chrome or Edge.
+- **Import and reorder frames** — Select multiple images, drag and drop files, paste an image from the clipboard, or add more images later. Move cards with a mouse or touch drag handle, previous/next buttons, and natural filename sorting.
+- **Set each frame's duration** — Use global presets or adjust individual frames from 20 to 10,000 ms. Undo/redo also covers sequence and timing changes.
+- **Preview the actual sequence** — Play, pause, step through frames, and choose Forward, Reverse, or Ping-pong (without duplicate endpoints). Set infinite, once-only, or custom repeat counts.
+- **Fit mixed image sizes** — Use preset or custom canvas dimensions, Fit/Fill placement, and transparent, white, black, or custom backgrounds.
+- **Choose GIF or Animated WebP** — GIF supports 64/128/256 colors and optional dithering; WebP supports quality, lossless mode, and encoding effort. Encoding runs locally with progress and cancellation.
+- **Inspect before saving** — Preview the generated GIF/WebP file, see its dimensions, frame count, duration and file size, then save it with an editable filename.
+- **Mobile-friendly and local** — Three bottom navigation actions (Frames / Preview / Export), Japanese/English UI, responsive layouts, and no file upload.
 
-The export view lets you choose GIF or Animated WebP without stacking both format panels. Switching formats preserves each format's settings and generated result until they become stale.
+## Usage
 
-## Privacy
+1. Choose multiple JPEG, PNG, or still WebP images, drop them onto the app, or paste an image.
+2. Change the order using the card drag handle or previous/next buttons. Duplicate or remove frames as needed.
+3. Set a common duration or edit each card's duration. \`Undo\` and \`Redo\` can reverse edits.
+4. Select the output canvas size, Fit/Fill behavior, and background.
+5. Play the preview and choose Forward, Reverse, or Ping-pong and the repeat count.
+6. Select **GIF** or **Animated WebP**, adjust format-specific settings, and create the result.
+7. Check the *generated file* in the results area, edit the suggested filename, and save it.
 
-Imported images stay in the browser. Frame Animator does not upload selected files or use an application backend for conversion.
+On smartphones, use the **Frames / Preview / Export** controls in the fixed bottom bar to switch stages. The drag handle is separate from ordinary page scrolling.
 
-The app uses a restrictive Content Security Policy with `connect-src 'none'`. It has no analytics, telemetry, runtime CDN, external font, or external API.
+### Playback and file format notes
 
-Imported image bytes are not automatically persisted to localStorage or IndexedDB. Closing the page discards the working image set.
+Animated WebP is an **animated image, not an MP4 video**. Some image viewers display only its first frame. Open a saved WebP in a compatible browser to verify its animation. GIF and WebP exports share the same playback order and repeat settings, but each format has its own encoding options.
 
-## Input support in v0.9.0
+If you change a setting that affects an existing output, regenerate the file before saving; outdated results are marked invalid. If conversion fails, the imported frames remain available for a retry.
 
-Supported:
+### Keyboard shortcuts
 
-- JPEG / JPG
-- PNG
-- still WebP
+| Shortcut | Action |
+| --- | --- |
+| \`Ctrl\` / \`⌘\` + \`Z\` | Undo |
+| \`Ctrl\` / \`⌘\` + \`Shift\` + \`Z\` | Redo |
+| \`Ctrl\` / \`⌘\` + \`Y\` | Redo |
 
-Not supported yet:
+Buttons for moving frames remain available without dragging.
 
-- Animated WebP
-- GIF
-- APNG
-- video
-- HEIC / HEIF
-- AVIF
-- SVG
-- PSD
-- PDF
+## Input support and limits
 
-## Limits in v0.9.0
+**Supported inputs:** JPEG/JPG, PNG, and *still* WebP. Unsupported inputs include animated GIF, Animated WebP, APNG, HEIC/HEIF, AVIF, SVG, video, PDF, and PSD. Export formats are Animated GIF (\`.gif\`) and Animated WebP (\`.webp\`); MP4 is not generated.
 
-- 200 images
-- 50 MiB per source file
-- 500 MiB total imported source bytes
-- 50 megapixels per source image
-- 20–10,000 ms per frame in 10 ms steps
-- output canvas width/height: 16–4096 px
+| Item | Application limit |
+| --- | --- |
+| Number of frames | 200 |
+| File size | 50 MiB per image |
+| Total imported source size | 500 MiB |
+| Image dimensions | 50 megapixels per image |
+| Frame duration | 20–10,000 ms in 10 ms steps |
+| Output canvas | 16–4096 px for each dimension |
+| Custom play count | 2–100 plays (plus once/infinite) |
 
-These are application safety guards and do not describe the absolute limits of every browser or device.
+These are application safeguards; device memory and browser capabilities may impose additional limits. Invalid images are reported separately while successfully imported images remain usable.
 
-## Browser support
+## Development and build
 
-The primary targets are current Chrome and Edge. Firefox, Safari, iOS Safari, and Android Chrome are also considered during development.
+\`\`\`text
+.
+├─ src/index.template.html           # App implementation and localized UI
+├─ app.config.json                   # App identity and version
+├─ dependencies.json                 # Pinned runtime assets
+├─ dependencies.lock.json            # Package hashes / integrity
+├─ build-standalone.ps1              # Windows standalone builder
+├─ frame-animator.html               # Repository-root standalone HTML
+├─ scripts/rc-browser-test.mjs       # Chromium regression checks
+├─ assets/                            # Favicon and screenshots
+└─ dist/                              # Generated build outputs
+   ├─ index.html
+   └─ index.self-extract.html
+\`\`\`
 
-The final standalone build is required to work when opened directly with `file://`.
+To validate the build and repository contracts on Windows:
 
-## Single-HTML build
+\`\`\`powershell
+./scripts/check-repository.ps1
+\`\`\`
 
-The repository follows the current Browser Kitty `htmlapps-template` contract.
+The browser regression script (\`scripts/rc-browser-test.mjs\`) uses Playwright and Chromium, and is also exercised by a GitHub Actions workflow. See [APP_SPEC.md](APP_SPEC.md), [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md), and [CONTRIBUTING.md](CONTRIBUTING.md) for implementation and contribution details.
 
-On Windows PowerShell:
+## Privacy and offline operation
 
-```powershell
-./build-standalone.ps1
-```
+- Selected files are decoded, resized, animated, and saved **in your browser**. The application does not upload their contents.
+- The generated HTML embeds its WebP encoder and other runtime assets. Its Content Security Policy includes \`connect-src 'none'\`; no runtime CDN, analytics, telemetry, or conversion API is used.
+- Images are not automatically written to localStorage or IndexedDB. Reloading/closing the page discards the working images; the language preference may be stored locally.
+- Opening a hosted page requires downloading the HTML itself. To use the tool without any connection, open the standalone HTML locally.
 
-The build produces the readable standalone HTML, a gzip self-extracting variant, and the repository-root readable copy defined by the template.
+## Browser support and limitations
 
-Before completion, run:
+Current Chrome and Edge are the primary test targets. Firefox, Safari, iOS Safari, and Android Chrome are best-effort targets; compatibility and performance can vary, particularly for large WASM encoding jobs.
 
-```powershell
-powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File .\scripts\check-powershell-syntax.ps1
-powershell.exe -NoLogo -NoProfile -ExecutionPolicy Bypass -File .\scripts\check-repository.ps1
-```
+Frame Animator does not accept a video as input, edit individual image pixels, add transitions/audio, or export an MP4. Large canvases and many frames can exhaust memory on some devices, despite the input guards and sequential encoding design.
 
-## Development
+## Dependencies
 
-Product behavior and acceptance criteria live in [APP_SPEC.md](APP_SPEC.md). The staged roadmap is in [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md).
+| Runtime dependency | Pinned version | License | Purpose |
+| --- | --- | --- | --- |
+| [@jsquash/webp](https://github.com/jamsinclair/jSquash) / libwebp | 1.5.0 | Apache-2.0 (wrapper); libwebp redistribution terms | Local Animated WebP encoding |
+
+GIF encoding and frame dragging are implemented inside the application. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for full third-party notices.
+
+## Contributing
+
+Issues and improvement proposals are welcome. Read [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md) before proposing a change or privately reporting a vulnerability.
 
 ## License
 
-MIT. See [LICENSE](LICENSE).
-
-Third-party notices are recorded in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). v0.9.0 embeds pinned `@jsquash/webp@1.5.0` and its libwebp encoder assets for local WebP generation.
+Copyright © 2026 ttomohisa. Licensed under the [MIT License](LICENSE).
