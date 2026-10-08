@@ -91,6 +91,12 @@ Frame Animatorは、複数のローカル画像からAnimated GIF / WebPを作�
 
 ![Frame Animator スマートフォン](assets/screenshot-mobile.png)
 
+## Animated WebPの再生について
+
+Animated WebPはMP4などの動画ファイルではなく、複数フレームを含む**動く画像**です。画像ビューアーやOS標準のプレビューによっては、最初のフレームだけ静止表示される場合があります。生成後は、アプリ内の結果プレビューまたはChrome / Edge等の対応ブラウザーで確認してください。
+
+書き出し画面ではGIFとAnimated WebPを切り替えて選択でき、生成後もそれぞれの設定・結果を保持します。
+
 ## プライバシー
 
 読み込んだ画像はブラウザ内に留まります。Frame Animatorは選択ファイルをアップロードせず、変換用バックエンドも使用しません。
