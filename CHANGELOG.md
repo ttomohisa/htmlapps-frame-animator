@@ -6,6 +6,24 @@ The project uses Semantic Versioning.
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-10-08
+
+### Stable release
+
+- Finalized the complete local still-image to Animated GIF/Animated WebP workflow: import, reorder, set timing, preview, export, inspect and save.
+- Stabilized lifted-card dragging with a placeholder and smooth movement of neighboring cards.
+- Aligned smartphone bottom navigation with Browser Kitty's Signal Screen visual conventions, using SVG icons and larger tap targets.
+- Published concise Japanese and English README documentation following PDF Organizer's practical quick-start, features, usage, build, privacy, and limitations structure.
+- Updated the stable app version, specification, security policy, and third-party notices.
+- Added Windows Chromium browser regression coverage for dragging, mobile geometry, clipboard, GIF/WebP playback and downloads, encoder failures, file:// operation, and no-network processing.
+- Regenerated distribution HTML and desktop/mobile screenshots from the verified build.
+
+### Compatibility
+
+- Supports JPEG/JPG, PNG, and still WebP inputs; outputs animated GIF or Animated WebP. No MP4 output or animated-image input.
+- Retains pinned @jsquash/webp@1.5.0, Content Security Policy connect-src 'none', and standalone/offline operation.
+
+
 ## [0.9.0] - 2026-10-08
 
 ### RC review fixes (after first preview)
