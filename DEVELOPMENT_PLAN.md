@@ -163,6 +163,8 @@ Final RC screenshot audit confirmed the supplied icon/favicon, clean populated f
 
 RC review: lifted dragging and FLIP-style movement of adjacent cards; single GIF/WebP format selector; removal of obsolete v0.7.0 copy; non-stretching export settings. Additional regression tests compare the actual decoded pixel content of separate Animated WebP frames rather than relying solely on RIFF/ANMF frame metadata.
 
+Final Windows/Chromium Playwright audit: **PASS**. The generated Animated WebP had 8 decodable frames with **4 distinct sampled frame-pixel hashes**, confirming frame content changes rather than only ANMF presence. Mouse drag/reorder, export-format switching, GIF/WebP save, error recovery, and direct `file://` paths also passed. The generated `frame-animator.html` was synchronized from this passing build.
+
 ## v1.0.0 — Stable
 
 Release when this flow is dependable:
