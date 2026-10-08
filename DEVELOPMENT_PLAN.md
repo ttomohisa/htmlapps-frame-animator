@@ -161,6 +161,8 @@ RC regression findings fixed before sign-off:
 
 Final RC screenshot audit confirmed the supplied icon/favicon, clean populated frame list, English/Japanese UI, and smartphone Preview stage without transient toast overlays.
 
+RC review: lifted dragging and FLIP-style movement of adjacent cards; single GIF/WebP format selector; removal of obsolete v0.7.0 copy; non-stretching export settings. Additional regression tests compare the actual decoded pixel content of separate Animated WebP frames rather than relying solely on RIFF/ANMF frame metadata.
+
 ## v1.0.0 — Stable
 
 Release when this flow is dependable:
