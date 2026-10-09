@@ -802,6 +802,7 @@
         frames: [],
         failures: [],
         importBusy: false,
+        importAddedCount: 0,
         generation: 0,
         undoStack: [],
         redoStack: [],
@@ -2517,11 +2518,13 @@
           await new Promise(resolve => setTimeout(resolve, 0));
         }
 
+        state.importBusy = false;
         if (importGeneration === state.generation) {
           for (const frame of added) state.framePool.set(frame.id, frame);
           state.frames.push(...added);
           if (!before.length && added.length) state.ui.mobilePage = 'frames';
           state.failures = failures;
+          state.importAddedCount = added.length;
           if (added.length) recordHistory(before, state.frames, 'import');
           render();
           if (added.length && failures.length) AppToast.show({ message: t('importPartial', { added: added.length, failed: failures.length }), tone: 'warning' });
@@ -2530,7 +2533,6 @@
         } else {
           for (const frame of added) releaseFrame(frame);
         }
-        state.importBusy = false;
         updateBusy(false);
         fileInput.value = '';
       }
@@ -2547,6 +2549,7 @@
         releaseAllFrameResources();
         state.frames = [];
         state.failures = [];
+        state.importAddedCount = 0;
         state.undoStack = [];
         state.redoStack = [];
         state.ui.mobilePage = 'frames';
@@ -2913,7 +2916,7 @@
         const title = document.createElement('h4');
         title.textContent = t('reportTitle');
         const summary = document.createElement('p');
-        summary.textContent = t('importPartial', { added: 0, failed: state.failures.length }).replace(/^0[^·]*·\s*/, '');
+        summary.textContent = t('importPartial', { added: state.importAddedCount, failed: state.failures.length });
         const list = document.createElement('ul');
         list.className = 'failure-list';
         state.failures.slice(0, 8).forEach(item => {

@@ -409,6 +409,8 @@ async function exerciseTimingAndSafeImports(browser, baseUrl) {
   await waitFrames(page, 3);
   await page.waitForFunction(() => !document.querySelector('#fileInput').disabled);
   assert((await page.locator('#importReport').textContent()).includes('APNG'), 'APNG must be reported, not silently flattened');
+  assert((await page.locator('#importReport p').textContent()).includes('Added 3'), 'Partial import report must show the real accepted count');
+  assert(await page.locator('#exportGifTab').isEnabled() && await page.locator('#exportWebpTab').isEnabled(), 'Both format tabs must be enabled immediately after import');
   const timings = () => page.locator('.frame-duration-input').evaluateAll(inputs => inputs.map(input => Number(input.value)));
   const expected = [50, 130, 500];
   for (const [index, value] of [100, 250, 1000].entries()) await setNumber(page.locator('.frame-duration-input').nth(index), value);

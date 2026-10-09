@@ -578,3 +578,7 @@ Direct `file://` opening of the standalone build is required.
 - Animated WebP detection uses the actual RIFF/WEBP header, even for a misleading filename/MIME type. Rejected additions leave existing frames, timing, and generated results intact; valid members of the same batch still import.
 - The language switch retains EN/JA and exposes its destination in a tooltip and accessible name written in the active UI language. Help includes speed semantics and animated-input limitations.
 - Validation must inspect saved GIF and WebP frame durations, edited filenames, source-image loss on reload, retained language preference, and readable/root/self-extract offline opening.
+
+- The self-extract loader preserves only the source CSP's `wasm-unsafe-eval` capability because both loader and restored-document policies apply. It must not grant general `unsafe-eval`; network access remains blocked. Regression checks cover matching permission presence/absence and reject broader or mismatched policies.
+
+- Completed imports render in the ready state so GIF/WebP format tabs are immediately usable. The persistent partial-failure report shows the actual accepted count from that batch.

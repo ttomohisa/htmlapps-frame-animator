@@ -12,7 +12,7 @@ function harness() {
     frames: [], framePool: new Map(), generation: 0, importBusy: false, failures: [],
     undoStack: [], redoStack: [], preview: { playing: false }, ui: {}
   };
-  const effects = { invalidations: 0, renders: 0 };
+  const effects = { invalidations: 0, renders: 0, renderBusy: [] };
   const context = vm.createContext({
     state, effects, File, Uint8Array, URL, setTimeout, console,
     LIMITS: { frames: 200, perFileBytes: 50 * 1024 ** 2, totalBytes: 500 * 1024 ** 2, pixels: 50000000 },
@@ -21,7 +21,7 @@ function harness() {
     t: key => key, AppToast: { show() {} }, makeId: (() => { let id = 0; return () => `frame-${++id}`; })(),
     decodeImage: async () => ({ width: 64, height: 48, close() {} }),
     makeThumbnail: async () => ({ blob: new Blob(), url: 'blob:fixture' }),
-    render: () => effects.renders++, fileInput: { value: '' }, releaseFrame() {},
+    render: () => { effects.renders++; effects.renderBusy.push(state.importBusy); }, fileInput: { value: '' }, releaseFrame() {},
     recordHistory: () => {}, invalidateAnimationResults: () => effects.invalidations++,
     pausePreview() {}, playPreview() {}, showUndoToast() {},
     pushHistory: entry => { state.undoStack.push(entry); state.redoStack = []; },
@@ -98,4 +98,15 @@ test('still WebP with an animation-looking filename remains a supported static i
   const c = harness(); const bytes = Buffer.alloc(30); bytes.write('RIFF'); bytes.writeUInt32LE(22, 4); bytes.write('WEBPVP8X', 8); bytes.writeUInt32LE(10, 16);
   await c.importFiles([new File([bytes], 'animation.webp', { type: 'image/webp' })]);
   assert.equal(c.state.frames.length, 1); assert.equal(c.state.failures.length, 0);
+});
+
+
+test('completed import renders ready controls', async () => {
+  const c = harness(); await c.importFiles([staticPng(), apng()]);
+  assert.deepEqual(Array.from(c.effects.renderBusy), [false], 'Completed render must run after leaving import-busy state');
+});
+test('partial failure records the actual accepted count', async () => {
+  const c = harness(); await c.importFiles([staticPng(), apng()]);
+  assert.equal(c.state.importAddedCount, 1, 'Partial failure report must retain the accepted count');
+  await c.importFiles([apng()]); assert.equal(c.state.importAddedCount, 0);
 });

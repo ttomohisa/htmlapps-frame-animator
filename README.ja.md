@@ -172,6 +172,8 @@ GIFのエンコーダとカードのドラッグ処理はアプリ内で実装�
 
 不具合や改善案はGitHub Issuesで受け付けます。変更への参加方法は [CONTRIBUTING.md](CONTRIBUTING.md)、脆弱性の報告方法は [SECURITY.md](SECURITY.md) を確認してください。
 
+自己展開版も通常版と同じく、埋め込みWebPエンコーダーを端末内で使用します。外部通信は許可しません。
+
 ## ライセンス
 
 Copyright © 2026 ttomohisa。[MIT License](LICENSE)。

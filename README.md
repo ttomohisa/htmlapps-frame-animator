@@ -146,7 +146,7 @@ Run `node --test scripts/timing-import-test.mjs` for dependency-free timing/impo
 ## Privacy and offline operation
 
 - Selected files are decoded, resized, animated, and saved **in your browser**. The application does not upload their contents.
-- The generated HTML embeds its WebP encoder and other runtime assets. Its Content Security Policy includes `connect-src 'none'`; no runtime CDN, analytics, telemetry, or conversion API is used.
+- Both readable and self-extracting HTML variants embed their WebP encoder and retain the WASM permission needed for local encoding. Its Content Security Policy includes `connect-src 'none'`; no runtime CDN, analytics, telemetry, or conversion API is used.
 - Images are not automatically written to localStorage or IndexedDB. Reloading/closing the page discards the working images; the language preference may be stored locally.
 - Opening a hosted page requires downloading the HTML itself. To use the tool without any connection, open the standalone HTML locally.
 

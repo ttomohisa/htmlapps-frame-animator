@@ -15,6 +15,8 @@ The project uses Semantic Versioning.
 
 ### Fixed
 
+- Restore export-format tabs immediately after import and report the actual accepted count for partially successful batches.
+- Preserve the source app's narrow WASM permission in the self-extract loader CSP, fixing Animated WebP export from that variant without enabling general JavaScript eval or network access.
 - Reject APNG before decoding instead of silently importing its first frame, including PNGs with large metadata chunks.
 - Identify animated WebP by file contents even when its filename or MIME type says PNG/JPEG. Invalid additions preserve existing frames, timings, and generated results.
 - Give the EN/JA switch a destination tooltip in the current UI language and localize the duration preset group label.
