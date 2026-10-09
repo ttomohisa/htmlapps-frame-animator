@@ -6,6 +6,25 @@ The project uses Semantic Versioning.
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-10-09
+
+### Added
+
+- One-click 0.5× slower / 2× faster timing controls scale every frame's current duration together, including mixed timings, with Undo/Redo.
+- Regression coverage for mixed-timing exports, APNG and renamed Animated WebP rejection, local file variants, and reload privacy.
+
+### Fixed
+
+- Restore export-format tabs immediately after import and report the actual accepted count for partially successful batches.
+- Preserve the source app's narrow WASM permission in the self-extract loader CSP, fixing Animated WebP export from that variant without enabling general JavaScript eval or network access.
+- Reject APNG before decoding instead of silently importing its first frame, including PNGs with large metadata chunks.
+- Identify animated WebP by file contents even when its filename or MIME type says PNG/JPEG. Invalid additions preserve existing frames, timings, and generated results.
+- Give the EN/JA switch a destination tooltip in the current UI language and localize the duration preset group label.
+
+### Notes
+
+- Speed changes round to 10 ms and retain the existing 20–10,000 ms duration limits. Undo restores the exact previous values; opposite speed buttons are not a lossless inverse at rounding/limit boundaries.
+
 ## [1.0.0] - 2026-10-08
 
 ### Stable release

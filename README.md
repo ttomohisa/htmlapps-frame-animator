@@ -19,7 +19,7 @@ GitHub Pages delivers the initial HTML. Once loaded, image decoding, frame editi
 
 [![Frame Animator desktop screenshot](assets/screenshot-en.png)](https://ttomohisa.github.io/htmlapps-frame-animator/)
 
-The public GitHub Pages site is deployed from `main`. The v1.0.0 changes in PR #9 become available there **after that PR is merged and the Pages workflow successfully deploys**.
+The public GitHub Pages site is deployed from `main`. A new version becomes available after its PR is merged and the automatic Pages workflow successfully deploys.
 
 ## Quick start
 
@@ -57,7 +57,7 @@ GitHub Pages is enabled for this repository and the deployment workflow is confi
 ## Features
 
 - **Import and reorder frames** — Select multiple images, drag and drop files, paste an image from the clipboard, or add more images later. Move cards with a mouse or touch drag handle, previous/next buttons, and natural filename sorting.
-- **Set each frame's duration** — Use global presets or adjust individual frames from 20 to 10,000 ms. Undo/redo also covers sequence and timing changes.
+- **Set each frame's duration** — Use global presets or adjust individual frames from 20 to 10,000 ms. Use **0.5× Slower / 2× Faster** to scale mixed timings together. Undo/redo also covers sequence and timing changes.
 - **Preview the actual sequence** — Play, pause, step through frames, and choose Forward, Reverse, or Ping-pong (without duplicate endpoints). Set infinite, once-only, or custom repeat counts.
 - **Fit mixed image sizes** — Use preset or custom canvas dimensions, Fit/Fill placement, and transparent, white, black, or custom backgrounds.
 - **Choose GIF or Animated WebP** — GIF supports 64/128/256 colors and optional dithering; WebP supports quality, lossless mode, and encoding effort. Encoding runs locally with progress and cancellation.
@@ -68,7 +68,7 @@ GitHub Pages is enabled for this repository and the deployment workflow is confi
 
 1. Choose multiple JPEG, PNG, or still WebP images, drop them onto the app, or paste an image.
 2. Change the order using the card drag handle or previous/next buttons. Duplicate or remove frames as needed.
-3. Set a common duration or edit each card's duration. `Undo` and `Redo` can reverse edits.
+3. Set a common duration or edit each card's duration. **0.5× Slower** doubles each duration; **2× Faster** halves it. Values round to 10 ms and stay within 20–10,000 ms. `Undo` restores exact previous timings, even when rounding or a limit was applied.
 4. Select the output canvas size, Fit/Fill behavior, and background.
 5. Play the preview and choose Forward, Reverse, or Ping-pong and the repeat count.
 6. Select **GIF** or **Animated WebP**, adjust format-specific settings, and create the result.
@@ -106,7 +106,7 @@ Buttons for moving frames remain available without dragging.
 | Output canvas | 16–4096 px for each dimension |
 | Custom play count | 2–100 plays (plus once/infinite) |
 
-These are application safeguards; device memory and browser capabilities may impose additional limits. Invalid images are reported separately while successfully imported images remain usable.
+These are application safeguards; device memory and browser capabilities may impose additional limits. APNG and Animated WebP are rejected rather than silently flattened, including a WebP renamed as PNG/JPEG. Invalid images are reported separately while successfully imported images remain usable. An invalid-only addition preserves the current frames and any generated result.
 
 ## Publish with GitHub Pages
 
@@ -141,12 +141,12 @@ To validate the build and repository contracts on Windows:
 ./scripts/check-repository.ps1
 ```
 
-The browser regression script (`scripts/rc-browser-test.mjs`) uses Playwright and Chromium, and is also exercised by a GitHub Actions workflow. See [APP_SPEC.md](APP_SPEC.md), [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md), and [CONTRIBUTING.md](CONTRIBUTING.md) for implementation and contribution details.
+Run `node --test scripts/timing-import-test.mjs` for dependency-free timing/import tests. The browser regression script (`scripts/rc-browser-test.mjs`) uses Playwright and Chromium, and is also exercised by a GitHub Actions workflow. See [APP_SPEC.md](APP_SPEC.md), [DEVELOPMENT_PLAN.md](DEVELOPMENT_PLAN.md), and [CONTRIBUTING.md](CONTRIBUTING.md) for implementation and contribution details.
 
 ## Privacy and offline operation
 
 - Selected files are decoded, resized, animated, and saved **in your browser**. The application does not upload their contents.
-- The generated HTML embeds its WebP encoder and other runtime assets. Its Content Security Policy includes `connect-src 'none'`; no runtime CDN, analytics, telemetry, or conversion API is used.
+- Both readable and self-extracting HTML variants embed their WebP encoder and retain the WASM permission needed for local encoding. Its Content Security Policy includes `connect-src 'none'`; no runtime CDN, analytics, telemetry, or conversion API is used.
 - Images are not automatically written to localStorage or IndexedDB. Reloading/closing the page discards the working images; the language preference may be stored locally.
 - Opening a hosted page requires downloading the HTML itself. To use the tool without any connection, open the standalone HTML locally.
 

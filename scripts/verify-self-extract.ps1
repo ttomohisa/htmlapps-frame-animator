@@ -102,6 +102,18 @@ try {
 }
 
 $restoredHtml = [System.Text.Encoding]::UTF8.GetString($restoredBytes)
+
+# document.write() does not discard the loader's CSP. Both policies apply to
+# embedded workers, so the loader must retain the app's narrow WASM capability.
+$wasmSourcePattern = 'script-src[^;"]*''wasm-unsafe-eval'''
+$sourceAllowsWasm = $restoredHtml -match $wasmSourcePattern
+$wrapperAllowsWasm = $html -match $wasmSourcePattern
+if ($sourceAllowsWasm -ne $wrapperAllowsWasm) {
+  throw "The self-extract loader must preserve the source CSP's wasm-unsafe-eval capability."
+}
+if ($html -match 'script-src[^;"]*''unsafe-eval''') {
+  throw "The self-extract loader must not enable general JavaScript unsafe-eval."
+}
 if (-not $restoredHtml.TrimStart().StartsWith("<!doctype html>", [StringComparison]::OrdinalIgnoreCase)) {
   throw "The restored payload is not an HTML document."
 }

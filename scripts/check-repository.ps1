@@ -299,3 +299,5 @@ if (-not $webrtcReadyText.Contains("options.requireReadyChannelOpen!==false&&(!r
   throw "WebRTC application-ready must wait for the designated DataChannel to open."
 }
 
+
+& (Join-Path $Root "scripts\check-self-extract-csp.ps1")
