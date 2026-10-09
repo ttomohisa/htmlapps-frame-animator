@@ -7,6 +7,7 @@ import { deflateSync } from 'node:zlib';
 
 const root = process.cwd();
 const distFile = resolve(root, 'dist/index.html');
+const appVersion = JSON.parse(readFileSync(resolve(root, 'app.config.json'), 'utf8')).version;
 const assetsDir = resolve(root, 'assets');
 mkdirSync(assetsDir, { recursive: true });
 
@@ -67,6 +68,45 @@ function createPng(width, height, seed = 0) {
     pngChunk('IDAT', deflateSync(scanlines, { level: 6 })),
     pngChunk('IEND', Buffer.alloc(0))
   ]);
+}
+
+function createApng() {
+  const width = 48, height = 32;
+  const first = createPng(width, height, 71);
+  const second = createPng(width, height, 72);
+  const control = Buffer.alloc(8); control.writeUInt32BE(2, 0);
+  const frameControl = sequence => {
+    const bytes = Buffer.alloc(26); bytes.writeUInt32BE(sequence, 0);
+    bytes.writeUInt32BE(width, 4); bytes.writeUInt32BE(height, 8);
+    bytes.writeUInt16BE(1, 20); bytes.writeUInt16BE(2, 22);
+    return pngChunk('fcTL', bytes);
+  };
+  const sequence = Buffer.alloc(4); sequence.writeUInt32BE(2);
+  const secondData = second.subarray(41, 41 + second.readUInt32BE(33));
+  return Buffer.concat([first.subarray(0, 33), pngChunk('tEXt', Buffer.from('note\0' + 'x'.repeat(70000))),
+    pngChunk('acTL', control), frameControl(0), first.subarray(33, -12),
+    frameControl(1), pngChunk('fdAT', Buffer.concat([sequence, secondData])), pngChunk('IEND', Buffer.alloc(0))]);
+}
+
+function gifDurations(buffer) {
+  assert(buffer.subarray(0, 6).toString() === 'GIF89a', 'Invalid GIF signature');
+  let offset = 13 + ((buffer[10] & 128) ? 3 * 2 ** ((buffer[10] & 7) + 1) : 0);
+  const durations = []; let delay = 0;
+  const skipBlocks = () => { while (offset < buffer.length && buffer[offset]) offset += 1 + buffer[offset]; offset++; };
+  while (offset < buffer.length) {
+    const marker = buffer[offset++];
+    if (marker === 0x3b) break;
+    if (marker === 0x21) {
+      const label = buffer[offset++];
+      if (label === 0xf9) delay = buffer.readUInt16LE(offset + 2) * 10;
+      skipBlocks();
+    } else if (marker === 0x2c) {
+      const packed = buffer[offset + 8]; offset += 9;
+      if (packed & 128) offset += 3 * 2 ** ((packed & 7) + 1);
+      offset++; skipBlocks(); durations.push(delay);
+    } else throw new Error(`Unexpected GIF block ${marker}`);
+  }
+  return durations;
 }
 
 function filePayload(name, width, height, seed) {
@@ -354,6 +394,62 @@ async function exerciseDesktop(browser, baseUrl) {
   await context.close();
 }
 
+async function exerciseTimingAndSafeImports(browser, baseUrl) {
+  const context = await makeContext(browser, { width: 1280, height: 900 });
+  const page = await context.newPage(); const external = [], errors = [];
+  watchNetwork(page, external, errors);
+  await page.goto(baseUrl, { waitUntil: 'load' });
+  assert(await page.locator('#languageButton').getAttribute('title') === '英語に切り替え', 'Japanese tooltip must describe the destination');
+  await page.locator('#languageButton').click();
+  assert(await page.locator('#languageButton').getAttribute('title') === 'Switch to Japanese', 'English tooltip must describe the destination');
+  assert(await page.locator('[data-speed="2"]').isDisabled(), 'Speed action must be disabled without frames');
+  await loadFiles(page, [filePayload('speed-a.png', 64, 48, 71),
+    { name: 'animation.png', mimeType: 'image/png', buffer: createApng() },
+    filePayload('speed-b.png', 64, 48, 72), filePayload('speed-c.png', 64, 48, 73)]);
+  await waitFrames(page, 3);
+  await page.waitForFunction(() => !document.querySelector('#fileInput').disabled);
+  assert((await page.locator('#importReport').textContent()).includes('APNG'), 'APNG must be reported, not silently flattened');
+  const timings = () => page.locator('.frame-duration-input').evaluateAll(inputs => inputs.map(input => Number(input.value)));
+  const expected = [50, 130, 500];
+  for (const [index, value] of [100, 250, 1000].entries()) await setNumber(page.locator('.frame-duration-input').nth(index), value);
+  await page.locator('[data-speed="2"]').click();
+  assert(JSON.stringify(await timings()) === JSON.stringify(expected), 'Double speed must scale and round each original timing');
+  await page.locator('#undoButton').click();
+  assert(JSON.stringify(await timings()) === '[100,250,1000]', 'Speed Undo must restore exact mixed timings');
+  await page.locator('#redoButton').click();
+  assert(JSON.stringify(await timings()) === JSON.stringify(expected), 'Speed Redo must restore scaled timings');
+  await page.locator('#playbackLoopMode').selectOption('once');
+  await page.locator('#outputFilename').fill('scaled-gif.gif');
+  await page.locator('#createGifButton').click();
+  await page.locator('#gifResultCard').waitFor({ state: 'visible' });
+  const [gifDownload] = await Promise.all([page.waitForEvent('download'), page.locator('#saveGifButton').click()]);
+  assert(gifDownload.suggestedFilename() === 'scaled-gif.gif', 'Edited GIF filename was not retained');
+  const gifPath = join(assetsDir, 'rc-scaled.gif'); await gifDownload.saveAs(gifPath);
+  assert(JSON.stringify(gifDurations(readFileSync(gifPath))) === JSON.stringify(expected), 'GIF saved delays must equal edited frame timings');
+  await page.locator('#exportWebpTab').click();
+  await page.locator('#webpOutputFilename').fill('scaled-webp.webp');
+  await page.locator('#createWebpButton').click();
+  await page.locator('#webpResultCard').waitFor({ state: 'visible' });
+  const [webpDownload] = await Promise.all([page.waitForEvent('download'), page.locator('#saveWebpButton').click()]);
+  assert(webpDownload.suggestedFilename() === 'scaled-webp.webp', 'Edited WebP filename was not retained');
+  const webpPath = join(assetsDir, 'rc-scaled.webp'); await webpDownload.saveAs(webpPath);
+  const webp = readFileSync(webpPath);
+  assert(JSON.stringify(parseWebP(webp).durations) === JSON.stringify(expected), 'WebP saved delays must equal edited frame timings');
+  await loadFiles(page, [{ name: 'renamed.png', mimeType: 'image/png', buffer: webp }]);
+  await page.waitForFunction(() => !document.querySelector('#fileInput').disabled);
+  assert(await page.locator('.frame-card').count() === 3, 'Renamed animated WebP must be rejected');
+  assert((await page.locator('#importReport').textContent()).includes('Animated WebP'), 'Renamed animation must get a clear failure reason');
+  assert(await page.locator('#saveWebpButton').isEnabled(), 'Rejected input must preserve valid output');
+  await page.locator('[data-speed="0.5"]').click();
+  assert(JSON.stringify(await timings()) === '[100,260,1000]', 'Half speed must double current timings');
+  assert(await page.locator('#saveWebpButton').isDisabled(), 'Timing change must invalidate generated WebP');
+  await page.reload();
+  assert(await page.locator('.frame-card').count() === 0, 'Source images must not be persisted on reload');
+  assert(await page.locator('#languageButton').textContent() === 'JA', 'Language should persist on reload');
+  assert(external.length === 0 && errors.length === 0, `Timing/import runtime errors: ${[...external, ...errors].join(' | ')}`);
+  await context.close();
+}
+
 async function exerciseFrameDragging(browser, baseUrl) {
   const context = await makeContext(browser, { width: 1280, height: 900 });
   const page = await context.newPage();
@@ -398,8 +494,8 @@ async function exerciseMobile(browser, baseUrl) {
   const errors = [];
   watchNetwork(page, external, errors);
   await page.goto(baseUrl, { waitUntil: 'load' });
-  assert((await page.locator('#versionBadge').textContent())?.trim() === 'v1.0.0', 'Standalone UI must display stable v1.0.0');
-  assert(await page.evaluate(() => JSON.parse(document.querySelector('#app-config').textContent).version === '1.0.0'), 'Embedded standalone app-config version mismatch');
+  assert((await page.locator('#versionBadge').textContent())?.trim() === `v${appVersion}`, 'Standalone UI version mismatch');
+  assert(await page.evaluate(expected => JSON.parse(document.querySelector('#app-config').textContent).version === expected, appVersion), 'Embedded standalone app-config version mismatch');
   await loadFiles(page, [
     filePayload('mobile-1.png', 80, 120, 11),
     filePayload('mobile-2.png', 120, 80, 12),
@@ -598,13 +694,13 @@ async function exerciseForcedFailure(browser, baseUrl) {
   await context.close();
 }
 
-async function exerciseFileUrl(browser) {
+async function exerciseFileUrl(browser, inputFile = distFile) {
   const context = await makeContext(browser, { width: 1000, height: 760 });
   const page = await context.newPage();
   const external = [];
   const errors = [];
   watchNetwork(page, external, errors);
-  await page.goto(pathToFileURL(distFile).href, { waitUntil: 'load' });
+  await page.goto(pathToFileURL(inputFile).href, { waitUntil: 'load' });
   await loadFiles(page, [
     filePayload('file-a.png', 32, 24, 61),
     filePayload('file-b.png', 32, 24, 62)
@@ -659,6 +755,7 @@ async function main() {
   const browser = await chromium.launch({ headless: true });
   try {
     await exerciseDesktop(browser, baseUrl);
+    await exerciseTimingAndSafeImports(browser, baseUrl);
     await exerciseFrameDragging(browser, baseUrl);
     await exerciseMobile(browser, baseUrl);
     await exerciseClipboardPaste(browser, baseUrl);
@@ -666,8 +763,10 @@ async function main() {
     await exerciseCancelAndRetry(browser, baseUrl);
     await exerciseForcedFailure(browser, baseUrl);
     await exerciseFileUrl(browser);
+    await exerciseFileUrl(browser, resolve(root, "dist/index.self-extract.html"));
+    await exerciseFileUrl(browser, resolve(root, "frame-animator.html"));
     await captureReleaseScreenshots(browser, baseUrl);
-    console.log('[OK] Frame Animator v1.0.0 browser regression passed.');
+    console.log(`[OK] Frame Animator v${appVersion} browser regression passed.`);
   } finally {
     await browser.close();
     await new Promise(resolveClose => server.close(resolveClose));

@@ -87,6 +87,7 @@
     .sort-select:focus-visible{outline:3px solid color-mix(in srgb,var(--focus) 55%,transparent);outline-offset:2px}
     .timing-toolbar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:14px;align-items:end;margin:0 0 14px;padding:13px;border:1px solid var(--line);border-radius:12px;background:var(--surface-muted)}
     .timing-copy strong{display:block;font-size:13px}.timing-copy span{display:block;margin-top:2px;color:var(--muted);font-size:11px}
+    .timing-speed{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:7px;align-items:center}.timing-speed-note{color:var(--muted);font-size:11px;flex:1 1 220px}
     .timing-controls{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:7px;align-items:end}
     .timing-presets{display:flex;flex-wrap:wrap;gap:5px}.timing-preset{min-height:36px;padding:6px 9px;border:1px solid var(--line);border-radius:9px;background:var(--surface);font-size:11px;font-weight:750;cursor:pointer}
     .timing-preset:hover:not(:disabled){border-color:var(--line-strong);background:var(--surface-hover)}.timing-preset:disabled{opacity:.42;cursor:not-allowed}
@@ -316,7 +317,7 @@
             <span data-i18n="timingBody">プリセットまたは入力値を全フレームへ適用します。個別の時間は各カードで変更できます。</span>
           </div>
           <div class="timing-controls">
-            <div class="timing-presets" aria-label="Frame duration presets">
+            <div class="timing-presets" data-i18n-aria-label="durationPresets">
               <button class="timing-preset" type="button" data-duration-preset="100">100 ms</button>
               <button class="timing-preset" type="button" data-duration-preset="200">200 ms</button>
               <button class="timing-preset" type="button" data-duration-preset="500">500 ms</button>
@@ -327,6 +328,11 @@
               <span class="duration-unit">ms</span>
             </div>
             <button class="button duration-apply" id="applyDurationButton" type="button" disabled data-i18n="applyAll">すべてに適用</button>
+          </div>
+          <div class="timing-speed">
+            <button class="button" type="button" data-speed="0.5" disabled data-i18n="speedSlower">0.5× ゆっくり</button>
+            <button class="button" type="button" data-speed="2" disabled data-i18n="speedFaster">2× はやく</button>
+            <span class="timing-speed-note" data-i18n="speedNote">各フレームの時間を2倍／半分にします。10 ms単位・20〜10,000 msに調整されます。</span>
           </div>
         </div>
 
@@ -617,7 +623,7 @@
           <li data-i18n="helpHow3">Canvas設定を確認し、GIFまたはWebPの設定を選んで作成します。生成後は実ファイルを確認して保存します。</li>
         </ol>
         <h3 data-i18n="helpFormatsTitle">対応形式</h3>
-        <p data-i18n="helpFormatsBody">JPEG / JPG、PNG、静止WebPに対応します。Animated WebP、GIF、動画、HEIC等は現在対象外です。</p>
+        <p data-i18n="helpFormatsBody">JPEG / JPG、PNG、静止WebPに対応します。Animated WebP、APNG、GIF、動画、HEIC等は現在対象外です。</p>
         <h3 data-i18n="helpLimitsTitle">上限</h3>
         <p data-i18n="helpLimitsBody">最大200枚、1ファイル50 MiB、読み込み済み元ファイル合計500 MiB、1画像50メガピクセルです。表示時間は1フレーム20〜10,000 ms、10 ms刻みです。</p>
         <h3 data-i18n="helpPrivacyTitle">プライバシー</h3>
@@ -745,6 +751,7 @@
           undo:'元に戻す', redo:'やり直す', sortLabel:'フレームを並べ替え', sortChoose:'並べ替え', sortAsc:'ファイル名 昇順', sortDesc:'ファイル名 降順',
           dragFrame:'ドラッグしてフレーム {number} を移動', movePrevious:'フレーム {number} を前へ移動', moveNext:'フレーム {number} を後ろへ移動', duplicate:'フレーム {number} を複製', deleteFrame:'フレーム {number} を削除',
           duplicated:'フレームを複製しました', deleted:'フレームを削除しました', reordered:'フレーム順を変更しました', sortedAsc:'ファイル名の昇順に並べ替えました', sortedDesc:'ファイル名の降順に並べ替えました', undone:'元に戻しました', redone:'やり直しました', duplicateLimit:'最大200枚までです',
+          durationPresets:'表示時間のプリセット', speedSlower:'0.5× ゆっくり', speedFaster:'2× はやく', speedNote:'各フレームの時間を2倍／半分にします。10 ms単位・20〜10,000 msに調整されます。', speedApplied:'全フレームの再生速度を変更しました',
           timingTitle:'全フレームの表示時間', timingBody:'プリセットまたは入力値を全フレームへ適用します。個別の時間は各カードで変更できます。', globalDurationLabel:'全フレームの表示時間', applyAll:'すべてに適用', frameDuration:'表示時間', timingApplied:'全フレームの表示時間を変更しました', timingChanged:'表示時間を変更しました',
           previewHeading:'アニメーションプレビュー', previewNote:'出力CanvasへFit / Fillした状態で、各フレームの表示時間どおりに確認します。', previewEmpty:'画像を追加すると、ここで出力Canvasとアニメーションを確認できます。', previewFrameLabel:'フレーム', previewTimeLabel:'再生位置', previewRestart:'最初から', previewPrevious:'前のフレーム', previewPlay:'再生 / 一時停止', previewNext:'次のフレーム', previewHelp:'プレビューは軽量画像を使いますが、Canvasサイズ・Fit / Fill・背景は最終出力と同じ計算を使います。', playbackSettingsTitle:'再生設定', playbackSettingsBody:'プレビュー・GIF・WebPで同じ再生順とループ設定を使います。', playbackOrderLabel:'再生順', playbackForward:'Forward', playbackReverse:'Reverse', playbackPingpong:'Ping-pong', playbackLoopLabel:'ループ', playbackLoopInfinite:'繰り返す', playbackLoopOnce:'1回だけ', playbackLoopCustom:'回数指定', playbackLoopCountLabel:'再生回数', playbackPassSummary:'1回分', framesUnit:'フレーム',
           outputSettingsTitle:'出力Canvas', outputSettingsBody:'1枚目の縦横比を基準にサイズをそろえます。カスタムでは幅・高さを個別指定できます。', canvasSizeLabel:'Canvasサイズ', canvasAuto:'自動（長辺最大720px）', canvas480:'長辺480px', canvas720:'長辺720px', canvas1080:'長辺1080px', canvasOriginal:'1枚目の元サイズ相当', canvasCustom:'カスタム', canvasWidthLabel:'Canvas幅', canvasHeightLabel:'Canvas高さ', placementLabel:'画像の配置', fit:'収める', fill:'切り抜く', backgroundLabel:'背景', backgroundTransparent:'透明', backgroundWhite:'白', backgroundBlack:'黒', backgroundCustom:'カスタム色', backgroundColorLabel:'背景色', previewCanvasLabel:'正規化されたアニメーションプレビュー', resolvedCanvas:'実際のCanvas',
@@ -752,12 +759,12 @@
           webpHeading:'Animated WebPを書き出す', webpHeadingNote:'写真や色数の多い画像を、品質・Lossless・Effortを指定してWebPへ変換します。', webpQualityLabel:'品質', webpEffortLabel:'Effort', webpLosslessLabel:'Lossless', webpLoopLabel:'ループ', webpLoopInfinite:'繰り返す', webpLoopOnce:'1回だけ', webpNote:'Animated WebPは動画ではなく、動く画像です。画像ビューアーによっては静止画に見えるため、ブラウザで再生をご確認ください。Losslessや高いEffortは処理時間・容量が増えることがあります。', createWebp:'WebPを作成', cancelWebp:'キャンセル', webpResultEmpty:'WebPを作成すると、ここで実際の生成ファイルを確認できます。', webpResultPreviewLabel:'生成したAnimated WebPのプレビュー', saveWebp:'WebPを保存', webpPreparing:'フレーム {current} / {total} を準備しています…', webpEncoding:'フレーム {current} / {total} をWebPへ変換しています…', webpFinishing:'Animated WebPを仕上げています…', webpDone:'WebPを作成しました', webpSaved:'WebPを保存しました', webpCancelled:'WebP作成をキャンセルしました', webpFailed:'WebPを作成できませんでした', webpFailedRecovery:'WebPを作成できませんでした。出力サイズ・品質・Lossless・Effortなどを変更して、もう一度お試しください。', webpStale:'設定が変更されました。もう一度WebPを作成してください。',
           exportFormatLabel:'書き出す形式', exportGifOption:'GIF', exportWebpOption:'Animated WebP',
           buildInfo:'ビルド情報', appVersion:'アプリバージョン', builtAt:'生成日時', dependencies:'内包依存', footer:'画像はこの端末内で処理されます',
-          help:'ヘルプ', close:'閉じる', helpTitle:'使い方と注意事項', helpHowTitle:'基本操作', helpHow1:'JPEG・PNG・静止WebPを複数選択、画面へドロップ、またはクリップボードから画像を貼り付けます。', helpHow2:'順番と表示時間を整えます。', helpHow3:'Canvas設定を確認し、GIFまたはWebPの設定を選んで作成します。生成後は実ファイルを確認して保存します。',
-          helpFormatsTitle:'対応形式', helpFormatsBody:'JPEG / JPG、PNG、静止WebPに対応します。Animated WebP、GIF、動画、HEIC等は現在対象外です。', helpLimitsTitle:'上限', helpLimitsBody:'最大200枚、1ファイル50 MiB、読み込み済み元ファイル合計500 MiB、1画像50メガピクセルです。表示時間は1フレーム20〜10,000 ms、Canvasは16〜4096pxです。',
+          help:'ヘルプ', close:'閉じる', helpTitle:'使い方と注意事項', helpHowTitle:'基本操作', helpHow1:'JPEG・PNG・静止WebPを複数選択、画面へドロップ、またはクリップボードから画像を貼り付けます。', helpHow2:'順番と表示時間を整えます。0.5×で各表示時間を2倍、2×で半分にできます（10 ms単位・20〜10,000 ms）。元に戻す／やり直すにも対応します。', helpHow3:'Canvas設定を確認し、GIFまたはWebPの設定を選んで作成します。生成後は実ファイルを確認して保存します。',
+          helpFormatsTitle:'対応形式', helpFormatsBody:'JPEG / JPG、PNG、静止WebPに対応します。Animated WebP、APNG、GIF、動画、HEIC等は現在対象外です。', helpLimitsTitle:'上限', helpLimitsBody:'最大200枚、1ファイル50 MiB、読み込み済み元ファイル合計500 MiB、1画像50メガピクセルです。表示時間は1フレーム20〜10,000 ms、Canvasは16〜4096pxです。',
           helpPrivacyTitle:'プライバシー', helpPrivacyBody:'選択した画像はブラウザ内だけで読み込みます。このアプリは画像を外部サーバーへ送信せず、Analyticsや外部APIも使用しません。', helpStorageTitle:'データ保持', helpStorageBody:'画像自体はブラウザストレージへ自動保存しません。ページを閉じると作業画像は破棄されます。',
           confirmTitle:'確認', cancel:'キャンセル', clearConfirmTitle:'すべての画像を消去しますか？', clearConfirmBody:'追加した画像とサムネイルをこのページから消去します。元ファイルは変更されません。', clearConfirmAction:'すべて消去',
           importing:'画像を読み込んでいます…', importAdded:'{count}枚追加しました', importPartial:'{added}枚追加 · {failed}枚を読み込めませんでした', importFailed:'画像を追加できませんでした', cleared:'画像を消去しました',
-          reportTitle:'読み込めなかった画像があります', reasonType:'対応していない形式です', reasonAnimated:'Animated WebPは入力できません', reasonFileSize:'1ファイル50 MiBを超えています', reasonTotalSize:'元ファイル合計500 MiBを超えます', reasonFrameLimit:'最大200枚を超えます', reasonPixels:'画像が50メガピクセルを超えています', reasonDecode:'画像を読み込めませんでした', reasonEmpty:'空のファイルです',
+          reportTitle:'読み込めなかった画像があります', reasonType:'対応していない形式です', reasonAnimated:'Animated WebPは入力できません', reasonAnimatedPng:'APNG（アニメーションPNG）は入力できません', reasonFileSize:'1ファイル50 MiBを超えています', reasonTotalSize:'元ファイル合計500 MiBを超えます', reasonFrameLimit:'最大200枚を超えます', reasonPixels:'画像が50メガピクセルを超えています', reasonDecode:'画像を読み込めませんでした', reasonEmpty:'空のファイルです',
           frameAlt:'フレーム {number}: {name}', megapixels:'{value} MP'
         },
         en: {
@@ -768,6 +775,7 @@
           undo:'Undo', redo:'Redo', sortLabel:'Sort frames', sortChoose:'Sort', sortAsc:'Filename ascending', sortDesc:'Filename descending',
           dragFrame:'Drag to move frame {number}', movePrevious:'Move frame {number} earlier', moveNext:'Move frame {number} later', duplicate:'Duplicate frame {number}', deleteFrame:'Delete frame {number}',
           duplicated:'Frame duplicated', deleted:'Frame deleted', reordered:'Frame order changed', sortedAsc:'Sorted by filename ascending', sortedDesc:'Sorted by filename descending', undone:'Undone', redone:'Redone', duplicateLimit:'Maximum of 200 frames reached',
+          durationPresets:'Frame duration presets', speedSlower:'0.5× Slower', speedFaster:'2× Faster', speedNote:'Double or halve each duration. Rounded to 10 ms and limited to 20–10,000 ms.', speedApplied:'Updated all frame speeds',
           timingTitle:'All frame durations', timingBody:'Apply a preset or custom duration to every frame. Individual durations can be changed on each card.', globalDurationLabel:'Duration for all frames', applyAll:'Apply to all', frameDuration:'Duration', timingApplied:'Updated all frame durations', timingChanged:'Frame duration updated',
           previewHeading:'Animation preview', previewNote:'Preview each frame after applying the output canvas, Fit / Fill, and background settings.', previewEmpty:'Add images to preview the normalized output canvas here.', previewFrameLabel:'Frame', previewTimeLabel:'Playback position', previewRestart:'Restart', previewPrevious:'Previous frame', previewPlay:'Play / pause', previewNext:'Next frame', previewHelp:'The preview uses lightweight image data, but canvas size, Fit / Fill, and background use the same geometry as final output.', playbackSettingsTitle:'Playback settings', playbackSettingsBody:'Preview, GIF, and WebP share the same playback order and loop settings.', playbackOrderLabel:'Playback order', playbackForward:'Forward', playbackReverse:'Reverse', playbackPingpong:'Ping-pong', playbackLoopLabel:'Loop', playbackLoopInfinite:'Repeat', playbackLoopOnce:'Play once', playbackLoopCustom:'Custom count', playbackLoopCountLabel:'Play count', playbackPassSummary:'One pass', framesUnit:'frames',
           outputSettingsTitle:'Output canvas', outputSettingsBody:'Preset sizes keep the first frame aspect ratio. Custom size lets you set width and height independently.', canvasSizeLabel:'Canvas size', canvasAuto:'Auto (long edge up to 720px)', canvas480:'480px long edge', canvas720:'720px long edge', canvas1080:'1080px long edge', canvasOriginal:'First frame original equivalent', canvasCustom:'Custom', canvasWidthLabel:'Canvas width', canvasHeightLabel:'Canvas height', placementLabel:'Image placement', fit:'Fit', fill:'Fill', backgroundLabel:'Background', backgroundTransparent:'Transparent', backgroundWhite:'White', backgroundBlack:'Black', backgroundCustom:'Custom color', backgroundColorLabel:'Background color', previewCanvasLabel:'Normalized animation preview', resolvedCanvas:'Resolved canvas',
@@ -775,12 +783,12 @@
           webpHeading:'Export Animated WebP', webpHeadingNote:'Encode full-color photographic output with quality, Lossless, and Effort controls.', webpQualityLabel:'Quality', webpEffortLabel:'Effort', webpLosslessLabel:'Lossless', webpLoopLabel:'Loop', webpLoopInfinite:'Repeat', webpLoopOnce:'Play once', webpNote:'Animated WebP is an animated image, not an MP4 video. Some image viewers display only a still frame; check playback in your browser. Lossless and higher Effort may take longer or increase file size.', createWebp:'Create WebP', cancelWebp:'Cancel', webpResultEmpty:'Create a WebP to review the actual generated file here.', webpResultPreviewLabel:'Generated Animated WebP preview', saveWebp:'Save WebP', webpPreparing:'Preparing frame {current} / {total}…', webpEncoding:'Encoding frame {current} / {total}…', webpFinishing:'Finishing Animated WebP…', webpDone:'WebP created', webpSaved:'WebP saved', webpCancelled:'WebP creation cancelled', webpFailed:'Could not create WebP', webpFailedRecovery:'Could not create the WebP. Adjust output size, quality, Lossless, or Effort, then try again.', webpStale:'Settings changed. Create the WebP again.',
           exportFormatLabel:'Export format', exportGifOption:'GIF', exportWebpOption:'Animated WebP',
           buildInfo:'Build information', appVersion:'App version', builtAt:'Built at', dependencies:'Embedded dependencies', footer:'Images are processed on this device',
-          help:'Help', close:'Close', helpTitle:'How to use & notes', helpHowTitle:'Basic workflow', helpHow1:'Choose multiple JPEG, PNG, or still WebP images, drop them onto the page, or paste an image from the clipboard.', helpHow2:'Arrange the sequence and adjust timing.', helpHow3:'Review the canvas, choose GIF or WebP settings, generate the animation, and inspect the actual file before saving.',
-          helpFormatsTitle:'Supported formats', helpFormatsBody:'JPEG / JPG, PNG, and still WebP are supported. Animated WebP, GIF, video, HEIC, and other formats are not supported yet.', helpLimitsTitle:'Limits', helpLimitsBody:'Up to 200 images, 50 MiB per file, 500 MiB total source files, 50 megapixels per image, 20–10,000 ms per frame, and a 16–4096 px output canvas.',
+          help:'Help', close:'Close', helpTitle:'How to use & notes', helpHowTitle:'Basic workflow', helpHow1:'Choose multiple JPEG, PNG, or still WebP images, drop them onto the page, or paste an image from the clipboard.', helpHow2:'Arrange the sequence and adjust timing. 0.5× doubles each duration; 2× halves it (10 ms steps, 20–10,000 ms). Undo/Redo restores the exact previous timings.', helpHow3:'Review the canvas, choose GIF or WebP settings, generate the animation, and inspect the actual file before saving.',
+          helpFormatsTitle:'Supported formats', helpFormatsBody:'JPEG / JPG, PNG, and still WebP are supported. Animated WebP, APNG, GIF, video, HEIC, and other formats are not supported yet.', helpLimitsTitle:'Limits', helpLimitsBody:'Up to 200 images, 50 MiB per file, 500 MiB total source files, 50 megapixels per image, 20–10,000 ms per frame, and a 16–4096 px output canvas.',
           helpPrivacyTitle:'Privacy', helpPrivacyBody:'Selected images are read only in your browser. This app does not upload images or use analytics or external APIs.', helpStorageTitle:'Data retention', helpStorageBody:'Images are not automatically stored in browser storage. Closing the page discards the working images.',
           confirmTitle:'Confirm', cancel:'Cancel', clearConfirmTitle:'Clear all images?', clearConfirmBody:'This removes the imported images and thumbnails from this page. Your original files are not changed.', clearConfirmAction:'Clear all',
           importing:'Loading images…', importAdded:'Added {count} images', importPartial:'Added {added} · could not load {failed}', importFailed:'Could not add images', cleared:'Images cleared',
-          reportTitle:'Some images could not be loaded', reasonType:'Unsupported file type', reasonAnimated:'Animated WebP is not supported', reasonFileSize:'File exceeds 50 MiB', reasonTotalSize:'Source files would exceed 500 MiB total', reasonFrameLimit:'Maximum of 200 images reached', reasonPixels:'Image exceeds 50 megapixels', reasonDecode:'Could not decode image', reasonEmpty:'File is empty',
+          reportTitle:'Some images could not be loaded', reasonType:'Unsupported file type', reasonAnimated:'Animated WebP is not supported', reasonAnimatedPng:'APNG (animated PNG) is not supported', reasonFileSize:'File exceeds 50 MiB', reasonTotalSize:'Source files would exceed 500 MiB total', reasonFrameLimit:'Maximum of 200 images reached', reasonPixels:'Image exceeds 50 megapixels', reasonDecode:'Could not decode image', reasonEmpty:'File is empty',
           frameAlt:'Frame {number}: {name}', megapixels:'{value} MP'
         }
       };
@@ -2224,7 +2232,7 @@
         });
       }
       async function isAnimatedWebP(file) {
-        if (!((file.type || '').toLowerCase() === 'image/webp' || /\.webp$/i.test(file.name || ''))) return false;
+        // Inspect the actual signature: names and MIME types can mislabel animated WebP.
         const bytes = new Uint8Array(await file.slice(0, Math.min(file.size, 65536)).arrayBuffer());
         if (bytes.length < 21) return false;
         const text = (start, length) => String.fromCharCode(...bytes.slice(start, start + length));
@@ -2239,6 +2247,26 @@
           if (type === 'ANIM') return true;
           const next = payload + size + (size & 1);
           if (next <= offset || next > bytes.length) break;
+          offset = next;
+        }
+        return false;
+      }
+      async function isAnimatedPNG(file) {
+        const signature = new Uint8Array(await file.slice(0, 8).arrayBuffer());
+        if (![137,80,78,71,13,10,26,10].every((byte, index) => signature[index] === byte)) return false;
+        // acTL must precede IDAT. Walk chunk headers so large metadata is skipped without
+        // loading the full source into memory or imposing a small prefix-size blind spot.
+        let offset = 8;
+        let chunks = 0;
+        while (offset + 12 <= file.size) {
+          if (++chunks > 4096) throw new Error('png-chunk-limit');
+          const header = new Uint8Array(await file.slice(offset, offset + 8).arrayBuffer());
+          const size = new DataView(header.buffer, header.byteOffset, header.byteLength).getUint32(0);
+          const type = String.fromCharCode(...header.subarray(4, 8));
+          const next = offset + 12 + size;
+          if (next > file.size) throw new Error('png-truncated-chunk');
+          if (type === 'acTL') return true;
+          if (type === 'IDAT' || type === 'IEND') return false;
           offset = next;
         }
         return false;
@@ -2459,6 +2487,7 @@
 
           try {
             if (await isAnimatedWebP(file)) { failures.push(failure(file.name, 'reasonAnimated')); continue; }
+            if (await isAnimatedPNG(file)) { failures.push(failure(file.name, 'reasonAnimatedPng')); continue; }
             const decoded = await decodeImage(file);
             try {
               if (!decoded.width || !decoded.height || decoded.width * decoded.height > LIMITS.pixels) {
@@ -2835,6 +2864,18 @@
         if (wasPlaying) playPreview();
       }
 
+      function scaleFrameDurations(speed) {
+        if (!state.frames.length || isBusy() || ![0.5, 2].includes(speed)) return;
+        const wasPlaying = state.preview.playing;
+        const before = timingSnapshot();
+        for (const frame of state.frames) frame.duration = normalizeDuration(frame.duration / speed);
+        if (recordTimingHistory(before, timingSnapshot(), 'scale-duration')) {
+          render();
+          showUndoToast(t('speedApplied'), 'success');
+          if (wasPlaying) playPreview();
+        }
+      }
+
       function applyMobileWorkflow({ scroll = false } = {}) {
         const isMobile = mobileMedia.matches;
         const hasFrames = state.frames.length > 0;
@@ -2927,7 +2968,7 @@
         $('#clearAllButton').disabled = busy || state.frames.length === 0;
         $('#applyDurationButton').disabled = busy || state.frames.length === 0;
         globalDurationInput.disabled = busy;
-        document.querySelectorAll('[data-duration-preset]').forEach(button => { button.disabled = busy || state.frames.length === 0; });
+        document.querySelectorAll('[data-duration-preset], [data-speed]').forEach(button => { button.disabled = busy || state.frames.length === 0; });
         sortSelect.disabled = busy || state.frames.length < 2;
         canvasSizeMode.disabled = busy;
         playbackOrder.disabled = busy;
@@ -2969,7 +3010,7 @@
         sortSelect.disabled = blocked || state.frames.length < 2;
         $('#applyDurationButton').disabled = blocked || state.frames.length === 0;
         globalDurationInput.disabled = blocked;
-        document.querySelectorAll('[data-duration-preset]').forEach(button => { button.disabled = blocked || state.frames.length === 0; });
+        document.querySelectorAll('[data-duration-preset], [data-speed]').forEach(button => { button.disabled = blocked || state.frames.length === 0; });
         canvasSizeMode.disabled = blocked;
         playbackOrder.disabled = blocked;
         playbackLoopMode.disabled = blocked;
@@ -3148,7 +3189,9 @@
         document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
         document.querySelectorAll('[data-i18n-aria-label]').forEach(el => el.setAttribute('aria-label', t(el.dataset.i18nAriaLabel)));
         $('#languageButton').textContent = language === 'ja' ? 'EN' : 'JA';
-        $('#languageButton').setAttribute('aria-label', language === 'ja' ? '英語に切り替え' : 'Switch to Japanese');
+        const languageDestination = language === 'ja' ? '英語に切り替え' : 'Switch to Japanese';
+        $('#languageButton').setAttribute('aria-label', languageDestination);
+        $('#languageButton').setAttribute('title', languageDestination);
         document.title = language === 'ja' ? APP_CONFIG.nameJa : APP_CONFIG.name;
         $('#brandName').textContent = language === 'ja' ? APP_CONFIG.nameJa : APP_CONFIG.name;
         $('#footerName').textContent = language === 'ja' ? APP_CONFIG.nameJa : APP_CONFIG.name;
@@ -3215,6 +3258,9 @@
       $('#undoButton').addEventListener('click', () => undoHistory());
       $('#redoButton').addEventListener('click', () => redoHistory());
 
+      document.querySelectorAll('[data-speed]').forEach(button => {
+        button.addEventListener('click', () => scaleFrameDurations(Number(button.dataset.speed)));
+      });
       document.querySelectorAll('[data-duration-preset]').forEach(button => {
         button.addEventListener('click', () => applyDurationToAll(Number(button.dataset.durationPreset)));
       });
