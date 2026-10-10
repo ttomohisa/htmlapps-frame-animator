@@ -113,6 +113,9 @@ foreach ($requiredDependencyId in @("qrcode-generator", "jsqr")) {
   }
 }
 
+& node --test (Join-Path $Root "tests\dialog-layout.test.cjs")
+if ($LASTEXITCODE -ne 0) { throw "Dialog layout regression tests failed." }
+
 $sourceText = Get-Content -Raw -Encoding UTF8 (Join-Path $Root "src\index.template.html")
 if (-not $sourceText.Contains("__EMBEDDED_ASSET_BUNDLE_JSON__")) { throw "src\index.template.html must embed the asset bundle JSON directly." }
 if ($sourceText.Contains("__EMBEDDED_ASSET_BUNDLE_BASE64__")) { throw "Legacy double-Base64 asset bundle placeholder must not return." }
