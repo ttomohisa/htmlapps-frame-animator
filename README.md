@@ -56,6 +56,7 @@ GitHub Pages is enabled for this repository and the deployment workflow is confi
 
 ## Features
 
+- Background scrolling pauses while a dialog is open and resumes after dismissal.
 - **Import and reorder frames** — Select multiple images, drag and drop files, paste an image from the clipboard, or add more images later. Move cards with a mouse or touch drag handle, previous/next buttons, and natural filename sorting.
 - **Set each frame's duration** — Use global presets or adjust individual frames from 20 to 10,000 ms. Use **0.5× Slower / 2× Faster** to scale mixed timings together. Undo/redo also covers sequence and timing changes.
 - **Preview the actual sequence** — Play, pause, step through frames, and choose Forward, Reverse, or Ping-pong (without duplicate endpoints). Set infinite, once-only, or custom repeat counts.

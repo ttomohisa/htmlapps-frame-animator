@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.3 - 2026-10-10
+
+- Prevent background scrolling while a native modal is open and restore it on dismissal.
+- Preserve current media processing, export, dependencies and privacy boundaries.
+
 All notable changes to Frame Animator will be documented in this file.
 
 The project uses Semantic Versioning.
