@@ -1,5 +1,11 @@
 # Frame Animator — APP_SPEC.md
 
+## Phone footer and final Help metadata
+
+- Hide only the informational footer at the existing 640px phone breakpoint; preserve functional tabs/actions and header versions.
+- Move existing lower build disclosure intact to the final scrollable Help content. Keep metadata available on phone and desktop; preserve keyboard activation and existing modal scroll behavior.
+- Existing equivalent local-processing badges remain `Fully local processing`; privacy text, runtime, versions and dependencies stay unchanged.
+
 ## 1. Product identity
 
 - **Name:** Frame Animator

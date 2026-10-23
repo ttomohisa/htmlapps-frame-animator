@@ -199,7 +199,10 @@
     }
     @media(max-width:360px){.header-inner{padding-left:max(8px,env(safe-area-inset-left));padding-right:max(8px,env(safe-area-inset-right))}.brand-mark{width:34px;height:34px}.brand-name{font-size:15px}.brand-meta{display:none}.frame-grid{grid-template-columns:1fr}.gif-option-grid{grid-template-columns:1fr}.mobile-workflow-nav{gap:5px}.mobile-workflow-tab{gap:4px;padding:8px 4px;font-size:11px}.mobile-workflow-tab svg{width:16px;height:16px}.preview-transport{grid-template-columns:repeat(4,minmax(44px,1fr))}}
     @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
-  </style>
+    @media (max-width: 640px) { body > footer { display: none; } }
+    #helpDialog .help-build { margin-top:20px; padding-top:12px; border-top:1px solid var(--line); color:var(--muted); font-size:11px; overflow-wrap:anywhere; }
+    #helpDialog .help-build .build-grid { grid-template-columns:minmax(0,1fr); }
+</style>
 </head>
 <body>
   <header class="app-header">
@@ -594,14 +597,7 @@
       </div>
     </section>
 
-    <details class="build-details">
-      <summary data-i18n="buildInfo">ビルド情報</summary>
-      <div class="build-grid">
-        <div class="build-item"><span data-i18n="appVersion">アプリバージョン</span><strong id="buildVersion">—</strong></div>
-        <div class="build-item"><span data-i18n="builtAt">生成日時</span><strong id="builtAt">—</strong></div>
-        <div class="build-item"><span data-i18n="dependencies">内包依存</span><strong id="dependencyCount">0</strong></div>
-      </div>
-    </details></div>
+</div>
   </main>
   <!-- APP:END -->
 
@@ -632,6 +628,14 @@
 
         <h3 data-i18n="helpStorageTitle">データ保持</h3>
         <p data-i18n="helpStorageBody">画像自体はブラウザストレージへ自動保存しません。ページを閉じると作業画像は破棄されます。</p>
+        <section class="help-build"><details class="build-details">
+      <summary data-i18n="buildInfo">ビルド情報</summary>
+      <div class="build-grid">
+        <div class="build-item"><span data-i18n="appVersion">アプリバージョン</span><strong id="buildVersion">—</strong></div>
+        <div class="build-item"><span data-i18n="builtAt">生成日時</span><strong id="builtAt">—</strong></div>
+        <div class="build-item"><span data-i18n="dependencies">内包依存</span><strong id="dependencyCount">0</strong></div>
+      </div>
+    </details></section>
       </div>
       <!-- APP:HELP:END -->
       <div class="dialog-actions"><button class="button primary" id="helpOkButton" type="button" data-i18n="close">閉じる</button></div>
@@ -3427,6 +3431,7 @@
       $('#closeHelpButton').addEventListener('click', () => helpDialog.close());
       $('#helpOkButton').addEventListener('click', () => helpDialog.close());
       helpDialog.addEventListener('click', event => {
+        if (event.target !== event.currentTarget) return;
         const rect = helpDialog.getBoundingClientRect();
         if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) helpDialog.close();
       });

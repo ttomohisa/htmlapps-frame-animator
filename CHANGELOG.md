@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Hide the phone informational footer and place existing build metadata at the end of Help, preserving functional controls and keyboard access.
+
 ## 1.0.3 - 2026-10-10
 
 - Prevent background scrolling while a native modal is open and restore it on dismissal.
