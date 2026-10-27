@@ -35,6 +35,7 @@ try{await page.goto(pathToFileURL(path.resolve(file)).href);await page.locator('
 await page.waitForFunction(()=>/^\d+\.\d+\.\d+$/.test(document.querySelector('#buildVersion').textContent));
 if(await page.locator('html').getAttribute('lang')!==language)await page.locator('#languageButton').click();
 await assertHeaderVersionFits(page, width, height, label);
+if(file==='dist/index.html'&&[1360,320,360,390].includes(width))await page.screenshot({path:path.join(evidence,`main-${language}-${width}.png`)});
 assert.equal(await page.locator('.local-badge svg[aria-hidden="true"]').count(),1,label+': decorative shield');
 assert.match(await page.locator('.local-badge svg path').first().getAttribute('d'),/^M12 3 /,label+': shield outline');
 assert.equal((await page.locator('[data-i18n="localProcessing"]').textContent()).trim(),language==='ja'?'完全ローカル処理':'Fully local processing');if(await page.locator('.local-badge').isVisible())await bounds(page.locator('.local-badge'),width,height,label,false);if(await page.locator('.local-badge').isVisible()){const text=await page.locator('.local-badge').evaluate(e=>{const r=document.createRange();r.selectNodeContents(e);const b=r.getBoundingClientRect();return{left:b.left,right:b.right,scroll:e.scrollWidth,client:e.clientWidth};});assert.ok(text.left>=-1&&text.right<=width+1&&text.scroll<=text.client+1,label+': actual privacy badge text '+JSON.stringify(text));}
