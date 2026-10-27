@@ -202,7 +202,11 @@
     @media (max-width: 640px) { body > footer { display: none; } }
     #helpDialog .help-build { margin-top:20px; padding-top:12px; border-top:1px solid var(--line); color:var(--muted); font-size:11px; overflow-wrap:anywhere; }
     #helpDialog .help-build .build-grid { grid-template-columns:minmax(0,1fr); }
-</style>
+
+    .brand-name { display:flex; align-items:center; min-width:0; overflow:visible; }
+    .brand-name > #brandName { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    .version-badge, .header-actions { flex:0 0 auto; }
+  </style>
 </head>
 <body>
   <header class="app-header">
@@ -231,7 +235,7 @@
         <p data-i18n="introBody">順番と表示時間を整え、異なるサイズや縦横比の画像を同じ出力Canvasへ収める／切り抜く設定で確認できます。</p>
       </div>
       <span class="local-badge">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 10V8a5 5 0 0 1 10 0v2m-9 0h8a2 2 0 0 1 2 2v6H6v-6a2 2 0 0 1 2-2Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3 5 6v5c0 4.6 2.8 8 7 10 4.2-2 7-5.4 7-10V6z"/><path d="m9 12 2 2 4-5"/></svg>
         <span data-i18n="localProcessing">完全ローカル処理</span>
       </span>
     </section>
