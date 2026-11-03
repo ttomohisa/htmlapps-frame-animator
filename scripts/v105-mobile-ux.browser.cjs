@@ -78,6 +78,10 @@ async function runCase(browser, language, width, height) {
     assert.equal(styles.innerBorder, '0px', label + ': no inner border');
     assert.equal(styles.innerRadius, '0px', label + ': no nested rounded box');
     assert.notEqual(styles.summaryBorderBottom, '0px', label + ': header divider');
+    if (width === 390) {
+      fs.mkdirSync(path.resolve('test-results/mobile-layout'), {recursive: true});
+      await page.screenshot({path: path.resolve('test-results/mobile-layout', 'timing-' + language + '-' + width + '.png')});
+    }
 
     assert.equal(await page.locator('.timing-presets').isVisible(), false, label + ': no phone presets');
     await page.locator('#timingExtras > summary').click();
@@ -104,6 +108,9 @@ async function runCase(browser, language, width, height) {
     });
     assert.ok(geometry.delta >= -1 && geometry.delta <= 20, label + ': playback directly below preview ' + JSON.stringify(geometry));
     assert.equal(await page.locator('#previewPlayButton').isEnabled(), true);
+    if (width === 390) {
+      await page.screenshot({path: path.resolve('test-results/mobile-layout', 'preview-' + language + '-' + width + '.png')});
+    }
 
     if (width === 390) {
       const second = await sampleImage(page, '#e77c36');
@@ -111,6 +118,9 @@ async function runCase(browser, language, width, height) {
         {name: 'frame-2.png', mimeType: 'image/png', buffer: second}
       ]);
       await page.waitForFunction(() => document.querySelector('#frameCount').textContent === '2');
+      await page.locator('#timingMode').selectOption('frame');
+      await page.locator('#globalDurationInput').fill('100');
+      await page.locator('#applyDurationButton').click();
       await page.locator('#mobileTabPreview').click();
       await page.waitForFunction(() => {
         const canvas = document.querySelector('#previewCanvas');
