@@ -6,10 +6,10 @@
 
 ### Changed
 
-- Streamlined smartphone Frames and timing controls with collapsed secondary actions and more prominent thumbnails.
+- Streamlined smartphone Frames and timing controls with collapsed secondary actions and more prominent thumbnails. One timing disclosure border replaces the nested rounded boxes, and phone presets are hidden while 0.5× / 2× remains available.
 - Added all-frame total animation length editing (one playback pass) with proportional frame durations, 10 ms granularity, limits, and Undo/Redo.
-- Scroll to Frames after selecting images on smartphones; put playback controls immediately below the preview.
-- Buffer the live preview frame before display to prevent flickering during image changes.
+- Scroll to just above the Frames panel after selecting images on smartphones, including one-image cases; put playback controls immediately below the preview.
+- Reuse a preview buffer before display to prevent flickering and reduce repeated full-size allocations.
 - Replace user-facing Canvas terminology, shorten explanatory text, clarify GIF Dithering, and remove the duplicate bottom Help close button.
 - Update Japanese and English UI/help while preserving local processing and GIF/WebP export.
 
