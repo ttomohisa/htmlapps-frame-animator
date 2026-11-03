@@ -44,7 +44,10 @@ jobs:
       - name: Verify input and mixed-timing regressions
         run: node --test scripts/timing-import-test.mjs tests/frame-ux-v105.test.cjs
       - name: Exercise drag, mobile, animation and offline regressions
-        run: node scripts/rc-browser-test.mjs
+        run: |
+          node scripts/rc-browser-test.mjs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node scripts/v105-mobile-ux.browser.cjs
       - name: Attach screenshot evidence
         if: always()
         uses: actions/upload-artifact@v4
