@@ -2621,7 +2621,7 @@
         }
         updateBusy(false);
         fileInput.value = '';
-        if (added.length && importGeneration === state.generation && mobileMedia.matches) {
+        if (added.length && importGeneration === state.generation && typeof mobileMedia !== 'undefined' && mobileMedia.matches) {
           requestAnimationFrame(() => setMobilePage('frames', { scroll: true }));
         }
       }
