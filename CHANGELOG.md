@@ -2,6 +2,18 @@
 
 ## Unreleased
 
+## [1.0.5] - 2026-11-03
+
+### Changed
+
+- Streamlined smartphone Frames and timing controls with collapsed secondary actions and more prominent thumbnails.
+- Added all-frame total animation length editing (one playback pass) with proportional frame durations, 10 ms granularity, limits, and Undo/Redo.
+- Scroll to Frames after selecting images on smartphones; put playback controls immediately below the preview.
+- Buffer the live preview frame before display to prevent flickering during image changes.
+- Replace user-facing Canvas terminology, shorten explanatory text, clarify GIF Dithering, and remove the duplicate bottom Help close button.
+- Update Japanese and English UI/help while preserving local processing and GIF/WebP export.
+
+
 - Verify the complete current header version at narrow phone widths; reserve space for the version beside truncated app titles.
 
 - 1.0.4: Replace the local-processing lock with a decorative shield, preserving the existing Japanese/English privacy text.
