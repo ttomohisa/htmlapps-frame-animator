@@ -58,19 +58,19 @@ GitHub Pages is enabled for this repository and the deployment workflow is confi
 
 - Background scrolling pauses while a dialog is open and resumes after dismissal.
 - **Import and reorder frames** — Select multiple images, drag and drop files, paste an image from the clipboard, or add more images later. Move cards with a mouse or touch drag handle, previous/next buttons, and natural filename sorting.
-- **Set each frame's duration** — Use global presets or adjust individual frames from 20 to 10,000 ms. Use **0.5× Slower / 2× Faster** to scale mixed timings together. Undo/redo also covers sequence and timing changes.
+- **Set each frame's duration** — Set a common per-frame duration or target total length for one playback pass, while retaining individual 20–10,000 ms timings. Use **0.5× Slower / 2× Faster** to scale mixed timings together. Undo/redo also covers sequence and timing changes.
 - **Preview the actual sequence** — Play, pause, step through frames, and choose Forward, Reverse, or Ping-pong (without duplicate endpoints). Set infinite, once-only, or custom repeat counts.
-- **Fit mixed image sizes** — Use preset or custom canvas dimensions, Fit/Fill placement, and transparent, white, black, or custom backgrounds.
+- **Fit mixed image sizes** — Use preset or custom output dimensions, Fit/Fill placement, and transparent, white, black, or custom backgrounds.
 - **Choose GIF or Animated WebP** — GIF supports 64/128/256 colors and optional dithering; WebP supports quality, lossless mode, and encoding effort. Encoding runs locally with progress and cancellation.
 - **Inspect before saving** — Preview the generated GIF/WebP file, see its dimensions, frame count, duration and file size, then save it with an editable filename.
-- **Mobile-friendly and local** — Three bottom navigation actions (Frames / Preview / Export), Japanese/English UI, responsive layouts, and no file upload.
+- **Mobile-friendly and local** — Jump to Frames after importing images, keep secondary frame controls collapsible, and place playback directly under the preview. Frames / Preview / Export tabs, Japanese/English UI, and no file upload.
 
 ## Usage
 
 1. Choose multiple JPEG, PNG, or still WebP images, drop them onto the app, or paste an image.
 2. Change the order using the card drag handle or previous/next buttons. Duplicate or remove frames as needed.
-3. Set a common duration or edit each card's duration. **0.5× Slower** doubles each duration; **2× Faster** halves it. Values round to 10 ms and stay within 20–10,000 ms. `Undo` restores exact previous timings, even when rounding or a limit was applied.
-4. Select the output canvas size, Fit/Fill behavior, and background.
+3. Set a common per-frame duration, enter a total animation length for one pass (preserving relative frame timings where possible), or edit each card's duration. **0.5× Slower** doubles each duration; **2× Faster** halves it. Values round to 10 ms and stay within 20–10,000 ms. `Undo` restores exact previous timings, even when rounding or a limit was applied.
+4. Select the output size, Fit/Fill behavior, and background.
 5. Play the preview and choose Forward, Reverse, or Ping-pong and the repeat count.
 6. Select **GIF** or **Animated WebP**, adjust format-specific settings, and create the result.
 7. Check the *generated file* in the results area, edit the suggested filename, and save it.
@@ -104,7 +104,7 @@ Buttons for moving frames remain available without dragging.
 | Total imported source size | 500 MiB |
 | Image dimensions | 50 megapixels per image |
 | Frame duration | 20–10,000 ms in 10 ms steps |
-| Output canvas | 16–4096 px for each dimension |
+| Output dimensions | 16–4096 px for each dimension |
 | Custom play count | 2–100 plays (plus once/infinite) |
 
 These are application safeguards; device memory and browser capabilities may impose additional limits. APNG and Animated WebP are rejected rather than silently flattened, including a WebP renamed as PNG/JPEG. Invalid images are reported separately while successfully imported images remain usable. An invalid-only addition preserves the current frames and any generated result.
