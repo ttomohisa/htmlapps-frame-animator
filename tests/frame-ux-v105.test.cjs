@@ -16,6 +16,10 @@ test('mobile controls, preview transport, and Help have the v1.0.5 structure', (
   assert.ok(!source.includes('id="helpOkButton"'));
   assert.ok(!source.includes('data-i18n="previewNote"'));
   assert.ok(source.includes('data-i18n="gifDitherHelp"'));
+  assert.ok(source.includes('#mobilePageFrames{min-height:calc(100dvh'));
+  assert.ok(source.includes('.timing-disclosure[open]>summary{border-bottom:1px solid var(--line)}'));
+  assert.ok(source.includes('.timing-presets{display:none}'));
+  assert.ok(!source.includes('.frame-tools #addMoreButton{display:none}'));
 });
 
 test('preview switches images only after the next image is ready', () => {
@@ -26,7 +30,9 @@ test('preview switches images only after the next image is ready', () => {
   const decoded = body.indexOf('await decodePreviewFrame(frame)');
   const visibleClear = body.indexOf('context.clearRect');
   assert.ok(decoded >= 0 && visibleClear > decoded, 'the visible preview must not be cleared before decoding');
-  assert.ok(body.includes('context.drawImage(buffer, 0, 0)'));
+  assert.ok(body.includes('context.drawImage(previewBuffer, 0, 0)'));
+  assert.ok(body.includes('previewBuffer.getContext'));
+  assert.ok(body.includes('bufferContext.clearRect'));
   assert.ok(body.includes('token !== state.canvas.renderToken'));
 });
 
