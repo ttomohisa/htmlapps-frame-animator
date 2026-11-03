@@ -13,11 +13,10 @@
 - Replace user-facing Canvas terminology, shorten explanatory text, clarify GIF Dithering, and remove the duplicate bottom Help close button.
 - Update Japanese and English UI/help while preserving local processing and GIF/WebP export.
 
+## [1.0.4] - 2026-10-27
 
-- Verify the complete current header version at narrow phone widths; reserve space for the version beside truncated app titles.
-
-- 1.0.4: Replace the local-processing lock with a decorative shield, preserving the existing Japanese/English privacy text.
-
+- Keep the full header version visible at narrow phone widths beside truncated app titles.
+- Replace the local-processing lock with a decorative shield, preserving the existing Japanese/English privacy text.
 - Hide the phone informational footer and place existing build metadata at the end of Help, preserving functional controls and keyboard access.
 
 ## 1.0.3 - 2026-10-10
