@@ -35,6 +35,10 @@ jobs:
         shell: powershell
         run: .\scripts\check-powershell-syntax.ps1
 
+      - name: Verify release planner success and safety invariants
+        shell: pwsh
+        run: node --test tests/release-workflow.test.cjs
+
       - name: Build and verify standalone HTML
         shell: pwsh
         run: ./scripts/check-repository.ps1
