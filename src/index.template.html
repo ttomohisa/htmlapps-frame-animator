@@ -165,6 +165,8 @@
     .webp-lossless input{width:20px;height:20px;flex:0 0 auto;accent-color:var(--accent)}
     .gif-result-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.gif-result-stat{padding:9px;border-radius:9px;background:var(--surface-muted)}.gif-result-stat span{display:block;color:var(--muted);font-size:10px}.gif-result-stat strong{display:block;margin-top:2px;font-size:12px;overflow-wrap:anywhere}
     .gif-result-actions{display:flex;justify-content:flex-end;gap:8px}.gif-note{margin:0;color:var(--muted);font-size:11px}
+    /* The mobile save actions live beside Create; desktop keeps Save in the result card. */
+    .mobile-save-button{display:none}
     .import-report{margin-top:14px;padding:12px;border:1px solid #ead18e;border-radius:11px;background:var(--warning-soft)}
     .import-report h4{margin:0 0 5px;color:#674400;font-size:13px}.import-report p{margin:0;color:#674400;font-size:11px}
     .failure-list{margin:9px 0 0;padding-left:18px;color:#674400;font-size:11px}.failure-list li+li{margin-top:3px}
@@ -216,6 +218,11 @@
       .drop-zone.is-compact>div{flex-wrap:wrap}.drop-zone.is-compact .drop-title{flex:1 1 auto;min-width:130px;white-space:normal}.drop-zone.is-compact #chooseButton{margin-left:0}
       .timing-toolbar{grid-template-columns:1fr}.timing-controls{justify-content:flex-start}.preview-layout{grid-template-columns:1fr}.preview-stage{min-height:260px;padding:10px}.preview-canvas-wrap,.preview-canvas{max-height:48vh}
       .gif-layout{grid-template-columns:1fr}.gif-option-grid{grid-template-columns:1fr 1fr}.gif-result-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.gif-result-preview{min-height:220px}.gif-create-row{align-items:stretch}.gif-create-row .button{min-height:44px}
+      .gif-result-actions{display:none}
+      .gif-create-row.has-result .mobile-save-button:not([hidden]){display:inline-flex;flex:1 1 55%;min-width:0}
+      .gif-create-row.has-result>.button.primary:not(.mobile-save-button){flex:1 1 45%;min-width:0;padding-inline:7px;background:var(--surface);border-color:var(--line);color:var(--text);font-size:12px}
+      .gif-create-row.has-result>.button.primary:not(.mobile-save-button):hover:not(:disabled){background:var(--surface-hover);border-color:var(--line-strong)}
+      .gif-create-row.has-result .mobile-save-button{font-size:13px;padding-inline:9px}
       .next-panel{grid-template-columns:1fr}.future-button{width:100%}.build-grid{grid-template-columns:1fr}
       dialog{width:calc(100vw - 16px);max-height:calc(100dvh - 16px);border-radius:16px}.dialog-shell{max-height:calc(100dvh - 16px)}.dialog-head{position:sticky;top:0;background:var(--surface);z-index:1}
       .dialog-body{padding-bottom:calc(20px + env(safe-area-inset-bottom))}.app-toast{right:10px;bottom:calc(86px + env(safe-area-inset-bottom));max-width:calc(100vw - 20px)}
@@ -597,8 +604,9 @@
               </span>
             </label>
             <p class="gif-note" data-i18n="gifLimitNote">GIFは最大256色・1bit透明です。</p>
-            <div class="gif-create-row">
+            <div class="gif-create-row" id="gifCreateRow">
               <button class="button primary" id="createGifButton" type="button" disabled data-i18n="createGif">GIFを作成</button>
+              <button class="button primary mobile-save-button" id="saveGifMobileButton" type="button" hidden disabled data-i18n="saveGif">GIFを保存</button>
               <button class="button" id="cancelGifButton" type="button" hidden data-i18n="cancelGif">キャンセル</button>
             </div>
             <div class="gif-progress-wrap" id="gifProgressWrap" hidden aria-live="polite">
@@ -676,8 +684,9 @@
               </span>
             </label>
             <p class="gif-note" data-i18n="webpNote">Animated WebPは動く画像です。対応ビューアやブラウザで再生をご確認ください。</p>
-            <div class="gif-create-row">
+            <div class="gif-create-row" id="webpCreateRow">
               <button class="button primary" id="createWebpButton" type="button" disabled data-i18n="createWebp">WebPを作成</button>
+              <button class="button primary mobile-save-button" id="saveWebpMobileButton" type="button" hidden disabled data-i18n="saveWebp">WebPを保存</button>
               <button class="button" id="cancelWebpButton" type="button" hidden data-i18n="cancelWebp">キャンセル</button>
             </div>
             <div class="gif-progress-wrap" id="webpProgressWrap" hidden aria-live="polite">
@@ -1715,6 +1724,14 @@
         return base.slice(0, 120);
       }
 
+      function syncMobileSaveAction(format, ready) {
+        const prefix = format === 'gif' ? 'Gif' : 'Webp';
+        const button = $('#save' + prefix + 'MobileButton');
+        button.hidden = !ready;
+        button.disabled = !ready || isBusy();
+        $('#' + format + 'CreateRow').classList.toggle('has-result', ready);
+      }
+
       function clearGifResult({ stale = false } = {}) {
         const hadResult = Boolean(state.gif.resultUrl);
         if (state.gif.resultUrl) URL.revokeObjectURL(state.gif.resultUrl);
@@ -1727,6 +1744,7 @@
         $('#gifResultCard').hidden = true;
         $('#gifResultEmpty').hidden = false;
         $('#saveGifButton').disabled = true;
+        syncMobileSaveAction('gif', false);
       }
 
       function invalidateGifResult(options = {}) {
@@ -1758,6 +1776,7 @@
           $('#gifResultEmpty').hidden = false;
           $('#gifResultEmpty').textContent = state.gif.stale ? t('gifStale') : state.gif.errorKey ? t(state.gif.errorKey) : t('gifResultEmpty');
           $('#saveGifButton').disabled = true;
+          syncMobileSaveAction('gif', false);
           return;
         }
         $('#gifResultEmpty').hidden = true;
@@ -1768,6 +1787,7 @@
         $('#gifResultDuration').textContent = formatSeconds(meta.duration);
         $('#gifResultBytes').textContent = formatBytes(meta.bytes);
         $('#saveGifButton').disabled = false;
+        syncMobileSaveAction('gif', true);
       }
 
       function cancelGif({ announce = true } = {}) {
@@ -2219,6 +2239,7 @@
         $('#webpResultCard').hidden = true;
         $('#webpResultEmpty').hidden = false;
         $('#saveWebpButton').disabled = true;
+        syncMobileSaveAction('webp', false);
       }
 
       function invalidateWebpResult(options = {}) {
@@ -2238,6 +2259,7 @@
           $('#webpResultEmpty').hidden = false;
           $('#webpResultEmpty').textContent = state.webp.stale ? t('webpStale') : state.webp.errorKey ? t(state.webp.errorKey) : t('webpResultEmpty');
           $('#saveWebpButton').disabled = true;
+          syncMobileSaveAction('webp', false);
           return;
         }
         $('#webpResultEmpty').hidden = true;
@@ -2248,6 +2270,7 @@
         $('#webpResultDuration').textContent = formatSeconds(meta.duration);
         $('#webpResultBytes').textContent = formatBytes(meta.bytes);
         $('#saveWebpButton').disabled = false;
+        syncMobileSaveAction('webp', true);
       }
 
       function setWebpBusy(busy) {
@@ -3706,6 +3729,7 @@
       $('#createGifButton').addEventListener('click', createGif);
       $('#cancelGifButton').addEventListener('click', () => cancelGif());
       $('#saveGifButton').addEventListener('click', saveGif);
+      $('#saveGifMobileButton').addEventListener('click', saveGif);
 
       webpQualityRange.addEventListener('input', () => {
         webpQuality.value = webpQualityRange.value;
@@ -3728,6 +3752,7 @@
       $('#createWebpButton').addEventListener('click', createWebp);
       $('#cancelWebpButton').addEventListener('click', () => cancelWebp());
       $('#saveWebpButton').addEventListener('click', saveWebp);
+      $('#saveWebpMobileButton').addEventListener('click', saveWebp);
 
       sortSelect.addEventListener('change', () => {
         const direction = sortSelect.value;
