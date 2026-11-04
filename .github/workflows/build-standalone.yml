@@ -18,6 +18,7 @@ on:
       - "scripts/build-self-extract.ps1"
       - "scripts/verify-self-extract.ps1"
       - ".github/workflows/build-standalone.yml"
+      - ".github/workflows/release.yml"
 
 permissions:
   contents: read
@@ -38,6 +39,12 @@ jobs:
         shell: pwsh
         run: ./scripts/check-repository.ps1
 
+      - name: Dry-run release packaging (no tag or publication)
+        shell: pwsh
+        run: |
+          $config = Get-Content -Raw -Encoding UTF8 app.config.json | ConvertFrom-Json
+          ./scripts/package-release.ps1 -Tag "v$($config.version)"
+
       - name: Upload standalone artifact
         uses: actions/upload-artifact@v7
         with:
@@ -49,5 +56,9 @@ jobs:
             dist/dependency-manifest.json
             dist/self-extract-manifest.json
             dist/.nojekyll
+            release-assets/*.html
+            release-assets/*.zip
+            release-assets/SHA256SUMS.txt
+            release-assets/RELEASE_NOTES.md
           if-no-files-found: error
           retention-days: 14

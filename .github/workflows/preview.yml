@@ -34,7 +34,7 @@ jobs:
       shell: pwsh
       run: |
         ./scripts/check-repository.ps1
-        node --test tests/mobile-help-footer.test.cjs
+        node --test tests/mobile-help-footer.test.cjs tests/frame-ux-v105.test.cjs
         if ($LASTEXITCODE -ne 0) { throw "Footer / Help source regression failed." }
     - name: Verify phone layout in Chromium
       shell: pwsh
@@ -47,6 +47,8 @@ jobs:
         if ($LASTEXITCODE -ne 0) { throw "Chromium installation failed." }
         New-Item -ItemType Directory -Force -Path "test-results/mobile-layout" | Out-Null
         node scripts/mobile-layout.browser.cjs 2>&1 | Tee-Object -FilePath "test-results/mobile-layout/browser.log"
+        if ($LASTEXITCODE -ne 0) { throw "Phone layout regression failed." }
+        node scripts/v105-mobile-ux.browser.cjs 2>&1 | Tee-Object -FilePath "test-results/mobile-layout/v105-browser.log"
         if ($LASTEXITCODE -ne 0) { throw "Phone layout browser regression failed." }
     - name: Upload phone layout screenshots
       if: always()

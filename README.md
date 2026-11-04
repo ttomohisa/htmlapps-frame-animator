@@ -58,19 +58,19 @@ GitHub Pages is enabled for this repository and the deployment workflow is confi
 
 - Background scrolling pauses while a dialog is open and resumes after dismissal.
 - **Import and reorder frames** — Select multiple images, drag and drop files, paste an image from the clipboard, or add more images later. Move cards with a mouse or touch drag handle, previous/next buttons, and natural filename sorting.
-- **Set each frame's duration** — Use global presets or adjust individual frames from 20 to 10,000 ms. Use **0.5× Slower / 2× Faster** to scale mixed timings together. Undo/redo also covers sequence and timing changes.
+- **Set each frame's duration** — Set a common per-frame duration or target length for one playback pass, while retaining individual 20–10,000 ms timings. Use **0.5× Slower / 2× Faster** to scale mixed timings together. Undo/redo also covers sequence and timing changes.
 - **Preview the actual sequence** — Play, pause, step through frames, and choose Forward, Reverse, or Ping-pong (without duplicate endpoints). Set infinite, once-only, or custom repeat counts.
-- **Fit mixed image sizes** — Use preset or custom canvas dimensions, Fit/Fill placement, and transparent, white, black, or custom backgrounds.
+- **Fit mixed image sizes** — Use preset or custom output dimensions, Fit/Fill placement, and transparent, white, black, or custom backgrounds.
 - **Choose GIF or Animated WebP** — GIF supports 64/128/256 colors and optional dithering; WebP supports quality, lossless mode, and encoding effort. Encoding runs locally with progress and cancellation.
 - **Inspect before saving** — Preview the generated GIF/WebP file, see its dimensions, frame count, duration and file size, then save it with an editable filename.
-- **Mobile-friendly and local** — Three bottom navigation actions (Frames / Preview / Export), Japanese/English UI, responsive layouts, and no file upload.
+- **Mobile-friendly and local** — After the first import on phones, hide the large entry panel and position Frames at the top; use the compact Add button in Frames for more images, then restore the entry panel on Clear all. keep secondary frame controls collapsible (the preset buttons are hidden on mobile, while speed controls remain available), and place playback directly under the preview. After exporting GIF/WebP, phones show Save directly beside Create; desktop retains Save in the result card. For WebP, use a slider or editable number to set quality; higher compression effort takes more time; the same value controls compression effort in lossless mode. The quality label and hint do not change when toggling lossless. Live preview uses source images resized for higher clarity, and scrolling keeps the last frame and export controls clear of the bottom navigation. Frames / Preview / Export tabs, Japanese/English UI, and no file upload.
 
 ## Usage
 
 1. Choose multiple JPEG, PNG, or still WebP images, drop them onto the app, or paste an image.
 2. Change the order using the card drag handle or previous/next buttons. Duplicate or remove frames as needed.
-3. Set a common duration or edit each card's duration. **0.5× Slower** doubles each duration; **2× Faster** halves it. Values round to 10 ms and stay within 20–10,000 ms. `Undo` restores exact previous timings, even when rounding or a limit was applied.
-4. Select the output canvas size, Fit/Fill behavior, and background.
+3. Set a common per-frame duration, enter a one-pass length (preserving relative frame timings where possible), or edit each card's duration. **0.5× Slower** doubles each duration; **2× Faster** halves it. Values round to 10 ms and stay within 20–10,000 ms. `Undo` restores exact previous timings, even when rounding or a limit was applied.
+4. Select the output size, Fit/Fill behavior, and background.
 5. Play the preview and choose Forward, Reverse, or Ping-pong and the repeat count.
 6. Select **GIF** or **Animated WebP**, adjust format-specific settings, and create the result.
 7. Check the *generated file* in the results area, edit the suggested filename, and save it.
@@ -104,7 +104,7 @@ Buttons for moving frames remain available without dragging.
 | Total imported source size | 500 MiB |
 | Image dimensions | 50 megapixels per image |
 | Frame duration | 20–10,000 ms in 10 ms steps |
-| Output canvas | 16–4096 px for each dimension |
+| Output dimensions | 16–4096 px for each dimension |
 | Custom play count | 2–100 plays (plus once/infinite) |
 
 These are application safeguards; device memory and browser capabilities may impose additional limits. APNG and Animated WebP are rejected rather than silently flattened, including a WebP renamed as PNG/JPEG. Invalid images are reported separately while successfully imported images remain usable. An invalid-only addition preserves the current frames and any generated result.
@@ -118,6 +118,27 @@ This repository's [Deploy standalone app to GitHub Pages](https://github.com/tto
 3. The workflow builds and verifies the fully embedded HTML, uploads the generated `dist` site, and deploys to [the GitHub Pages URL](https://ttomohisa.github.io/htmlapps-frame-animator/).
 
 The PR Preview is separate from GitHub Pages. The public site's version updates only after a successful deployment from `main`.
+
+## GitHub Releases
+
+**No manual tag or release step is needed.** After a version PR is reviewed and **manually merged into `main`**, the [Publish GitHub Release workflow](.github/workflows/release.yml) runs automatically on the resulting `main` push.
+
+For example, merging the v1.0.5 PR causes the workflow to:
+
+1. Read the version from `app.config.json` and check for an existing matching tag or release.
+2. Build and verify the standalone HTML files and assemble the release archive.
+3. Create the `v1.0.5` tag on the **exact merged `main` commit**, if absent.
+4. Publish the GitHub Release with the four familiar downloads:
+
+   - `htmlapps-frame-animator-v1.0.5.html` — readable single HTML.
+   - `htmlapps-frame-animator-v1.0.5.self-extract.html` — self-extracting single HTML.
+   - `htmlapps-frame-animator-v1.0.5.zip` — HTML, manifests, README files, license, notices and changelog.
+   - `SHA256SUMS.txt` — checksums for the other three downloads.
+
+The release notes come from the matching entry in `CHANGELOG.md`. Subsequent pushes using an already published version do not create duplicate tags or releases. Manually pushed stable version tags are still supported, but must match `app.config.json` and be included in `main`. If verification fails, the workflow does not create a new tag.
+
+In pull requests, validation **tests packaging but does not create tags or publish releases**. GitHub Actions needs `contents: write` permission to publish. GitHub Release and deployment to Browser Kitty are separate processes.
+
 
 ## Development and build
 
