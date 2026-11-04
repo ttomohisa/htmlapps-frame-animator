@@ -53,7 +53,7 @@ test('preview switches images only after the next image is ready', () => {
   assert.ok(source.includes('PREVIEW_DECODE_MAX_EDGE = 1600'));
   assert.ok(!source.includes('frame.thumbnailBlob || frame.file'));
   assert.ok(source.includes('webp-encoding-options'));
-  assert.ok(source.includes('refreshWebpQualityCopy()'));
+  assert.ok(!source.includes('refreshWebpQualityCopy'));
   assert.ok(source.includes("webpEffort6:'6 · 最も丁寧'"));
   assert.ok(source.includes('clearPreviewDecodeCache()'));
   assert.ok(body.includes('token !== state.canvas.renderToken'));
