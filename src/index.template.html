@@ -176,7 +176,9 @@
     @media(max-width:900px){.frame-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
     @media(max-width:640px){
       .header-inner{padding-left:max(10px,env(safe-area-inset-left));padding-right:max(10px,env(safe-area-inset-right))}
-      .main{padding:16px max(12px,env(safe-area-inset-right)) 38px max(12px,env(safe-area-inset-left))}
+      /* Reserve real scrolling space below the fixed mobile workflow controls. */
+      .main{padding:16px max(12px,env(safe-area-inset-right)) calc(136px + env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
+      html{scroll-padding-bottom:calc(100px + env(safe-area-inset-bottom))}
       footer{padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right));padding-bottom:calc(96px + env(safe-area-inset-bottom))}
       .page-intro{display:block}.local-badge{margin-top:11px}.panel-body{padding:13px}.drop-zone{min-height:190px;padding:22px 14px}
       /* Signal Screen mobile action bar: edge-to-edge, blurred surface and clear primary action. */
@@ -219,6 +221,7 @@
       .frame-tools .summary-actions{padding-top:7px}
       /* The frame panel can align below the header, even when only one image is loaded. */
       #mobilePageFrames{min-height:calc(100dvh - var(--header-height) + 24px);scroll-margin-top:calc(var(--header-height) + 20px + env(safe-area-inset-top))}
+      #frameGrid{scroll-margin-top:calc(var(--header-height) + 10px + env(safe-area-inset-top))}
       /* One rounded outer border for the disclosure and its expanded controls. */
       .timing-disclosure{margin-bottom:10px;border:1px solid var(--line);border-radius:11px;background:var(--surface-muted);overflow:hidden}
       .timing-disclosure>summary{min-height:42px;padding:11px 12px;border:0;border-radius:0;background:transparent}
@@ -825,14 +828,14 @@
           dragFrame:'ドラッグしてフレーム {number} を移動', movePrevious:'フレーム {number} を前へ移動', moveNext:'フレーム {number} を後ろへ移動', duplicate:'フレーム {number} を複製', deleteFrame:'フレーム {number} を削除',
           duplicated:'フレームを複製しました', deleted:'フレームを削除しました', reordered:'フレーム順を変更しました', sortedAsc:'ファイル名の昇順に並べ替えました', sortedDesc:'ファイル名の降順に並べ替えました', undone:'元に戻しました', redone:'やり直しました', duplicateLimit:'最大200枚までです',
           durationPresets:'表示時間のプリセット', speedSlower:'0.5× ゆっくり', speedFaster:'2× はやく', speedNote:'各フレームの時間を2倍／半分にします。', speedApplied:'全フレームの再生速度を変更しました',
-          timingTitle:'全フレームの表示時間', timingBody:'各画像にも個別の時間を設定できます。', globalDurationLabel:'表示時間', applyAll:'適用', frameDuration:'表示時間', timingApplied:'全フレームの表示時間を変更しました', timingChanged:'表示時間を変更しました', frameToolsTitle:'編集・管理', timingModeLabel:'表示時間の指定方法', timingModeFrame:'1枚あたり', timingModeTotal:'全体の長さ', timingExtrasLabel:'速度調整', timingTotalRange:'合計時間は{min}〜{max}秒にしてください。', timingTotalApplied:'全体の長さを変更しました', timingTotalLabel:'全体の長さ（再生1回分・秒）', gifDitherHelp:'色の境目を細かな点で目立ちにくくします。',
-          previewHeading:'アニメーションプレビュー', previewNote:'出力画像へFit / Fillした状態で、各フレームの表示時間どおりに確認します。', previewEmpty:'画像を追加すると、ここでアニメーションを確認できます。', previewFrameLabel:'フレーム', previewTimeLabel:'再生位置', previewRestart:'最初から', previewPrevious:'前のフレーム', previewPlay:'再生 / 一時停止', previewNext:'次のフレーム', previewHelp:'プレビューには軽量画像を使います。サイズ・配置・背景は書き出し時と同じ設定です。', playbackSettingsTitle:'再生設定', playbackSettingsBody:'プレビュー・GIF・WebPで同じ再生順とループ設定を使います。', playbackOrderLabel:'再生順', playbackForward:'Forward', playbackReverse:'Reverse', playbackPingpong:'Ping-pong', playbackLoopLabel:'ループ', playbackLoopInfinite:'繰り返す', playbackLoopOnce:'1回だけ', playbackLoopCustom:'回数指定', playbackLoopCountLabel:'再生回数', playbackPassSummary:'1回分', framesUnit:'フレーム',
+          timingTitle:'全フレームの表示時間', timingBody:'各画像にも個別の時間を設定できます。', globalDurationLabel:'表示時間', applyAll:'適用', frameDuration:'表示時間', timingApplied:'全フレームの表示時間を変更しました', timingChanged:'表示時間を変更しました', frameToolsTitle:'編集・管理', timingModeLabel:'表示時間の指定方法', timingModeFrame:'1枚あたり', timingModeTotal:'1回分の長さ', timingExtrasLabel:'速度調整', timingTotalRange:'1回分の長さは{min}〜{max}秒にしてください。', timingTotalApplied:'1回分の長さを変更しました', timingTotalLabel:'1回分の長さ（秒）', gifDitherHelp:'色の境目を細かな点で目立ちにくくします。',
+          previewHeading:'アニメーションプレビュー', previewNote:'出力画像へFit / Fillした状態で、各フレームの表示時間どおりに確認します。', previewEmpty:'画像を追加すると、ここでアニメーションを確認できます。', previewFrameLabel:'フレーム', previewTimeLabel:'再生位置', previewRestart:'最初から', previewPrevious:'前のフレーム', previewPlay:'再生 / 一時停止', previewNext:'次のフレーム', previewHelp:'プレビューは元画像を縮小して表示します。書き出し結果の画質は、保存前に確認してください。', playbackSettingsTitle:'再生設定', playbackSettingsBody:'プレビュー・GIF・WebPで同じ再生順とループ設定を使います。', playbackOrderLabel:'再生順', playbackForward:'Forward', playbackReverse:'Reverse', playbackPingpong:'Ping-pong', playbackLoopLabel:'ループ', playbackLoopInfinite:'繰り返す', playbackLoopOnce:'1回だけ', playbackLoopCustom:'回数指定', playbackLoopCountLabel:'再生回数', playbackPassSummary:'1回分', framesUnit:'フレーム',
           outputSettingsTitle:'出力サイズ', outputSettingsBody:'1枚目の縦横比を基準にサイズをそろえます。カスタムでは幅・高さを個別指定できます。', canvasSizeLabel:'画像サイズ', canvasAuto:'自動（長辺最大720px）', canvas480:'長辺480px', canvas720:'長辺720px', canvas1080:'長辺1080px', canvasOriginal:'1枚目の元サイズ相当', canvasCustom:'カスタム', canvasWidthLabel:'画像の幅', canvasHeightLabel:'画像の高さ', placementLabel:'画像の配置', fit:'収める', fill:'切り抜く', backgroundLabel:'背景', backgroundTransparent:'透明', backgroundWhite:'白', backgroundBlack:'黒', backgroundCustom:'カスタム色', backgroundColorLabel:'背景色', previewCanvasLabel:'アニメーションのプレビュー', resolvedCanvas:'実際の出力サイズ',
           gifHeading:'Animated GIFを書き出す', gifHeadingNote:'設定したサイズと表示時間でGIFを作成します。', gifColorsLabel:'色数', gifLoopLabel:'ループ', gifLoopInfinite:'繰り返す', gifLoopOnce:'1回だけ', gifDitherLabel:'ディザリング', outputFilenameLabel:'出力ファイル名', gifLimitNote:'GIFは最大256色・1bit透明です。', createGif:'GIFを作成', cancelGif:'キャンセル', gifResultEmpty:'GIFを作成すると、ここで実際の生成ファイルを確認できます。', gifResultPreviewLabel:'生成したGIFのプレビュー', gifResultSizeLabel:'サイズ', gifResultFramesLabel:'フレーム', gifResultDurationLabel:'再生時間', gifResultBytesLabel:'ファイル容量', saveGif:'GIFを保存', gifPreparing:'フレーム {current} / {total} を準備しています…', gifEncoding:'フレーム {current} / {total} をGIFへ変換しています…', gifFinishing:'GIFを仕上げています…', gifDone:'GIFを作成しました', gifSaved:'GIFを保存しました', gifCancelled:'GIF作成をキャンセルしました', gifFailed:'GIFを作成できませんでした', gifFailedRecovery:'GIFを作成できませんでした。出力サイズやフレーム数を小さくするか、設定を変更してもう一度お試しください。', gifStale:'設定が変更されました。もう一度GIFを作成してください。', heavyJobTitle:'処理負荷の確認', heavyJobBody:'{format}を{frames}フレーム・{width}×{height}pxで作成します。端末のメモリを多く使用し、処理に時間がかかる可能性があります。続行しますか？', continueExport:'続行',
           webpHeading:'Animated WebPを書き出す', webpHeadingNote:'品質や圧縮方法を調整してWebPを作成します。', webpQualityLabel:'品質', webpEffortLabel:'Effort', webpLosslessLabel:'Lossless', webpLoopLabel:'ループ', webpLoopInfinite:'繰り返す', webpLoopOnce:'1回だけ', webpNote:'Animated WebPは動画ではなく、動く画像です。画像ビューアーによっては静止画に見えるため、ブラウザで再生をご確認ください。Losslessや高いEffortは処理時間・容量が増えることがあります。', createWebp:'WebPを作成', cancelWebp:'キャンセル', webpResultEmpty:'WebPを作成すると、ここで実際の生成ファイルを確認できます。', webpResultPreviewLabel:'生成したAnimated WebPのプレビュー', saveWebp:'WebPを保存', webpPreparing:'フレーム {current} / {total} を準備しています…', webpEncoding:'フレーム {current} / {total} をWebPへ変換しています…', webpFinishing:'Animated WebPを仕上げています…', webpDone:'WebPを作成しました', webpSaved:'WebPを保存しました', webpCancelled:'WebP作成をキャンセルしました', webpFailed:'WebPを作成できませんでした', webpFailedRecovery:'WebPを作成できませんでした。出力サイズ・品質・Lossless・Effortなどを変更して、もう一度お試しください。', webpStale:'設定が変更されました。もう一度WebPを作成してください。',
           exportFormatLabel:'書き出す形式', exportGifOption:'GIF', exportWebpOption:'Animated WebP',
           buildInfo:'ビルド情報', appVersion:'アプリバージョン', builtAt:'生成日時', dependencies:'内包依存', footer:'画像はこの端末内で処理されます',
-          help:'ヘルプ', close:'閉じる', helpTitle:'使い方と注意事項', helpHowTitle:'基本操作', helpHow1:'JPEG・PNG・静止WebPを複数選択、画面へドロップ、またはクリップボードから画像を貼り付けます。', helpHow2:'画像の順番と表示時間を調整します。全体の長さを指定したり、0.5×／2×で各フレームの速度を変えたりできます（10 ms刻み・20〜10,000 ms）。元に戻す／やり直すにも対応します。', helpHow3:'画像サイズと配置を設定し、GIFまたはWebPを作成します。生成したファイルを確認して保存します。',
+          help:'ヘルプ', close:'閉じる', helpTitle:'使い方と注意事項', helpHowTitle:'基本操作', helpHow1:'JPEG・PNG・静止WebPを複数選択、画面へドロップ、またはクリップボードから画像を貼り付けます。', helpHow2:'画像の順番と表示時間を調整します。再生1回分の長さを指定したり、0.5×／2×で各フレームの速度を変えたりできます（10 ms刻み・20〜10,000 ms）。元に戻す／やり直すにも対応します。', helpHow3:'画像サイズと配置を設定し、GIFまたはWebPを作成します。生成したファイルを確認して保存します。',
           helpFormatsTitle:'対応形式', helpFormatsBody:'JPEG / JPG、PNG、静止WebPに対応します。Animated WebP、APNG、GIF、動画、HEIC等は現在対象外です。', helpLimitsTitle:'上限', helpLimitsBody:'最大200枚、1ファイル50 MiB、元ファイル合計500 MiB、1画像50メガピクセルです。1枚の表示時間は20〜10,000 ms、出力サイズは幅・高さ16〜4096pxです。',
           helpPrivacyTitle:'プライバシー', helpPrivacyBody:'選択した画像はブラウザ内だけで読み込みます。このアプリは画像を外部サーバーへ送信せず、Analyticsや外部APIも使用しません。',  helpStorageTitle:'データ保持', helpStorageBody:'画像自体はブラウザストレージへ自動保存しません。ページを閉じると作業画像は破棄されます。',
           confirmTitle:'確認', cancel:'キャンセル', clearConfirmTitle:'すべての画像を消去しますか？', clearConfirmBody:'追加した画像とサムネイルをこのページから消去します。元ファイルは変更されません。', clearConfirmAction:'すべて消去',
@@ -849,14 +852,14 @@
           dragFrame:'Drag to move frame {number}', movePrevious:'Move frame {number} earlier', moveNext:'Move frame {number} later', duplicate:'Duplicate frame {number}', deleteFrame:'Delete frame {number}',
           duplicated:'Frame duplicated', deleted:'Frame deleted', reordered:'Frame order changed', sortedAsc:'Sorted by filename ascending', sortedDesc:'Sorted by filename descending', undone:'Undone', redone:'Redone', duplicateLimit:'Maximum of 200 frames reached',
           durationPresets:'Frame duration presets', speedSlower:'0.5× Slower', speedFaster:'2× Faster', speedNote:'Double or halve each frame duration.', speedApplied:'Updated all frame speeds',
-          timingTitle:'All frame durations', timingBody:'You can also adjust each image separately.', globalDurationLabel:'Duration', applyAll:'Apply', frameDuration:'Duration', timingApplied:'Updated all frame durations', timingChanged:'Frame duration updated', frameToolsTitle:'Edit and manage', timingModeLabel:'How to set duration', timingModeFrame:'Per frame', timingModeTotal:'Total length', timingExtrasLabel:'Speed', timingTotalRange:'Total length must be between {min} and {max} seconds.', timingTotalApplied:'Updated total animation length', timingTotalLabel:'Total length for one pass (seconds)', gifDitherHelp:'Uses tiny dots to soften visible steps between colors.',
-          previewHeading:'Animation preview', previewNote:'', previewEmpty:'Add images to preview the animation here.', previewFrameLabel:'Frame', previewTimeLabel:'Playback position', previewRestart:'Restart', previewPrevious:'Previous frame', previewPlay:'Play / pause', previewNext:'Next frame', previewHelp:'The preview uses smaller images. Size, placement, and background match your export settings.', playbackSettingsTitle:'Playback settings', playbackSettingsBody:'Preview, GIF, and WebP share the same playback order and loop settings.', playbackOrderLabel:'Playback order', playbackForward:'Forward', playbackReverse:'Reverse', playbackPingpong:'Ping-pong', playbackLoopLabel:'Loop', playbackLoopInfinite:'Repeat', playbackLoopOnce:'Play once', playbackLoopCustom:'Custom count', playbackLoopCountLabel:'Play count', playbackPassSummary:'One pass', framesUnit:'frames',
+          timingTitle:'All frame durations', timingBody:'You can also adjust each image separately.', globalDurationLabel:'Duration', applyAll:'Apply', frameDuration:'Duration', timingApplied:'Updated all frame durations', timingChanged:'Frame duration updated', frameToolsTitle:'Edit and manage', timingModeLabel:'How to set duration', timingModeFrame:'Per frame', timingModeTotal:'One-pass length', timingExtrasLabel:'Speed', timingTotalRange:'One-pass length must be between {min} and {max} seconds.', timingTotalApplied:'Updated one-pass length', timingTotalLabel:'One-pass length (seconds)', gifDitherHelp:'Uses tiny dots to soften visible steps between colors.',
+          previewHeading:'Animation preview', previewNote:'', previewEmpty:'Add images to preview the animation here.', previewFrameLabel:'Frame', previewTimeLabel:'Playback position', previewRestart:'Restart', previewPrevious:'Previous frame', previewPlay:'Play / pause', previewNext:'Next frame', previewHelp:'The preview uses resized source images. Review the generated file to check export quality.', playbackSettingsTitle:'Playback settings', playbackSettingsBody:'Preview, GIF, and WebP share the same playback order and loop settings.', playbackOrderLabel:'Playback order', playbackForward:'Forward', playbackReverse:'Reverse', playbackPingpong:'Ping-pong', playbackLoopLabel:'Loop', playbackLoopInfinite:'Repeat', playbackLoopOnce:'Play once', playbackLoopCustom:'Custom count', playbackLoopCountLabel:'Play count', playbackPassSummary:'One pass', framesUnit:'frames',
           outputSettingsTitle:'Image size and placement', outputSettingsBody:'Give every image the same output dimensions.', canvasSizeLabel:'Output size', canvasAuto:'Auto (long edge up to 720px)', canvas480:'480px long edge', canvas720:'720px long edge', canvas1080:'1080px long edge', canvasOriginal:'First frame original equivalent', canvasCustom:'Custom', canvasWidthLabel:'Image width', canvasHeightLabel:'Image height', placementLabel:'Image placement', fit:'Fit', fill:'Fill', backgroundLabel:'Background', backgroundTransparent:'Transparent', backgroundWhite:'White', backgroundBlack:'Black', backgroundCustom:'Custom color', backgroundColorLabel:'Background color', previewCanvasLabel:'Animation preview', resolvedCanvas:'Actual output size',
           gifHeading:'Export Animated GIF', gifHeadingNote:'Create a GIF using the selected size and frame durations.', gifColorsLabel:'Colors', gifLoopLabel:'Loop', gifLoopInfinite:'Repeat', gifLoopOnce:'Play once', gifDitherLabel:'Dithering', outputFilenameLabel:'Output filename', gifLimitNote:'GIF supports up to 256 colors and 1-bit transparency.', createGif:'Create GIF', cancelGif:'Cancel', gifResultEmpty:'Create a GIF to review the actual generated file here.', gifResultPreviewLabel:'Generated GIF preview', gifResultSizeLabel:'Size', gifResultFramesLabel:'Frames', gifResultDurationLabel:'Duration', gifResultBytesLabel:'File size', saveGif:'Save GIF', gifPreparing:'Preparing frame {current} / {total}…', gifEncoding:'Encoding frame {current} / {total}…', gifFinishing:'Finishing GIF…', gifDone:'GIF created', gifSaved:'GIF saved', gifCancelled:'GIF creation cancelled', gifFailed:'Could not create GIF', gifFailedRecovery:'Could not create the GIF. Reduce the output size or frame count, or change the settings and try again.', gifStale:'Settings changed. Create the GIF again.', heavyJobTitle:'Confirm processing load', heavyJobBody:'Create {format} with {frames} frames at {width}×{height}px. This may use substantial memory and take longer on this device. Continue?', continueExport:'Continue',
           webpHeading:'Export Animated WebP', webpHeadingNote:'Create a WebP animation with adjustable quality and compression.', webpQualityLabel:'Quality', webpEffortLabel:'Effort', webpLosslessLabel:'Lossless', webpLoopLabel:'Loop', webpLoopInfinite:'Repeat', webpLoopOnce:'Play once', webpNote:'Animated WebP is an animated image, not an MP4 video. Some image viewers display only a still frame; check playback in your browser. Lossless and higher Effort may take longer or increase file size.', createWebp:'Create WebP', cancelWebp:'Cancel', webpResultEmpty:'Create a WebP to review the actual generated file here.', webpResultPreviewLabel:'Generated Animated WebP preview', saveWebp:'Save WebP', webpPreparing:'Preparing frame {current} / {total}…', webpEncoding:'Encoding frame {current} / {total}…', webpFinishing:'Finishing Animated WebP…', webpDone:'WebP created', webpSaved:'WebP saved', webpCancelled:'WebP creation cancelled', webpFailed:'Could not create WebP', webpFailedRecovery:'Could not create the WebP. Adjust output size, quality, Lossless, or Effort, then try again.', webpStale:'Settings changed. Create the WebP again.',
           exportFormatLabel:'Export format', exportGifOption:'GIF', exportWebpOption:'Animated WebP',
           buildInfo:'Build information', appVersion:'App version', builtAt:'Built at', dependencies:'Embedded dependencies', footer:'Images are processed on this device',
-          help:'Help', close:'Close', helpTitle:'How to use & notes', helpHowTitle:'Basic workflow', helpHow1:'Choose multiple JPEG, PNG, or still WebP images, drop them onto the page, or paste an image from the clipboard.', helpHow2:'Arrange frames and adjust timings. Set the total animation length or scale each duration with 0.5× / 2× (10 ms steps, 20–10,000 ms). Undo/Redo restores previous values.', helpHow3:'Choose the image size and placement, create a GIF or WebP, then review the generated file before saving.',
+          help:'Help', close:'Close', helpTitle:'How to use & notes', helpHowTitle:'Basic workflow', helpHow1:'Choose multiple JPEG, PNG, or still WebP images, drop them onto the page, or paste an image from the clipboard.', helpHow2:'Arrange frames and adjust timings. Set the length of one playback pass or scale each duration with 0.5× / 2× (10 ms steps, 20–10,000 ms). Undo/Redo restores previous values.', helpHow3:'Choose the image size and placement, create a GIF or WebP, then review the generated file before saving.',
           helpFormatsTitle:'Supported formats', helpFormatsBody:'JPEG / JPG, PNG, and still WebP are supported. Animated WebP, APNG, GIF, video, HEIC, and other formats are not supported yet.', helpLimitsTitle:'Limits', helpLimitsBody:'Up to 200 images, 50 MiB per file, 500 MiB total, 50 megapixels per image, 20–10,000 ms per frame, and output dimensions of 16–4096 px.',
           helpPrivacyTitle:'Privacy', helpPrivacyBody:'Selected images are read only in your browser. This app does not upload images or use analytics or external APIs.',  helpStorageTitle:'Data retention', helpStorageBody:'Images are not automatically stored in browser storage. Closing the page discards the working images.',
           confirmTitle:'Confirm', cancel:'Cancel', clearConfirmTitle:'Clear all images?', clearConfirmBody:'This removes the imported images and thumbnails from this page. Your original files are not changed.', clearConfirmAction:'Clear all',
@@ -953,6 +956,9 @@
       const responsiveDisclosures = ['#frameTools', '#timingDisclosure', '#timingExtras'].map(selector => $(selector));
       const previewCanvas = $('#previewCanvas');
       const previewBuffer = document.createElement('canvas');
+      const previewDecodeCache = new Map();
+      const PREVIEW_DECODE_CACHE_LIMIT = 4;
+      const PREVIEW_DECODE_MAX_EDGE = 1600;
       const previewCanvasWrap = $('#previewCanvasWrap');
       const previewPlaceholder = $('#previewPlaceholder');
       const previewProgress = $('#previewProgress');
@@ -1084,16 +1090,76 @@
           height
         };
       }
-      async function decodePreviewFrame(frame) {
-        const blob = frame.thumbnailBlob || frame.file;
+      // Thumbnails (360px max edge) are only for cards. The preview uses
+      // the original image resized to a higher resolution when supported.
+      async function decodePreviewSource(frame) {
         if (typeof createImageBitmap === 'function') {
+          const scale = Math.min(1, PREVIEW_DECODE_MAX_EDGE / Math.max(frame.width, frame.height));
+          const options = { imageOrientation: 'from-image' };
+          if (scale < 1) {
+            options.resizeWidth = Math.max(1, Math.round(frame.width * scale));
+            options.resizeHeight = Math.max(1, Math.round(frame.height * scale));
+            options.resizeQuality = 'high';
+          }
           try {
-            const bitmap = await createImageBitmap(blob);
+            const bitmap = await createImageBitmap(frame.file, options);
             return { source: bitmap, close: () => bitmap.close?.() };
-          } catch { /* fall through to Image element */ }
+          } catch {
+            try {
+              const bitmap = await createImageBitmap(frame.file, { imageOrientation: 'from-image' });
+              return { source: bitmap, close: () => bitmap.close?.() };
+            } catch { /* fall back to a browser image */ }
+          }
         }
-        const image = await decodeViaImage(blob);
+        const image = await decodeViaImage(frame.file);
         return { source: image, close: () => {} };
+      }
+      function discardPreviewEntry(entry) {
+        if (entry.evicted) return;
+        entry.evicted = true;
+        entry.promise.then(decoded => {
+          if (!entry.references) decoded.close();
+        }).catch(() => {});
+      }
+      function clearPreviewDecodeCache() {
+        for (const entry of previewDecodeCache.values()) discardPreviewEntry(entry);
+        previewDecodeCache.clear();
+      }
+      async function decodePreviewFrame(frame) {
+        const key = frame.sourceId;
+        let entry = previewDecodeCache.get(key);
+        if (!entry) {
+          entry = { references: 0, evicted: false, promise: null };
+          entry.promise = decodePreviewSource(frame);
+          previewDecodeCache.set(key, entry);
+          entry.promise.catch(() => {
+            if (previewDecodeCache.get(key) === entry) previewDecodeCache.delete(key);
+            discardPreviewEntry(entry);
+          });
+          while (previewDecodeCache.size > PREVIEW_DECODE_CACHE_LIMIT) {
+            const oldestKey = previewDecodeCache.keys().next().value;
+            const oldestEntry = previewDecodeCache.get(oldestKey);
+            previewDecodeCache.delete(oldestKey);
+            discardPreviewEntry(oldestEntry);
+          }
+        } else {
+          previewDecodeCache.delete(key);
+          previewDecodeCache.set(key, entry);
+        }
+        entry.references++;
+        try {
+          const decoded = await entry.promise;
+          let released = false;
+          return { source: decoded.source, close: () => {
+            if (released) return;
+            released = true;
+            entry.references--;
+            if (entry.evicted && entry.references === 0) decoded.close();
+          } };
+        } catch (error) {
+          entry.references--;
+          throw error;
+        }
       }
       // Draw into a detached canvas first. Keeping the previous image on screen
       // until the next frame has decoded prevents a blank flash between frames.
@@ -2626,7 +2692,10 @@
         updateBusy(false);
         fileInput.value = '';
         if (added.length && importGeneration === state.generation && typeof mobileMedia !== 'undefined' && mobileMedia.matches) {
-          requestAnimationFrame(() => setMobilePage('frames', { scroll: true }));
+          requestAnimationFrame(() => {
+            setMobilePage('frames', { scroll: false });
+            requestAnimationFrame(scrollToFrameImages);
+          });
         }
       }
 
@@ -2635,6 +2704,7 @@
         state.framePool.clear();
       }
       function clearAllImmediately() {
+        clearPreviewDecodeCache();
         if (state.gif.busy) cancelGif({ announce: false });
         if (state.webp.busy) cancelWebp({ announce: false });
         invalidateAnimationResults();
@@ -3098,6 +3168,14 @@
           const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
           target?.scrollIntoView({ block: 'start', behavior: reduceMotion ? 'auto' : 'smooth' });
         }
+      }
+
+      function scrollToFrameImages() {
+        if (!mobileMedia.matches || !state.frames.length || frameGrid.hidden) return;
+        const headerBottom = $('.app-header').getBoundingClientRect().bottom;
+        const y = window.scrollY + frameGrid.getBoundingClientRect().top - headerBottom - 8;
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        window.scrollTo({ top: Math.max(0, y), behavior: reduceMotion ? 'auto' : 'smooth' });
       }
 
       function setMobilePage(page, { scroll = true } = {}) {
@@ -3659,6 +3737,7 @@
         pausePreview({ resetElapsed: true });
         previewBuffer.width = 0;
         previewBuffer.height = 0;
+        clearPreviewDecodeCache();
         cancelGif({ announce: false });
         cancelWebp({ announce: false });
         if (state.gif.workerUrl) {
