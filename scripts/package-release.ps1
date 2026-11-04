@@ -119,11 +119,11 @@ if (-not $section.Success -or [string]::IsNullOrWhiteSpace($section.Groups['body
   throw "No release notes found under CHANGELOG.md heading ## [$version]."
 }
 $notes = @(
-  '## Changes / 変更内容',
+  '## Changes',
   '',
   $section.Groups['body'].Value.Trim(),
   '',
-  '## Downloads / ダウンロード',
+  '## Downloads',
   '',
   ('- `{0}`: readable standalone HTML (open in a browser).' -f $readableName),
   ('- `{0}`: self-extracting standalone HTML.' -f $selfExtractName),
