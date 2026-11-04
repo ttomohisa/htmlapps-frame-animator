@@ -123,25 +123,24 @@ PR PreviewとGitHub Pagesの公開サイトは別です。公開版の更新は�
 
 ## GitHub Release
 
-バージョン更新のPRを確認して`main`にマージした後、そのコミットにタグを付けてpushします。
+**タグ作成やRelease公開の手動操作は不要です。** バージョン更新のPRを確認して**ご自身で`main`へマージ**すると、[GitHub Releaseワークフロー](.github/workflows/release.yml)が自動実行されます。
 
-```sh
-git switch main
-git pull --ff-only origin main
-git tag v1.0.5
-git push origin v1.0.5
-```
+例えばv1.0.5のPRをマージすると、次の順に進みます。
 
-[GitHub Releaseワークフロー](.github/workflows/release.yml)が`vMAJOR.MINOR.PATCH`形式のタグを検知し、単一HTMLの生成・検証後にReleaseを公開します。`app.config.json`とバージョンが一致しないタグや、`main`に含まれないコミットへのタグでは公開しません。
+1. `app.config.json`のバージョンと既存のタグ・Releaseを確認する。
+2. 単一HTMLの生成・検証とZIPの作成を行う。
+3. タグがなければ、**マージ後の`main`のコミット**に`v1.0.5`タグを作成する。
+4. 次の4ファイルを付けたGitHub Releaseを公開する。
 
-配布ファイルは従来の4種類を維持します。
+   - `htmlapps-frame-animator-v1.0.5.html` — 通常の単一HTML
+   - `htmlapps-frame-animator-v1.0.5.self-extract.html` — 自己展開型の単一HTML
+   - `htmlapps-frame-animator-v1.0.5.zip` — HTML、マニフェスト、README、ライセンスなど
+   - `SHA256SUMS.txt` — 上記3ファイルのSHA-256
 
-- `htmlapps-frame-animator-v1.0.5.html` — 通常の単一HTML
-- `htmlapps-frame-animator-v1.0.5.self-extract.html` — 自己展開型の単一HTML
-- `htmlapps-frame-animator-v1.0.5.zip` — HTML、ビルド情報、README、ライセンス、通知、変更履歴
-- `SHA256SUMS.txt` — 上記3ファイルのSHA-256
+Release本文は`CHANGELOG.md`の該当バージョンから生成します。同じバージョンが公開済みなら重複作成しません。手動でのタグpushにも対応しますが、タグは`app.config.json`と一致し、`main`に含まれるコミットを指す必要があります。検証に失敗した場合、新しいタグは作りません。
 
-Releaseの説明文は`CHANGELOG.md`の該当バージョンから生成します。**PR中は配布ファイルの生成・検証のみ**を実行し、タグやReleaseは作りません。GitHub ActionsにはRelease作成用の書き込み権限が必要です。GitHub ReleaseとBrowser Kitty本体への反映は別作業です。
+**PR中はリリース用ファイルの作成・検証のみ**を実行します。自動公開にはGitHub Actionsの`contents: write`権限が必要です。Browser Kitty本体への反映は別作業です。
+
 
 ## 開発とビルド
 
