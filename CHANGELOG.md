@@ -8,9 +8,9 @@
 
 - Streamlined smartphone Frames and timing controls with collapsed secondary actions and more prominent thumbnails. One timing disclosure border replaces the nested rounded boxes, and phone presets are hidden while 0.5× / 2× remains available.
 - Added all-frame total animation length editing (one playback pass) with proportional frame durations, 10 ms granularity, limits, and Undo/Redo.
-- Scroll to the first image thumbnail below the sticky header after selecting images on smartphones, including one-image cases; put playback controls immediately below the preview.
+- Scroll to just above the thumbnail list rather than clipping the first images on Android Chrome, including one-image cases; put playback controls immediately below the preview.
 - Render previews from higher-detail original images (up to 1600 px long edge with a bounded decode cache) instead of blurry thumbnails; reuse a buffer to prevent flickering and repeated allocations.
-- Reserve space to scroll the last frame and export buttons above the phone dock. Rename the total duration control to '1回分の長さ' / 'One-pass length'. Replace user-facing Canvas terminology, shorten explanatory text, clarify GIF Dithering, and remove the duplicate bottom Help close button.
+- Redesign WebP options into aligned inputs and a plain lossless toggle, with understandable Japanese/English copy and context-sensitive quality labels. Reserve space to scroll the last frame and export buttons above the phone dock. Rename the total duration control to '1回分の長さ' / 'One-pass length'. Replace user-facing Canvas terminology, shorten explanatory text, clarify GIF Dithering, and remove the duplicate bottom Help close button.
 - Update Japanese and English UI/help while preserving local processing and GIF/WebP export.
 
 ## [1.0.4] - 2026-10-27
