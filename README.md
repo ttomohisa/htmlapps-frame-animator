@@ -58,7 +58,7 @@ GitHub Pages is enabled for this repository and the deployment workflow is confi
 
 - Background scrolling pauses while a dialog is open and resumes after dismissal.
 - **Import and reorder frames** — Select multiple images, drag and drop files, paste an image from the clipboard, or add more images later. Move cards with a mouse or touch drag handle, previous/next buttons, and natural filename sorting.
-- **Set each frame's duration** — Set a common per-frame duration or target total length for one playback pass, while retaining individual 20–10,000 ms timings. Use **0.5× Slower / 2× Faster** to scale mixed timings together. Undo/redo also covers sequence and timing changes.
+- **Set each frame's duration** — Set a common per-frame duration or target length for one playback pass, while retaining individual 20–10,000 ms timings. Use **0.5× Slower / 2× Faster** to scale mixed timings together. Undo/redo also covers sequence and timing changes.
 - **Preview the actual sequence** — Play, pause, step through frames, and choose Forward, Reverse, or Ping-pong (without duplicate endpoints). Set infinite, once-only, or custom repeat counts.
 - **Fit mixed image sizes** — Use preset or custom output dimensions, Fit/Fill placement, and transparent, white, black, or custom backgrounds.
 - **Choose GIF or Animated WebP** — GIF supports 64/128/256 colors and optional dithering; WebP supports quality, lossless mode, and encoding effort. Encoding runs locally with progress and cancellation.
