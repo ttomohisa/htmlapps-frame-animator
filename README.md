@@ -63,13 +63,13 @@ GitHub Pages is enabled for this repository and the deployment workflow is confi
 - **Fit mixed image sizes** — Use preset or custom output dimensions, Fit/Fill placement, and transparent, white, black, or custom backgrounds.
 - **Choose GIF or Animated WebP** — GIF supports 64/128/256 colors and optional dithering; WebP supports quality, lossless mode, and encoding effort. Encoding runs locally with progress and cancellation.
 - **Inspect before saving** — Preview the generated GIF/WebP file, see its dimensions, frame count, duration and file size, then save it with an editable filename.
-- **Mobile-friendly and local** — Jump to Frames after importing images, keep secondary frame controls collapsible (the preset buttons are hidden on mobile, while speed controls remain available), and place playback directly under the preview. Frames / Preview / Export tabs, Japanese/English UI, and no file upload.
+- **Mobile-friendly and local** — Jump to the first image after importing, keep secondary frame controls collapsible (the preset buttons are hidden on mobile, while speed controls remain available), and place playback directly under the preview. Live preview uses source images resized for higher clarity, and scrolling keeps the last frame and export controls clear of the bottom navigation. Frames / Preview / Export tabs, Japanese/English UI, and no file upload.
 
 ## Usage
 
 1. Choose multiple JPEG, PNG, or still WebP images, drop them onto the app, or paste an image.
 2. Change the order using the card drag handle or previous/next buttons. Duplicate or remove frames as needed.
-3. Set a common per-frame duration, enter a total animation length for one pass (preserving relative frame timings where possible), or edit each card's duration. **0.5× Slower** doubles each duration; **2× Faster** halves it. Values round to 10 ms and stay within 20–10,000 ms. `Undo` restores exact previous timings, even when rounding or a limit was applied.
+3. Set a common per-frame duration, enter a one-pass length (preserving relative frame timings where possible), or edit each card's duration. **0.5× Slower** doubles each duration; **2× Faster** halves it. Values round to 10 ms and stay within 20–10,000 ms. `Undo` restores exact previous timings, even when rounding or a limit was applied.
 4. Select the output size, Fit/Fill behavior, and background.
 5. Play the preview and choose Forward, Reverse, or Ping-pong and the repeat count.
 6. Select **GIF** or **Animated WebP**, adjust format-specific settings, and create the result.
