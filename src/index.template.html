@@ -3717,6 +3717,8 @@
         webpQualityRange.value = String(quality);
         invalidateWebpResult({ stale: true });
       });
+      // Lossless changes the encoder's use of quality, not the label or help text.
+      // Keep this UI stable; the static hint explains both modes.
       for (const control of [webpEffort, webpLossless]) {
         control.addEventListener('change', () => {
           invalidateWebpResult({ stale: true });
