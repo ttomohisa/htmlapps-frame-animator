@@ -177,7 +177,7 @@
     @media(max-width:640px){
       .header-inner{padding-left:max(10px,env(safe-area-inset-left));padding-right:max(10px,env(safe-area-inset-right))}
       /* Reserve real scrolling space below the fixed mobile workflow controls. */
-      .main{padding:16px max(12px,env(safe-area-inset-right)) calc(136px + env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left))}
+      .main{padding:16px max(12px,env(safe-area-inset-right)) calc(136px + env(safe-area-inset-bottom) + var(--frame-scroll-space, 0px)) max(12px,env(safe-area-inset-left))}
       html{scroll-padding-bottom:calc(100px + env(safe-area-inset-bottom))}
       footer{padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right));padding-bottom:calc(96px + env(safe-area-inset-bottom))}
       .page-intro{display:block}.local-badge{margin-top:11px}.panel-body{padding:13px}.drop-zone{min-height:190px;padding:22px 14px}
@@ -3172,14 +3172,23 @@
 
       function scrollToFrameImages() {
         if (!mobileMedia.matches || !state.frames.length || frameGrid.hidden) return;
+        const main = $('.main');
+        // Only add extra scroll range for short projects, then restore it on
+        // the next navigation. Without this a single thumbnail cannot align
+        // under the sticky header on taller phones.
+        main.style.removeProperty('--frame-scroll-space');
         const headerBottom = $('.app-header').getBoundingClientRect().bottom;
-        const y = window.scrollY + frameGrid.getBoundingClientRect().top - headerBottom - 8;
+        const y = Math.max(0, window.scrollY + frameGrid.getBoundingClientRect().top - headerBottom - 8);
+        const maxY = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
+        const extra = Math.max(0, Math.ceil(y - maxY));
+        if (extra) main.style.setProperty('--frame-scroll-space', `${extra + 4}px`);
         const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        window.scrollTo({ top: Math.max(0, y), behavior: reduceMotion ? 'auto' : 'smooth' });
+        window.scrollTo({ top: y, behavior: reduceMotion ? 'auto' : 'smooth' });
       }
 
       function setMobilePage(page, { scroll = true } = {}) {
         if (!['frames','preview','export'].includes(page)) return;
+        if (page !== 'frames') $('.main').style.removeProperty('--frame-scroll-space');
         state.ui.mobilePage = page;
         applyMobileWorkflow({ scroll });
       }
