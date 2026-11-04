@@ -121,6 +121,28 @@ APNGとAnimated WebPは先頭の静止画として取り込まず、対象外と
 
 PR PreviewとGitHub Pagesの公開サイトは別です。公開版の更新は、`main`からのデプロイが成功した後に行われます。
 
+## GitHub Release
+
+バージョン更新のPRを確認して`main`にマージした後、そのコミットにタグを付けてpushします。
+
+```sh
+git switch main
+git pull --ff-only origin main
+git tag v1.0.5
+git push origin v1.0.5
+```
+
+[GitHub Releaseワークフロー](.github/workflows/release.yml)が`vMAJOR.MINOR.PATCH`形式のタグを検知し、単一HTMLの生成・検証後にReleaseを公開します。`app.config.json`とバージョンが一致しないタグや、`main`に含まれないコミットへのタグでは公開しません。
+
+配布ファイルは従来の4種類を維持します。
+
+- `htmlapps-frame-animator-v1.0.5.html` — 通常の単一HTML
+- `htmlapps-frame-animator-v1.0.5.self-extract.html` — 自己展開型の単一HTML
+- `htmlapps-frame-animator-v1.0.5.zip` — HTML、ビルド情報、README、ライセンス、通知、変更履歴
+- `SHA256SUMS.txt` — 上記3ファイルのSHA-256
+
+Releaseの説明文は`CHANGELOG.md`の該当バージョンから生成します。**PR中は配布ファイルの生成・検証のみ**を実行し、タグやReleaseは作りません。GitHub ActionsにはRelease作成用の書き込み権限が必要です。GitHub ReleaseとBrowser Kitty本体への反映は別作業です。
+
 ## 開発とビルド
 
 ```text
