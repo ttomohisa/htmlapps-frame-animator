@@ -2730,7 +2730,7 @@
         }
         updateBusy(false);
         fileInput.value = '';
-        if (added.length && importGeneration === state.generation && mobileMedia.matches) {
+        if (added.length && importGeneration === state.generation && typeof mobileMedia !== 'undefined' && mobileMedia.matches) {
           if (!before.length) {
             // After the first import, the large entry form is removed from the
             // phone layout. Frames is now the first content below the header:
