@@ -121,23 +121,24 @@ The PR Preview is separate from GitHub Pages. The public site's version updates 
 
 ## GitHub Releases
 
-After a version PR has been reviewed and merged to `main`, create a **stable Semantic Versioning tag** for that exact main-branch commit and push it:
+**No manual tag or release step is needed.** After a version PR is reviewed and **manually merged into `main`**, the [Publish GitHub Release workflow](.github/workflows/release.yml) runs automatically on the resulting `main` push.
 
-```sh
-git switch main
-git pull --ff-only origin main
-git tag v1.0.5
-git push origin v1.0.5
-```
+For example, merging the v1.0.5 PR causes the workflow to:
 
-The [Publish GitHub Release workflow](.github/workflows/release.yml) starts on a pushed `vMAJOR.MINOR.PATCH` tag. It refuses tags that do not match `app.config.json` or that point to a commit outside `main`. It builds and verifies the offline files, then publishes a GitHub Release with the same four download types as earlier releases:
+1. Read the version from `app.config.json` and check for an existing matching tag or release.
+2. Build and verify the standalone HTML files and assemble the release archive.
+3. Create the `v1.0.5` tag on the **exact merged `main` commit**, if absent.
+4. Publish the GitHub Release with the four familiar downloads:
 
-- `htmlapps-frame-animator-v1.0.5.html` — readable single HTML.
-- `htmlapps-frame-animator-v1.0.5.self-extract.html` — self-extracting single HTML.
-- `htmlapps-frame-animator-v1.0.5.zip` — HTML, build manifests, README files, license, notices and changelog.
-- `SHA256SUMS.txt` — checksums for the three assets above.
+   - `htmlapps-frame-animator-v1.0.5.html` — readable single HTML.
+   - `htmlapps-frame-animator-v1.0.5.self-extract.html` — self-extracting single HTML.
+   - `htmlapps-frame-animator-v1.0.5.zip` — HTML, manifests, README files, license, notices and changelog.
+   - `SHA256SUMS.txt` — checksums for the other three downloads.
 
-The release notes come from the matching entry in `CHANGELOG.md`. In pull requests, the standalone validation workflow **tests packaging but does not publish or create tags**. The repository must allow GitHub Actions to write release contents. A GitHub Release does not itself deploy to Browser Kitty; that remains a separate process.
+The release notes come from the matching entry in `CHANGELOG.md`. Subsequent pushes using an already published version do not create duplicate tags or releases. Manually pushed stable version tags are still supported, but must match `app.config.json` and be included in `main`. If verification fails, the workflow does not create a new tag.
+
+In pull requests, validation **tests packaging but does not create tags or publish releases**. GitHub Actions needs `contents: write` permission to publish. GitHub Release and deployment to Browser Kitty are separate processes.
+
 
 ## Development and build
 
