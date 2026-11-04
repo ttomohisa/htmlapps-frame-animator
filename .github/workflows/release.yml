@@ -1,0 +1,89 @@
+name: Publish GitHub Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+concurrency:
+  group: github-release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  release:
+    # Do not publish if this workflow is copied into a fork.
+    if: github.repository == 'ttomohisa/htmlapps-frame-animator'
+    runs-on: windows-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out tagged commit
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify tag, app version and main ancestry
+        shell: pwsh
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if ($env:RELEASE_TAG -cnotmatch '^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$') {
+            throw "Only stable vMAJOR.MINOR.PATCH tags can publish a release."
+          }
+
+          $config = Get-Content -Raw -Encoding UTF8 app.config.json | ConvertFrom-Json
+          if ($env:RELEASE_TAG -cne "v$($config.version)") {
+            throw "Tag $env:RELEASE_TAG does not match app.config.json version $($config.version)."
+          }
+
+          git fetch --no-tags origin main
+          if ($LASTEXITCODE -ne 0) { throw 'Could not fetch main for ancestry validation.' }
+          git merge-base --is-ancestor HEAD refs/remotes/origin/main
+          if ($LASTEXITCODE -ne 0) {
+            throw 'Release tags must point to a commit already included in main. Merge the PR before tagging.'
+          }
+
+      - name: Validate PowerShell syntax and encoding
+        shell: powershell
+        run: .\scripts\check-powershell-syntax.ps1
+
+      - name: Build and verify standalone HTML
+        shell: pwsh
+        run: ./scripts/check-repository.ps1
+
+      - name: Assemble versioned release assets and verify checksums
+        shell: pwsh
+        env:
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: ./scripts/package-release.ps1 -Tag $env:RELEASE_TAG
+
+      - name: Publish GitHub Release with four downloads
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $tag = $env:RELEASE_TAG
+          $repository = (Get-Content -Raw -Encoding UTF8 app.config.json | ConvertFrom-Json).repository.name
+          $names = @(
+            "$repository-$tag.html",
+            "$repository-$tag.self-extract.html",
+            "$repository-$tag.zip",
+            'SHA256SUMS.txt'
+          )
+          $files = @($names | ForEach-Object {
+            $file = Join-Path 'release-assets' $_
+            if (-not (Test-Path -LiteralPath $file -PathType Leaf)) {
+              throw "Release asset missing: $file"
+            }
+            $file
+          })
+          gh release create $tag @files --verify-tag --latest --repo $env:GITHUB_REPOSITORY `
+            --title "Frame Animator $tag" --notes-file release-assets/RELEASE_NOTES.md
+          if ($LASTEXITCODE -ne 0) { throw "GitHub Release creation failed for $tag." }
