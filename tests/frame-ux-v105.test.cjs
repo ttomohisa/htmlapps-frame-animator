@@ -22,6 +22,16 @@ test('mobile controls, preview transport, and Help have the v1.0.5 structure', (
   assert.ok(source.includes("$('#addImagesPanel').hidden = !showEntry"));
   assert.ok(source.includes("$('.page-intro').hidden = !showEntry"));
   assert.ok(source.includes('id="webpQualityRange"'));
+  assert.ok(source.includes('id="saveGifMobileButton"'));
+  assert.ok(source.includes('id="saveWebpMobileButton"'));
+  assert.ok(source.includes("syncMobileSaveAction('gif', true)"));
+  assert.ok(source.includes("syncMobileSaveAction('webp', true)"));
+  assert.ok(source.includes("syncMobileSaveAction('gif', false)"));
+  assert.ok(source.includes("syncMobileSaveAction('webp', false)"));
+  assert.ok(source.includes('.gif-result-actions{display:none}'));
+  assert.ok(source.includes('.gif-create-row.has-result .mobile-save-button:not([hidden])'));
+  assert.ok(source.includes("$('#saveGifMobileButton').addEventListener('click', saveGif)"));
+  assert.ok(source.includes("$('#saveWebpMobileButton').addEventListener('click', saveWebp)"));
   assert.ok(source.includes('webpQualityRange.addEventListener'));
   assert.ok(!source.includes('refreshWebpQualityCopy'));
   assert.ok(!source.includes('webpQualityLosslessLabel'));
