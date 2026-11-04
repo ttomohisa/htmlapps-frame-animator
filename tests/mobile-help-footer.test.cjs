@@ -3,3 +3,10 @@ const html=fs.readFileSync('src/index.template.html','utf8');
 test('phone informational footer only',()=>assert.ok(html.includes('@media (max-width: 640px) { body > footer { display: none; } }')));
 test('build version belongs to final Help metadata',()=>{assert.match(html, /class="help-build"/);assert.equal((html.match(/id="buildVersion"/g)||[]).length,1);const start=html.lastIndexOf('<dialog',html.indexOf('id="helpDialog"'));const end=html.indexOf('</dialog>',start);assert.ok(html.indexOf('id="buildVersion"')>start&&html.indexOf('id="buildVersion"')<end);});
 test('all metadata IDs occur once in final Help child',()=>{const start=html.lastIndexOf('<dialog',html.indexOf('id="helpDialog"'));const end=html.indexOf('</dialog>',start);const help=html.slice(start,end);for(const id of ["buildVersion", "builtAt", "dependencyCount"]){assert.equal(html.split('id="'+id+'"').length-1,1);assert.ok(help.includes('id="'+id+'"'));}assert.match(help,/<section class="help-build">[\s\S]*<\/section>\s*<\/div>\s*<!-- APP:HELP:END -->/);});
+
+test('local-processing badge is hidden on phones but retained on larger screens',()=>{
+  const media=html.slice(html.indexOf('@media(max-width:640px){'),html.indexOf('@media(max-width:360px)',html.indexOf('@media(max-width:640px){')));
+  assert.ok(media.includes('.local-badge{display:none}'));
+  assert.ok(html.includes('.local-badge{display:inline-flex;'));
+  assert.equal((html.match(/data-i18n="localProcessing"/g)||[]).length,1);
+});
