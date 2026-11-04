@@ -14,7 +14,8 @@ test('mobile controls, preview transport, and Help have the v1.0.5 structure', (
   assert.ok(source.includes('.preview-transport{order:1'));
   assert.ok(source.includes("requestAnimationFrame(scrollToFrameImages)"));
   assert.ok(source.includes("frameGrid.getBoundingClientRect().top - headerBottom - 8"));
-  assert.ok(source.includes("calc(136px + env(safe-area-inset-bottom))"));
+  assert.ok(source.includes("calc(136px + env(safe-area-inset-bottom) + var(--frame-scroll-space, 0px))"));
+  assert.ok(source.includes("main.style.setProperty('--frame-scroll-space'"));
   assert.ok(!source.includes('id="helpOkButton"'));
   assert.ok(!source.includes('data-i18n="previewNote"'));
   assert.ok(source.includes('data-i18n="gifDitherHelp"'));
