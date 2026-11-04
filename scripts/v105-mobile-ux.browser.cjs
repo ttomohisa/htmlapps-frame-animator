@@ -46,19 +46,20 @@ async function runCase(browser, language, width, height) {
     ]);
     await page.waitForFunction(() => document.querySelector('#frameCount').textContent === '1');
 
-    // The reference phone screenshot starts with the images just beneath the
-    // sticky header, not with the large Frames section heading.
+    // Match the Preview tab: the Frames panel border sits beneath the
+    // sticky app header with the panel title and timing controls still visible.
     await page.waitForFunction(() => {
-      const grid = document.querySelector('#frameGrid');
+      const panel = document.querySelector('#mobilePageFrames > .panel');
       const header = document.querySelector('.app-header');
-      if (!grid || !header) return false;
-      const gap = grid.getBoundingClientRect().top - header.getBoundingClientRect().bottom;
-      return gap >= 82 && gap <= 126;
+      if (!panel || !header) return false;
+      const gap = panel.getBoundingClientRect().top - header.getBoundingClientRect().bottom;
+      return gap >= 4 && gap <= 32;
     }, null, {timeout: 5000});
-    const grid = await page.locator('#frameGrid').boundingBox();
+    const panel = await page.locator('#mobilePageFrames > .panel').boundingBox();
     const header = await page.locator('.app-header').boundingBox();
-    const gap = grid.y - (header.y + header.height);
-    assert.ok(gap >= 82 && gap <= 126, label + ': image grid scroll alignment ' + gap);
+    const gap = panel.y - (header.y + header.height);
+    assert.ok(gap >= 4 && gap <= 32, label + ': Frames panel matches Preview alignment ' + gap);
+    assert.equal(await page.locator('#addImagesPanel').isVisible(), true, label + ': add-images section available in Frames');
     assert.equal(await page.locator('#frameTools').evaluate(el => el.open), false);
     if (width === 390) {
       fs.mkdirSync(path.resolve('test-results/mobile-layout'), {recursive: true});
@@ -106,6 +107,7 @@ async function runCase(browser, language, width, height) {
     await page.locator('#frameTools > summary').click();
 
     await page.locator('#mobileTabPreview').click();
+    assert.equal(await page.locator('#addImagesPanel').isVisible(), false, label + ': image-add section hidden in Preview');
     const geometry = await page.evaluate(() => {
       const preview = document.querySelector('#previewStage').getBoundingClientRect();
       const transport = document.querySelector('.preview-transport').getBoundingClientRect();
@@ -189,6 +191,7 @@ async function runCase(browser, language, width, height) {
 
       // The fixed bottom navigation must never cover the last image controls.
       await page.locator('#mobileTabFrames').click();
+      assert.equal(await page.locator('#addImagesPanel').isVisible(), true, label + ': image-add section restored in Frames');
       await page.evaluate(() => scrollTo({top: document.documentElement.scrollHeight, behavior: 'instant'}));
       await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
       const dockCheck = await page.evaluate(() => {
@@ -200,16 +203,27 @@ async function runCase(browser, language, width, height) {
       await page.screenshot({path: path.resolve('test-results/mobile-layout', 'frames-bottom-' + language + '.png')});
 
       await page.locator('#mobileTabExport').click();
+      assert.equal(await page.locator('#addImagesPanel').isVisible(), false, label + ': image-add section hidden in Export');
       await page.locator('#exportWebpTab').click();
       assert.equal(await page.locator('#webpQuality').inputValue(), '80', label + ': quality default');
+      assert.equal(await page.locator('#webpQualityRange').inputValue(), '80', label + ': slider matches default');
+      await page.locator('#webpQualityRange').evaluate(el => {
+        el.value = '65';
+        el.dispatchEvent(new Event('input', {bubbles:true}));
+      });
+      assert.equal(await page.locator('#webpQuality').inputValue(), '65', label + ': slider updates number');
+      await page.locator('#webpQuality').fill('73');
+      await page.locator('#webpQuality').dispatchEvent('change');
+      assert.equal(await page.locator('#webpQualityRange').inputValue(), '73', label + ': number updates slider');
       assert.equal(await page.locator('#webpEffort').inputValue(), '4', label + ': method default');
       assert.equal(await page.locator('#webpEffort option').count(), 7, label + ': retain methods 0 to 6');
+      assert.equal((await page.locator('#webpEffort option[value="3"]').textContent()).trim(), language === 'ja' ? '3 · ふつう' : '3 · Moderate');
       assert.equal((await page.locator('#webpQualityLabel').textContent()).trim(), language === 'ja' ? '画質' : 'Quality');
       await page.locator('#webpLossless').check();
       assert.equal((await page.locator('#webpQualityLabel').textContent()).trim(), language === 'ja' ? '圧縮の強さ' : 'Compression level');
       await page.locator('#webpLossless').uncheck();
       assert.equal((await page.locator('#webpQualityLabel').textContent()).trim(), language === 'ja' ? '画質' : 'Quality');
-      assert.equal(await page.locator('#webpQuality').inputValue(), '80', label + ': quality remains 80 after toggles');
+      assert.equal(await page.locator('#webpQuality').inputValue(), '73', label + ': quality remains 73 after toggles');
       assert.ok(await page.evaluate(() => document.querySelector('#webpExportPanel').scrollWidth <= document.querySelector('#webpExportPanel').clientWidth + 1), label + ': WebP no overflow');
       await page.screenshot({path: path.resolve('test-results/mobile-layout', 'webp-options-' + language + '.png')});
       await page.evaluate(() => scrollTo({top: document.documentElement.scrollHeight, behavior: 'instant'}));
