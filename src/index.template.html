@@ -189,6 +189,7 @@
     .app-toast.show{opacity:1;transform:translateY(0);pointer-events:auto}.app-toast[data-tone="success"]{border-color:color-mix(in srgb,var(--accent) 34%,var(--line))}.app-toast[data-tone="warning"]{border-color:#c58a24}
     .app-toast-message{min-width:0;flex:1 1 auto;font-size:13px;line-height:1.45}.app-toast-action{flex:0 0 auto;min-height:34px;padding:5px 8px;border:0;border-radius:8px;background:transparent;color:var(--accent);font-size:12px;font-weight:800;cursor:pointer}.app-toast-action[hidden]{display:none}
     .mobile-workflow-nav{display:none}
+    .mobile-frame-add{display:none}
     @media(max-width:900px){.frame-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
     @media(max-width:640px){
       .header-inner{padding-left:max(10px,env(safe-area-inset-left));padding-right:max(10px,env(safe-area-inset-right))}
@@ -197,6 +198,10 @@
       html{scroll-padding-bottom:calc(100px + env(safe-area-inset-bottom))}
       footer{padding-left:max(12px,env(safe-area-inset-left));padding-right:max(12px,env(safe-area-inset-right));padding-bottom:calc(96px + env(safe-area-inset-bottom))}
       .page-intro{display:block}.local-badge{margin-top:11px}.panel-body{padding:13px}.drop-zone{min-height:190px;padding:22px 14px}
+      /* After the first import, Frames becomes the first phone content. */
+      .page-intro[hidden],#addImagesPanel[hidden]{display:none!important}
+      .mobile-frame-add:not([hidden]){display:inline-flex;align-items:center;gap:5px;flex:0 0 auto;min-height:40px;padding:7px 10px;font-size:11px}
+      .mobile-frame-add svg{width:15px;height:15px}
       /* Signal Screen mobile action bar: edge-to-edge, blurred surface and clear primary action. */
       .mobile-workflow-nav{position:fixed;inset:auto 0 0;z-index:50;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0;padding:9px max(12px,env(safe-area-inset-right)) calc(9px + env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));border-top:1px solid var(--line);background:rgba(245,245,242,.95);backdrop-filter:blur(15px);-webkit-backdrop-filter:blur(15px)}
       .mobile-workflow-nav[hidden]{display:none}
@@ -355,6 +360,10 @@
           <h3 id="framesHeading" data-i18n="framesHeading">フレーム</h3>
           <p data-i18n="framesNote">画像の順番と表示時間を調整します。</p>
         </div>
+        <button class="button mobile-frame-add" id="quickAddButton" type="button" data-i18n-aria-label="addMore" hidden>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14m-7-7h14"/></svg>
+          <span data-i18n="addMore">画像を追加</span>
+        </button>
       </div>
       <div class="panel-body">
         <div class="summary-bar">
@@ -974,8 +983,7 @@
       const dropZone = $('#dropZone');
       const mobileWorkflowNav = $('#mobileWorkflowNav');
       const mobileMedia = window.matchMedia('(max-width:640px)');
-      let pendingImportScroll = 0;
-      const frameGrid = $('#frameGrid');
+       const frameGrid = $('#frameGrid');
       const importReport = $('#importReport');
       const sortSelect = $('#sortSelect');
       const globalDurationInput = $('#globalDurationInput');
@@ -2722,11 +2730,20 @@
         }
         updateBusy(false);
         fileInput.value = '';
-        if (added.length && importGeneration === state.generation && typeof mobileMedia !== 'undefined' && mobileMedia.matches) {
+        if (added.length && importGeneration === state.generation && mobileMedia.matches) {
           if (!before.length) {
-            // The first import reveals the navigation and collapses the drop area.
-            // Wait for those changes and Chrome's viewport to settle before aligning.
-            alignFramesAfterFirstImport(importGeneration);
+            // After the first import, the large entry form is removed from the
+            // phone layout. Frames is now the first content below the header:
+            // scroll to the document top instead of an element whose position
+            // can shift as Android's native file picker closes.
+            fileInput.blur();
+            setMobilePage('frames', { scroll: false });
+            requestAnimationFrame(() => requestAnimationFrame(() => {
+              if (state.generation !== importGeneration || !mobileMedia.matches ||
+                  state.ui.mobilePage !== 'frames') return;
+              $('#mobileTabFrames').focus({ preventScroll: true });
+              window.scrollTo({ top: 0, behavior: 'instant' });
+            }));
           } else {
             setMobilePage('frames', { scroll: true });
           }
@@ -3183,7 +3200,12 @@
         const isMobile = mobileMedia.matches;
         const hasFrames = state.frames.length > 0;
         mobileWorkflowNav.hidden = !isMobile || !hasFrames;
-        $('#addImagesPanel').hidden = isMobile && hasFrames && state.ui.mobilePage !== 'frames';
+        // Keep the initial picker and introduction while the project is empty.
+        // Once frames exist, use the small Add button inside Frames instead.
+        const showEntry = !isMobile || !hasFrames;
+        $('.page-intro').hidden = !showEntry;
+        $('#addImagesPanel').hidden = !showEntry;
+        $('#quickAddButton').hidden = !isMobile || !hasFrames || state.ui.mobilePage !== 'frames';
 
         const pages = Array.from(document.querySelectorAll('[data-mobile-page]'));
         for (const page of pages) {
@@ -3205,38 +3227,8 @@
         }
       }
 
-      function alignFramesAfterFirstImport(importGeneration) {
-        const token = ++pendingImportScroll;
-        setMobilePage('frames', { scroll: false });
-        const panel = $('#mobilePageFrames > .panel');
-        const header = $('.app-header');
-        const align = () => {
-          if (token !== pendingImportScroll || state.generation !== importGeneration ||
-              !mobileMedia.matches || state.ui.mobilePage !== 'frames') return;
-          // Use measured geometry rather than assuming a fixed header height.
-          // An initial native file-picker dismissal can change the visual viewport
-          // after scrollIntoView, especially with Chrome's address bar visible.
-          const gap = panel.getBoundingClientRect().top - header.getBoundingClientRect().bottom;
-          if (Math.abs(gap - 12) > 2) {
-            window.scrollBy({ top: gap - 12, behavior: 'instant' });
-          }
-        };
-        // Do not fight a user's own scroll or a later tab switch.
-        const cancel = () => { if (token === pendingImportScroll) pendingImportScroll++; };
-        window.addEventListener('touchstart', cancel, { passive: true, once: true });
-        window.addEventListener('wheel', cancel, { passive: true, once: true });
-        requestAnimationFrame(() => requestAnimationFrame(align));
-        setTimeout(align, 150);
-        setTimeout(() => {
-          align();
-          window.removeEventListener('touchstart', cancel);
-          window.removeEventListener('wheel', cancel);
-        }, 400);
-      }
-
       function setMobilePage(page, { scroll = true } = {}) {
         if (!['frames','preview','export'].includes(page)) return;
-        if (page !== 'frames') pendingImportScroll++;
         state.ui.mobilePage = page;
         applyMobileWorkflow({ scroll });
       }
@@ -3300,6 +3292,7 @@
         $('#chooseButton').disabled = busy;
         fileInput.disabled = busy;
         $('#addMoreButton').disabled = busy || state.frames.length >= LIMITS.frames;
+        $('#quickAddButton').disabled = busy || state.frames.length >= LIMITS.frames;
         $('#clearAllButton').disabled = busy || state.frames.length === 0;
         $('#applyDurationButton').disabled = busy || state.frames.length === 0;
         globalDurationInput.disabled = busy;
@@ -3343,6 +3336,7 @@
         $('#chooseButton').disabled = blocked;
         fileInput.disabled = blocked;
         $('#addMoreButton').disabled = blocked || state.frames.length >= LIMITS.frames;
+        $('#quickAddButton').disabled = blocked || state.frames.length >= LIMITS.frames;
         $('#clearAllButton').disabled = blocked || state.frames.length === 0;
         sortSelect.disabled = blocked || state.frames.length < 2;
         $('#applyDurationButton').disabled = blocked || state.frames.length === 0;
@@ -3594,6 +3588,7 @@
 
       $('#chooseButton').addEventListener('click', () => fileInput.click());
       $('#addMoreButton').addEventListener('click', () => fileInput.click());
+      $('#quickAddButton').addEventListener('click', () => fileInput.click());
       fileInput.addEventListener('change', () => importFiles(fileInput.files));
       for (const eventName of ['dragenter','dragover']) {
         dropZone.addEventListener(eventName, event => { event.preventDefault(); if (!isBusy()) dropZone.classList.add('is-dragging'); });
