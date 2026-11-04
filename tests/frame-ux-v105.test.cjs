@@ -12,6 +12,8 @@ test('mobile controls, preview transport, and Help have the v1.0.5 structure', (
   }
   assert.ok(source.includes('.preview-side{display:contents}'));
   assert.ok(source.includes('.preview-transport{order:1'));
+  assert.ok(source.includes("alignFramesAfterFirstImport(importGeneration)"));
+  assert.ok(source.includes("window.scrollBy({ top: gap - 12, behavior: 'instant' })"));
   assert.ok(source.includes("setMobilePage('frames', { scroll: true })"));
   assert.ok(!source.includes('scrollToFrameImages'));
   assert.ok(source.includes("$('#addImagesPanel').hidden = isMobile && hasFrames && state.ui.mobilePage !== 'frames'"));
