@@ -9,7 +9,7 @@
 ## v1.0.5 smartphone usability and timing update
 
 - On smartphone widths (640px and below), the frame area prioritizes image thumbnails. Secondary edit/manage actions and the all-frame timing form are collapsed by default; desktop keeps them expanded.
-- After importing images on phones, align the Frames panel top using the same scrollIntoView path and CSS scroll margin as the Preview tab. Keep the panel heading and timing disclosure visible. Importing and error reporting remain unchanged.
+- On the first phone import, hide the initial intro and large drop zone once frames exist, place Frames first in the document flow, blur the hidden file input, and scroll to document top. This avoids Android native file-picker scroll restoration/clipping the Frames heading. On later imports, retain the existing Frames tab navigation. Importing and error reporting remain unchanged.
 - All-frame timing supports both an identical per-frame duration (20–10,000 ms in 10 ms steps) and a target total duration in seconds for **one playback pass**. Ping-pong counts mirrored interior frames in that total; loop repetitions are not included.
 - Setting a total duration preserves existing per-frame timing ratios where feasible, enforces per-frame limits, uses 10 ms increments, and records a single Undo/Redo history entry. Requests outside the feasible range are rejected with an inline message rather than silently clamped.
 - On phones, remove the redundant preset button grid from view; keep 0.5× / 2× speed controls in the optional Speed disclosure. Desktop retains the preset buttons.
@@ -19,7 +19,7 @@
 - User-facing references to Canvas are replaced with image/output-size language. Japanese and English instructions and format notes reflect the revised controls; GIF Dithering has a short explanation.
 - The redundant bottom Help close button is removed; the top-right close control, Esc, and backdrop close remain.
 - Group the WebP settings into a synchronized slider and compact editable number field for quality, an effort selector (0–6), and a plain lossless checkbox with short Japanese/English hints. WebP quality (1–100) means visual fidelity for lossy compression but compression effort in lossless mode; explain the change dynamically. Preserve all 0–6 method values.
-- Reserve enough scrollable space above the bottom dock for the last frame's actions, preview settings and export controls. On phones, show the add-images panel only in Frames (and for an empty project), not Preview or Export. Desktop retains the add-images panel. Keep the current file limits, supported formats, export encoder settings, local-only policy, and standalone build behavior. CI and real-device verification are release gates.
+- Reserve enough scrollable space above the bottom dock for the last frame's actions, preview settings and export controls. On phones, the full add-images panel is shown while the project is empty. After the first import, a compact visible Add button in the Frames heading and the existing management Add control replace the large panel; no Add control appears in Preview or Export. Clear all restores the original intro and picker. Desktop retains the full add-images panel. Keep the current file limits, supported formats, export encoder settings, local-only policy, and standalone build behavior. CI and real-device verification are release gates.
 
 ## 1. Product identity
 
