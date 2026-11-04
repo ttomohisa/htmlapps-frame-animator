@@ -26,10 +26,23 @@ const args = [cli, 'preview'];
 if (process.argv[2] === 'delete') args.push('delete');
 args.push('--config', configPath, '--name', name);
 args.push(process.argv[2] === 'delete' ? '--skip-confirmation' : '--json');
-const output = cp.execFileSync(process.execPath, args, {
-  cwd: control, encoding: 'utf8', maxBuffer: 8 * 1024 * 1024,
-  env: { ...process.env, CLOUDFLARE_API_TOKEN: token, CLOUDFLARE_ACCOUNT_ID: account, NO_COLOR: '1', CI: 'true', WRANGLER_SEND_METRICS: 'false' },
-});
+let output = '';
+try {
+  output = cp.execFileSync(process.execPath, args, {
+    cwd: control, encoding: 'utf8', maxBuffer: 8 * 1024 * 1024,
+    env: { ...process.env, CLOUDFLARE_API_TOKEN: token, CLOUDFLARE_ACCOUNT_ID: account, NO_COLOR: '1', CI: 'true', WRANGLER_SEND_METRICS: 'false' },
+  });
+} catch (error) {
+  // Another cleanup can already have removed this preview. Wrangler reports
+  // Cloudflare code 10025 in that case; deletion is idempotently complete.
+  // Authentication, permission, network and all other errors must still fail.
+  const details = String(error?.stderr || '') + '\n' + String(error?.stdout || '');
+  if (process.argv[2] === 'delete' && /Preview not found\.\s*\[code:\s*10025\]/.test(details)) {
+    console.log('::notice::Cloudflare preview is already absent; cleanup complete');
+  } else {
+    throw error;
+  }
+}
 if (process.argv[2] !== 'delete') {
   const start = output.indexOf('{');
   const end = output.lastIndexOf('}');
