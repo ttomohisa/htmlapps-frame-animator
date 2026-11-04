@@ -41,6 +41,7 @@ async function runCase(browser, language, width, height) {
     assert.equal(await page.locator('html').getAttribute('lang'), language);
     assert.equal(await page.locator('#addImagesPanel').isVisible(), true, label + ': entry picker visible before images');
     assert.equal(await page.locator('.page-intro').isVisible(), true, label + ': intro visible before images');
+    assert.equal(await page.locator('.local-badge').isVisible(), false, label + ': local processing badge hidden on phones');
 
     const first = await sampleImage(page, '#16624f');
     await page.locator('#fileInput').setInputFiles([
