@@ -46,20 +46,24 @@ async function runCase(browser, language, width, height) {
     ]);
     await page.waitForFunction(() => document.querySelector('#frameCount').textContent === '1');
 
-    // In a short sequence, the page still needs enough scroll range to show
-    // the top of the Frames panel below the sticky app header.
+    // The reference phone screenshot starts with the images just beneath the
+    // sticky header, not with the large Frames section heading.
     await page.waitForFunction(() => {
-      const panel = document.querySelector('#mobilePageFrames .panel');
+      const grid = document.querySelector('#frameGrid');
       const header = document.querySelector('.app-header');
-      if (!panel || !header) return false;
-      const gap = panel.getBoundingClientRect().top - header.getBoundingClientRect().bottom;
-      return gap >= 6 && gap <= 48;
+      if (!grid || !header) return false;
+      const gap = grid.getBoundingClientRect().top - header.getBoundingClientRect().bottom;
+      return gap >= 4 && gap <= 32;
     }, null, {timeout: 5000});
-    const framePanel = await page.locator('#mobilePageFrames .panel').boundingBox();
+    const grid = await page.locator('#frameGrid').boundingBox();
     const header = await page.locator('.app-header').boundingBox();
-    const gap = framePanel.y - (header.y + header.height);
-    assert.ok(gap >= 6 && gap <= 48, label + ': frame scroll alignment ' + gap);
+    const gap = grid.y - (header.y + header.height);
+    assert.ok(gap >= 4 && gap <= 32, label + ': image grid scroll alignment ' + gap);
     assert.equal(await page.locator('#frameTools').evaluate(el => el.open), false);
+    if (width === 390) {
+      fs.mkdirSync(path.resolve('test-results/mobile-layout'), {recursive: true});
+      await page.screenshot({path: path.resolve('test-results/mobile-layout', 'frames-after-import-' + language + '.png')});
+    }
     assert.equal(await page.locator('#timingDisclosure').evaluate(el => el.open), false);
 
     await page.locator('#timingDisclosure > summary').click();
@@ -90,6 +94,7 @@ async function runCase(browser, language, width, height) {
     assert.equal(await page.locator('[data-duration-preset]').first().isVisible(), false);
 
     await page.locator('#timingMode').selectOption('total');
+    assert.equal((await page.locator('#timingMode option:checked').textContent()).trim(), language === 'ja' ? '1回分の長さ' : 'One-pass length');
     await page.locator('#globalDurationInput').fill('2.40');
     await page.locator('#applyDurationButton').click();
     assert.equal(await page.locator('.frame-duration-input').first().inputValue(), '2400');
@@ -142,6 +147,66 @@ async function runCase(browser, language, width, height) {
       }));
       assert.equal(blankSamples, 0, label + ': preview should not flash blank while playing');
       await page.locator('#previewPlayButton').click();
+
+      // A detailed source image must be decoded from the original file, not
+      // from the tiny thumbnail made for the frame cards.
+      const highDetail = await page.evaluate(() => {
+        const c = document.createElement('canvas');
+        c.width = 1080;
+        c.height = 2244;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, 1080, 2244);
+        ctx.fillStyle = '#0b251e';
+        for (let y = 12; y < 2244; y += 12) ctx.fillRect(0, y, 1080, 3);
+        ctx.font = 'bold 48px sans-serif';
+        ctx.fillText('Preview source detail', 50, 180);
+        return c.toDataURL('image/png').split(',')[1];
+      });
+      const bitmapCalls = await page.evaluate(() => {
+        const calls = [];
+        const original = createImageBitmap;
+        window.createImageBitmap = function(...args) {
+          if (args[0] instanceof File && args[0].name === 'detailed-source.png') {
+            calls.push({width: args[1]?.resizeWidth || 0, height: args[1]?.resizeHeight || 0});
+          }
+          return original.apply(this, args);
+        };
+        window.__previewSourceCalls = calls;
+        return true;
+      });
+      assert.equal(bitmapCalls, true);
+      await page.locator('#fileInput').setInputFiles([
+        {name: 'detailed-source.png', mimeType: 'image/png', buffer: Buffer.from(highDetail, 'base64')}
+      ]);
+      await page.waitForFunction(() => document.querySelector('#frameCount').textContent === '3');
+      await page.locator('#mobileTabPreview').click();
+      await page.locator('#previewNextButton').click();
+      await page.locator('#previewNextButton').click();
+      await page.waitForFunction(() => window.__previewSourceCalls.some(call => call.height >= 1000));
+      assert.ok((await page.evaluate(() => window.__previewSourceCalls)).some(call => call.height >= 1000),
+        label + ': preview decodes high-quality source rather than thumbnail');
+
+      // The fixed bottom navigation must never cover the last image controls.
+      await page.locator('#mobileTabFrames').click();
+      await page.evaluate(() => scrollTo({top: document.documentElement.scrollHeight, behavior: 'instant'}));
+      await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
+      const dockCheck = await page.evaluate(() => {
+        const last = document.querySelector('#frameGrid .frame-card:last-child').getBoundingClientRect();
+        const bottomBar = document.querySelector('#mobileWorkflowNav').getBoundingClientRect();
+        return {lastBottom:last.bottom, dockTop:bottomBar.top, lastTop:last.top};
+      });
+      assert.ok(dockCheck.lastBottom <= dockCheck.dockTop - 8, label + ': last frame clear of dock ' + JSON.stringify(dockCheck));
+      await page.screenshot({path: path.resolve('test-results/mobile-layout', 'frames-bottom-' + language + '.png')});
+
+      await page.locator('#mobileTabExport').click();
+      await page.evaluate(() => scrollTo({top: document.documentElement.scrollHeight, behavior: 'instant'}));
+      const exportDock = await page.evaluate(() => {
+        const save = document.querySelector('#createGifButton').getBoundingClientRect();
+        const dock = document.querySelector('#mobileWorkflowNav').getBoundingClientRect();
+        return {buttonBottom:save.bottom, dockTop:dock.top};
+      });
+      assert.ok(exportDock.buttonBottom < exportDock.dockTop, label + ': GIF export control clear of dock ' + JSON.stringify(exportDock));
     }
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth), true, label + ': no horizontal overflow');
     assert.deepEqual(errors, [], label + ': no console/page errors');
