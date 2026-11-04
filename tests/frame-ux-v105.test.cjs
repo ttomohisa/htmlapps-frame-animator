@@ -12,7 +12,9 @@ test('mobile controls, preview transport, and Help have the v1.0.5 structure', (
   }
   assert.ok(source.includes('.preview-side{display:contents}'));
   assert.ok(source.includes('.preview-transport{order:1'));
-  assert.ok(source.includes("setMobilePage('frames', { scroll: true })"));
+  assert.ok(source.includes("requestAnimationFrame(scrollToFrameImages)"));
+  assert.ok(source.includes("frameGrid.getBoundingClientRect().top - headerBottom - 8"));
+  assert.ok(source.includes("calc(136px + env(safe-area-inset-bottom))"));
   assert.ok(!source.includes('id="helpOkButton"'));
   assert.ok(!source.includes('data-i18n="previewNote"'));
   assert.ok(source.includes('data-i18n="gifDitherHelp"'));
@@ -33,6 +35,10 @@ test('preview switches images only after the next image is ready', () => {
   assert.ok(body.includes('context.drawImage(previewBuffer, 0, 0)'));
   assert.ok(body.includes('previewBuffer.getContext'));
   assert.ok(body.includes('bufferContext.clearRect'));
+  assert.ok(source.includes('createImageBitmap(frame.file, options)'));
+  assert.ok(source.includes('PREVIEW_DECODE_MAX_EDGE = 1600'));
+  assert.ok(!source.includes('frame.thumbnailBlob || frame.file'));
+  assert.ok(source.includes('clearPreviewDecodeCache()'));
   assert.ok(body.includes('token !== state.canvas.renderToken'));
 });
 
