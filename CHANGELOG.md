@@ -12,7 +12,7 @@
 - Render previews from higher-detail original images (up to 1600 px long edge with a bounded decode cache) instead of blurry thumbnails; reuse a buffer to prevent flickering and repeated allocations.
 - Redesign WebP options with a synchronized quality slider and small editable number field. Keep the quality label and short bilingual explanation static when lossless is toggled; only the checkbox changes. Show image addition only in Frames on phones. Reserve space to scroll the last frame and export buttons above the phone dock. Rename the total duration control to '1回分の長さ' / 'One-pass length'. Replace user-facing Canvas terminology, shorten explanatory text, clarify GIF Dithering, and remove the duplicate bottom Help close button.
 - On phones, reveal the GIF/WebP Save button next to Create as soon as an export succeeds. Hide the old bottom Save action on phones to avoid duplicates; retain desktop layout and existing save behavior.
-- Added tag-triggered GitHub Release publishing with a main-branch ancestry/version guard, verified HTML + ZIP + SHA-256 assets, and changelog-based release notes. PR validation packages the release without publishing.
+- Automate creation of the version tag and GitHub Release after the version PR is merged into main. The workflow verifies HTML + ZIP + SHA-256 outputs before tagging, checks version and main ancestry, and avoids duplicate releases. Manually pushed stable tags remain supported; PR validation packages without publishing.
 - Update Japanese and English UI/help while preserving local processing and GIF/WebP export.
 
 ## [1.0.4] - 2026-10-27
