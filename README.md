@@ -119,6 +119,26 @@ This repository's [Deploy standalone app to GitHub Pages](https://github.com/tto
 
 The PR Preview is separate from GitHub Pages. The public site's version updates only after a successful deployment from `main`.
 
+## GitHub Releases
+
+After a version PR has been reviewed and merged to `main`, create a **stable Semantic Versioning tag** for that exact main-branch commit and push it:
+
+```sh
+git switch main
+git pull --ff-only origin main
+git tag v1.0.5
+git push origin v1.0.5
+```
+
+The [Publish GitHub Release workflow](.github/workflows/release.yml) starts on a pushed `vMAJOR.MINOR.PATCH` tag. It refuses tags that do not match `app.config.json` or that point to a commit outside `main`. It builds and verifies the offline files, then publishes a GitHub Release with the same four download types as earlier releases:
+
+- `htmlapps-frame-animator-v1.0.5.html` — readable single HTML.
+- `htmlapps-frame-animator-v1.0.5.self-extract.html` — self-extracting single HTML.
+- `htmlapps-frame-animator-v1.0.5.zip` — HTML, build manifests, README files, license, notices and changelog.
+- `SHA256SUMS.txt` — checksums for the three assets above.
+
+The release notes come from the matching entry in `CHANGELOG.md`. In pull requests, the standalone validation workflow **tests packaging but does not publish or create tags**. The repository must allow GitHub Actions to write release contents. A GitHub Release does not itself deploy to Browser Kitty; that remains a separate process.
+
 ## Development and build
 
 ```text
