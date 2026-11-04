@@ -654,31 +654,13 @@
               </label>
             </div>
             <label class="output-field">
-                <span class="output-label" data-i18n="webpQualityLabel">品質</span>
-                <input class="size-input" id="webpQuality" type="number" min="1" max="100" step="1" value="80" inputmode="numeric">
-              </label>
-              <label class="output-field">
-                <span class="output-label" data-i18n="webpEffortLabel">Effort</span>
-                <select class="output-select" id="webpEffort">
-                  <option value="0">0</option><option value="1">1</option><option value="2">2</option><option value="3">3</option>
-                  <option value="4" selected>4</option><option value="5">5</option><option value="6">6</option>
-                </select>
-              </label>
-            </div>
-            <div class="gif-option-grid">
-              <label class="gif-switch">
-                <span data-i18n="webpLosslessLabel">Lossless</span>
-                <input id="webpLossless" type="checkbox">
-              </label>
-            </div>
-            <label class="output-field">
               <span class="output-label" data-i18n="outputFilenameLabel">出力ファイル名</span>
               <span class="filename-control">
                 <input class="filename-input" id="webpOutputFilename" type="text" value="frame-animation" maxlength="120" autocomplete="off" spellcheck="false">
                 <span class="filename-extension">.webp</span>
               </span>
             </label>
-            <p class="gif-note" data-i18n="webpNote">Animated WebPは動画ではなく、動く画像です。画像ビューアーによっては静止画に見えるため、ブラウザで再生をご確認ください。Losslessや高いEffortは処理時間・容量が増えることがあります。</p>
+            <p class="gif-note" data-i18n="webpNote">Animated WebPは動く画像です。対応ビューアやブラウザで再生をご確認ください。</p>
             <div class="gif-create-row">
               <button class="button primary" id="createWebpButton" type="button" disabled data-i18n="createWebp">WebPを作成</button>
               <button class="button" id="cancelWebpButton" type="button" hidden data-i18n="cancelWebp">キャンセル</button>
