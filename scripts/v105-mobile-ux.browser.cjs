@@ -226,11 +226,21 @@ async function runCase(browser, language, width, height) {
       assert.equal(await page.locator('#webpEffort').inputValue(), '4', label + ': method default');
       assert.equal(await page.locator('#webpEffort option').count(), 7, label + ': retain methods 0 to 6');
       assert.equal((await page.locator('#webpEffort option[value="3"]').textContent()).trim(), language === 'ja' ? '3 · やや速い' : '3 · Moderate');
-      assert.equal((await page.locator('#webpQualityLabel').textContent()).trim(), language === 'ja' ? '画質' : 'Quality');
+      const qualityLabel = (await page.locator('#webpQualityLabel').textContent()).trim();
+      const qualityHelp = (await page.locator('#webpQualityHelp').textContent()).trim();
+      assert.equal(qualityLabel, language === 'ja' ? '画質' : 'Quality');
+      assert.equal(qualityHelp, language === 'ja'
+        ? '通常は画質、劣化なしでは圧縮を調整します。'
+        : 'Adjusts image quality normally, or compression in lossless mode.');
       await page.locator('#webpLossless').check();
-      assert.equal((await page.locator('#webpQualityLabel').textContent()).trim(), language === 'ja' ? '圧縮の強さ' : 'Compression level');
+      assert.equal((await page.locator('#webpQualityLabel').textContent()).trim(), qualityLabel,
+        label + ': label stays unchanged when lossless is enabled');
+      assert.equal((await page.locator('#webpQualityHelp').textContent()).trim(), qualityHelp,
+        label + ': help stays unchanged when lossless is enabled');
       await page.locator('#webpLossless').uncheck();
-      assert.equal((await page.locator('#webpQualityLabel').textContent()).trim(), language === 'ja' ? '画質' : 'Quality');
+      assert.equal((await page.locator('#webpQualityLabel').textContent()).trim(), qualityLabel);
+      assert.equal((await page.locator('#webpQualityHelp').textContent()).trim(), qualityHelp,
+        label + ': help stays unchanged when lossless is disabled');
       assert.equal(await page.locator('#webpQuality').inputValue(), '73', label + ': quality remains 73 after toggles');
       assert.ok(await page.evaluate(() => document.querySelector('#webpExportPanel').scrollWidth <= document.querySelector('#webpExportPanel').clientWidth + 1), label + ': WebP no overflow');
       await page.screenshot({path: path.resolve('test-results/mobile-layout', 'webp-options-' + language + '.png')});
