@@ -281,7 +281,13 @@ async function runFirstBatchCase(browser, language, width, height) {
     await page.goto(pathToFileURL(path.resolve('dist/index.html')).href);
     const first = await sampleImage(page, '#16624f');
     const second = await sampleImage(page, '#7f81b6');
-    await page.locator('#fileInput').setInputFiles([
+    // Choose from the actual button so the browser scrolls the original
+    // picker into view before import (the Android-specific first-use path).
+    const [initialChooser] = await Promise.all([
+      page.waitForEvent('filechooser'),
+      page.locator('#chooseButton').click()
+    ]);
+    await initialChooser.setFiles([
       {name:'initial-1.png', mimeType:'image/png', buffer:first},
       {name:'initial-2.png', mimeType:'image/png', buffer:second}
     ]);
