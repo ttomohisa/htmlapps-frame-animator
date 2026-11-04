@@ -63,7 +63,7 @@ GitHub Pages is enabled for this repository and the deployment workflow is confi
 - **Fit mixed image sizes** — Use preset or custom output dimensions, Fit/Fill placement, and transparent, white, black, or custom backgrounds.
 - **Choose GIF or Animated WebP** — GIF supports 64/128/256 colors and optional dithering; WebP supports quality, lossless mode, and encoding effort. Encoding runs locally with progress and cancellation.
 - **Inspect before saving** — Preview the generated GIF/WebP file, see its dimensions, frame count, duration and file size, then save it with an editable filename.
-- **Mobile-friendly and local** — Jump to the first image after importing, keep secondary frame controls collapsible (the preset buttons are hidden on mobile, while speed controls remain available), and place playback directly under the preview. Live preview uses source images resized for higher clarity, and scrolling keeps the last frame and export controls clear of the bottom navigation. Frames / Preview / Export tabs, Japanese/English UI, and no file upload.
+- **Mobile-friendly and local** — Jump to just above the images after importing, keep secondary frame controls collapsible (the preset buttons are hidden on mobile, while speed controls remain available), and place playback directly under the preview. For WebP, higher compression effort takes more time; lossless compression changes the quality input into a compression-level setting. Live preview uses source images resized for higher clarity, and scrolling keeps the last frame and export controls clear of the bottom navigation. Frames / Preview / Export tabs, Japanese/English UI, and no file upload.
 
 ## Usage
 
