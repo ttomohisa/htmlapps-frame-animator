@@ -39,6 +39,8 @@ async function runCase(browser, language, width, height) {
     await page.goto(pathToFileURL(path.resolve('dist/index.html')).href);
     await page.locator('#chooseButton').waitFor();
     assert.equal(await page.locator('html').getAttribute('lang'), language);
+    assert.equal(await page.locator('#addImagesPanel').isVisible(), true, label + ': entry picker visible before images');
+    assert.equal(await page.locator('.page-intro').isVisible(), true, label + ': intro visible before images');
 
     const first = await sampleImage(page, '#16624f');
     await page.locator('#fileInput').setInputFiles([
@@ -59,7 +61,10 @@ async function runCase(browser, language, width, height) {
     const header = await page.locator('.app-header').boundingBox();
     const gap = panel.y - (header.y + header.height);
     assert.ok(gap >= 4 && gap <= 32, label + ': Frames panel matches Preview alignment ' + gap);
-    assert.equal(await page.locator('#addImagesPanel').isVisible(), true, label + ': add-images section available in Frames');
+    assert.equal(await page.locator('#addImagesPanel').isVisible(), false, label + ': first import hides large add panel');
+    assert.equal(await page.locator('.page-intro').isVisible(), false, label + ': first import hides intro');
+    assert.equal(await page.locator('#quickAddButton').isVisible(), true, label + ': re-add button inside Frames');
+    assert.ok((await page.evaluate(() => scrollY)) <= 2, label + ': first import starts at document top');
     assert.equal(await page.locator('#frameTools').evaluate(el => el.open), false);
     if (width === 390) {
       fs.mkdirSync(path.resolve('test-results/mobile-layout'), {recursive: true});
@@ -108,6 +113,7 @@ async function runCase(browser, language, width, height) {
 
     await page.locator('#mobileTabPreview').click();
     assert.equal(await page.locator('#addImagesPanel').isVisible(), false, label + ': image-add section hidden in Preview');
+    assert.equal(await page.locator('#quickAddButton').isVisible(), false, label + ': quick add hidden in Preview');
     const geometry = await page.evaluate(() => {
       const preview = document.querySelector('#previewStage').getBoundingClientRect();
       const transport = document.querySelector('.preview-transport').getBoundingClientRect();
@@ -191,7 +197,8 @@ async function runCase(browser, language, width, height) {
 
       // The fixed bottom navigation must never cover the last image controls.
       await page.locator('#mobileTabFrames').click();
-      assert.equal(await page.locator('#addImagesPanel').isVisible(), true, label + ': image-add section restored in Frames');
+      assert.equal(await page.locator('#addImagesPanel').isVisible(), false, label + ': large import panel stays collapsed');
+      assert.equal(await page.locator('#quickAddButton').isVisible(), true, label + ': quick add remains accessible');
       await page.evaluate(() => scrollTo({top: document.documentElement.scrollHeight, behavior: 'instant'}));
       await page.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
       const dockCheck = await page.evaluate(() => {
@@ -204,6 +211,7 @@ async function runCase(browser, language, width, height) {
 
       await page.locator('#mobileTabExport').click();
       assert.equal(await page.locator('#addImagesPanel').isVisible(), false, label + ': image-add section hidden in Export');
+      assert.equal(await page.locator('#quickAddButton').isVisible(), false, label + ': quick add hidden in Export');
       await page.locator('#exportWebpTab').click();
       assert.equal(await page.locator('#webpQuality').inputValue(), '80', label + ': quality default');
       assert.equal(await page.locator('#webpQualityRange').inputValue(), '80', label + ': slider matches default');
@@ -280,22 +288,36 @@ async function runFirstBatchCase(browser, language, width, height) {
     await page.waitForFunction(() => document.querySelector('#frameCount').textContent === '2');
     await page.waitForTimeout(520);
     const firstPosition = await checkPanel('first import');
+    assert.ok(firstPosition.scrollY <= 2, label + ': first import lands at document top');
+    assert.equal(await page.locator('.page-intro').isVisible(), false, label + ': intro removed from editing layout');
+    assert.equal(await page.locator('#addImagesPanel').isVisible(), false, label + ': large add panel removed from editing layout');
+    assert.equal(await page.locator('#quickAddButton').isVisible(), true, label + ': compact add button visible');
 
-    // Simulate a mobile browser viewport adjustment, then another file choice.
+    // The address bar can change the visual viewport after the native picker.
     await page.setViewportSize({width, height:height - 30});
+    await checkPanel('after viewport change');
     const third = await sampleImage(page, '#f6b447');
-    await page.locator('#fileInput').setInputFiles([
-      {name:'subsequent-3.png', mimeType:'image/png', buffer:third}
+    const [chooser] = await Promise.all([
+      page.waitForEvent('filechooser'),
+      page.locator('#quickAddButton').click()
     ]);
+    await chooser.setFiles([{name:'subsequent-3.png', mimeType:'image/png', buffer:third}]);
     await page.waitForFunction(() => document.querySelector('#frameCount').textContent === '3');
     await page.waitForTimeout(550);
     const secondPosition = await checkPanel('second import');
+    assert.equal(await page.locator('#quickAddButton').isVisible(), true, label + ': add remains usable after second import');
     assert.ok(Math.abs(firstPosition.gap - secondPosition.gap) <= 22,
       label + ': first and second picker alignment differ: ' + JSON.stringify({firstPosition,secondPosition}));
     if (width === 390) {
       fs.mkdirSync(path.resolve('test-results/mobile-layout'), {recursive:true});
       await page.screenshot({path:path.resolve('test-results/mobile-layout','fresh-batch-' + language + '.png')});
     }
+    await page.locator('#frameTools > summary').click();
+    page.once('dialog', dialog => dialog.accept());
+    await page.locator('#clearAllButton').click();
+    await page.waitForFunction(() => document.querySelector('#frameCount').textContent === '0');
+    assert.equal(await page.locator('.page-intro').isVisible(), true, label + ': reset restores intro');
+    assert.equal(await page.locator('#addImagesPanel').isVisible(), true, label + ': reset restores initial image picker');
     assert.deepEqual(pageErrors, [], label + ': no page errors');
     console.log('PASS ' + label);
   } finally { await context.close(); }
