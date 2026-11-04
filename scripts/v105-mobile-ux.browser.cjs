@@ -313,8 +313,9 @@ async function runFirstBatchCase(browser, language, width, height) {
       await page.screenshot({path:path.resolve('test-results/mobile-layout','fresh-batch-' + language + '.png')});
     }
     await page.locator('#frameTools > summary').click();
-    page.once('dialog', dialog => dialog.accept());
     await page.locator('#clearAllButton').click();
+    await page.locator('#appConfirmDialog').waitFor({ state: 'visible' });
+    await page.locator('#appConfirmOk').click();
     await page.waitForFunction(() => document.querySelector('#frameCount').textContent === '0');
     assert.equal(await page.locator('.page-intro').isVisible(), true, label + ': reset restores intro');
     assert.equal(await page.locator('#addImagesPanel').isVisible(), true, label + ': reset restores initial image picker');
