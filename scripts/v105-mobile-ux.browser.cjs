@@ -217,7 +217,7 @@ async function runCase(browser, language, width, height) {
       assert.equal(await page.locator('#webpQualityRange').inputValue(), '73', label + ': number updates slider');
       assert.equal(await page.locator('#webpEffort').inputValue(), '4', label + ': method default');
       assert.equal(await page.locator('#webpEffort option').count(), 7, label + ': retain methods 0 to 6');
-      assert.equal((await page.locator('#webpEffort option[value="3"]').textContent()).trim(), language === 'ja' ? '3 · ふつう' : '3 · Moderate');
+      assert.equal((await page.locator('#webpEffort option[value="3"]').textContent()).trim(), language === 'ja' ? '3 · やや速め' : '3 · Moderate');
       assert.equal((await page.locator('#webpQualityLabel').textContent()).trim(), language === 'ja' ? '画質' : 'Quality');
       await page.locator('#webpLossless').check();
       assert.equal((await page.locator('#webpQualityLabel').textContent()).trim(), language === 'ja' ? '圧縮の強さ' : 'Compression level');
