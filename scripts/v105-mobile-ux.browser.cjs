@@ -243,12 +243,73 @@ async function runCase(browser, language, width, height) {
   }
 }
 
+// Reproduce the reported failure: two frames chosen in the *first* picker
+// on a fresh page, compared with the second picker in the same session.
+async function runFirstBatchCase(browser, language, width, height) {
+  const context = await browser.newContext({
+    viewport: {width, height},
+    locale: language === 'ja' ? 'ja-JP' : 'en-US',
+    reducedMotion: 'no-preference'
+  });
+  const page = await context.newPage();
+  const label = 'fresh-batch ' + language + ' ' + width + 'x' + height;
+  const pageErrors = [];
+  page.on('pageerror', error => pageErrors.push(error.message));
+  const checkPanel = async step => {
+    const position = await page.evaluate(() => {
+      const panel = document.querySelector('#mobilePageFrames > .panel');
+      const header = document.querySelector('.app-header');
+      return {
+        gap: panel.getBoundingClientRect().top - header.getBoundingClientRect().bottom,
+        scrollY: window.scrollY,
+        count: document.querySelector('#frameCount').textContent
+      };
+    });
+    assert.ok(position.gap >= 5 && position.gap <= 30,
+      label + ' ' + step + ' must show the full Frames heading, got ' + JSON.stringify(position));
+    return position;
+  };
+  try {
+    await page.goto(pathToFileURL(path.resolve('dist/index.html')).href);
+    const first = await sampleImage(page, '#16624f');
+    const second = await sampleImage(page, '#7f81b6');
+    await page.locator('#fileInput').setInputFiles([
+      {name:'initial-1.png', mimeType:'image/png', buffer:first},
+      {name:'initial-2.png', mimeType:'image/png', buffer:second}
+    ]);
+    await page.waitForFunction(() => document.querySelector('#frameCount').textContent === '2');
+    await page.waitForTimeout(520);
+    const firstPosition = await checkPanel('first import');
+
+    // Simulate a mobile browser viewport adjustment, then another file choice.
+    await page.setViewportSize({width, height:height - 30});
+    const third = await sampleImage(page, '#f6b447');
+    await page.locator('#fileInput').setInputFiles([
+      {name:'subsequent-3.png', mimeType:'image/png', buffer:third}
+    ]);
+    await page.waitForFunction(() => document.querySelector('#frameCount').textContent === '3');
+    await page.waitForTimeout(550);
+    const secondPosition = await checkPanel('second import');
+    assert.ok(Math.abs(firstPosition.gap - secondPosition.gap) <= 22,
+      label + ': first and second picker alignment differ: ' + JSON.stringify({firstPosition,secondPosition}));
+    if (width === 390) {
+      fs.mkdirSync(path.resolve('test-results/mobile-layout'), {recursive:true});
+      await page.screenshot({path:path.resolve('test-results/mobile-layout','fresh-batch-' + language + '.png')});
+    }
+    assert.deepEqual(pageErrors, [], label + ': no page errors');
+    console.log('PASS ' + label);
+  } finally { await context.close(); }
+}
+
 (async () => {
   const browser = await chromium.launch();
   try {
     for (const lang of ['ja', 'en']) {
       for (const [width, height] of [[320, 568], [360, 640], [390, 844]]) {
         await runCase(browser, lang, width, height);
+      }
+      for (const [width, height] of [[320, 568], [390, 844]]) {
+        await runFirstBatchCase(browser, lang, width, height);
       }
     }
   } finally {
