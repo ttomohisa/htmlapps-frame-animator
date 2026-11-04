@@ -53,12 +53,12 @@ async function runCase(browser, language, width, height) {
       const header = document.querySelector('.app-header');
       if (!grid || !header) return false;
       const gap = grid.getBoundingClientRect().top - header.getBoundingClientRect().bottom;
-      return gap >= 4 && gap <= 32;
+      return gap >= 82 && gap <= 126;
     }, null, {timeout: 5000});
     const grid = await page.locator('#frameGrid').boundingBox();
     const header = await page.locator('.app-header').boundingBox();
     const gap = grid.y - (header.y + header.height);
-    assert.ok(gap >= 4 && gap <= 32, label + ': image grid scroll alignment ' + gap);
+    assert.ok(gap >= 82 && gap <= 126, label + ': image grid scroll alignment ' + gap);
     assert.equal(await page.locator('#frameTools').evaluate(el => el.open), false);
     if (width === 390) {
       fs.mkdirSync(path.resolve('test-results/mobile-layout'), {recursive: true});
@@ -200,6 +200,18 @@ async function runCase(browser, language, width, height) {
       await page.screenshot({path: path.resolve('test-results/mobile-layout', 'frames-bottom-' + language + '.png')});
 
       await page.locator('#mobileTabExport').click();
+      await page.locator('#exportWebpTab').click();
+      assert.equal(await page.locator('#webpQuality').inputValue(), '80', label + ': quality default');
+      assert.equal(await page.locator('#webpEffort').inputValue(), '4', label + ': method default');
+      assert.equal(await page.locator('#webpEffort option').count(), 7, label + ': retain methods 0 to 6');
+      assert.equal((await page.locator('#webpQualityLabel').textContent()).trim(), language === 'ja' ? '画質' : 'Quality');
+      await page.locator('#webpLossless').check();
+      assert.equal((await page.locator('#webpQualityLabel').textContent()).trim(), language === 'ja' ? '圧縮の強さ' : 'Compression level');
+      await page.locator('#webpLossless').uncheck();
+      assert.equal((await page.locator('#webpQualityLabel').textContent()).trim(), language === 'ja' ? '画質' : 'Quality');
+      assert.equal(await page.locator('#webpQuality').inputValue(), '80', label + ': quality remains 80 after toggles');
+      assert.ok(await page.evaluate(() => document.querySelector('#webpExportPanel').scrollWidth <= document.querySelector('#webpExportPanel').clientWidth + 1), label + ': WebP no overflow');
+      await page.screenshot({path: path.resolve('test-results/mobile-layout', 'webp-options-' + language + '.png')});
       await page.evaluate(() => scrollTo({top: document.documentElement.scrollHeight, behavior: 'instant'}));
       const exportDock = await page.evaluate(() => {
         const save = document.querySelector('#createGifButton').getBoundingClientRect();
