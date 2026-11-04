@@ -125,16 +125,16 @@ PR PreviewとGitHub Pagesの公開サイトは別です。公開版の更新は�
 
 **タグ作成やRelease公開の手動操作は不要です。** バージョン更新のPRを確認して**ご自身で`main`へマージ**すると、[GitHub Releaseワークフロー](.github/workflows/release.yml)が自動実行されます。
 
-例えばv1.0.5のPRをマージすると、次の順に進みます。
+例えばv1.0.6のPRをマージすると、次の順に進みます。
 
 1. `app.config.json`のバージョンと既存のタグ・Releaseを確認する。
 2. 単一HTMLの生成・検証とZIPの作成を行う。
-3. タグがなければ、**マージ後の`main`のコミット**に`v1.0.5`タグを作成する。
+3. タグがなければ、**マージ後の`main`のコミット**に`v1.0.6`タグを作成する。
 4. 次の4ファイルを付けたGitHub Releaseを公開する。
 
-   - `htmlapps-frame-animator-v1.0.5.html` — 通常の単一HTML
-   - `htmlapps-frame-animator-v1.0.5.self-extract.html` — 自己展開型の単一HTML
-   - `htmlapps-frame-animator-v1.0.5.zip` — HTML、マニフェスト、README、ライセンスなど
+   - `htmlapps-frame-animator-v1.0.6.html` — 通常の単一HTML
+   - `htmlapps-frame-animator-v1.0.6.self-extract.html` — 自己展開型の単一HTML
+   - `htmlapps-frame-animator-v1.0.6.zip` — HTML、マニフェスト、README、ライセンスなど
    - `SHA256SUMS.txt` — 上記3ファイルのSHA-256
 
 Release本文は`CHANGELOG.md`の該当バージョンから生成します。同じバージョンが公開済みなら重複作成しません。手動でのタグpushにも対応しますが、タグは`app.config.json`と一致し、`main`に含まれるコミットを指す必要があります。検証に失敗した場合、新しいタグは作りません。

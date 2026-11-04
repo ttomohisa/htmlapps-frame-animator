@@ -34,7 +34,7 @@ jobs:
       shell: pwsh
       run: |
         ./scripts/check-repository.ps1
-        node --test tests/mobile-help-footer.test.cjs tests/frame-ux-v105.test.cjs
+        node --test tests/mobile-help-footer.test.cjs tests/frame-ux-v105.test.cjs tests/preview-command.test.cjs
         if ($LASTEXITCODE -ne 0) { throw "Footer / Help source regression failed." }
     - name: Verify phone layout in Chromium
       shell: pwsh

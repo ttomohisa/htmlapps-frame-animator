@@ -123,16 +123,16 @@ The PR Preview is separate from GitHub Pages. The public site's version updates 
 
 **No manual tag or release step is needed.** After a version PR is reviewed and **manually merged into `main`**, the [Publish GitHub Release workflow](.github/workflows/release.yml) runs automatically on the resulting `main` push.
 
-For example, merging the v1.0.5 PR causes the workflow to:
+For example, merging the v1.0.6 PR causes the workflow to:
 
 1. Read the version from `app.config.json` and check for an existing matching tag or release.
 2. Build and verify the standalone HTML files and assemble the release archive.
-3. Create the `v1.0.5` tag on the **exact merged `main` commit**, if absent.
+3. Create the `v1.0.6` tag on the **exact merged `main` commit**, if absent.
 4. Publish the GitHub Release with the four familiar downloads:
 
-   - `htmlapps-frame-animator-v1.0.5.html` — readable single HTML.
-   - `htmlapps-frame-animator-v1.0.5.self-extract.html` — self-extracting single HTML.
-   - `htmlapps-frame-animator-v1.0.5.zip` — HTML, manifests, README files, license, notices and changelog.
+   - `htmlapps-frame-animator-v1.0.6.html` — readable single HTML.
+   - `htmlapps-frame-animator-v1.0.6.self-extract.html` — self-extracting single HTML.
+   - `htmlapps-frame-animator-v1.0.6.zip` — HTML, manifests, README files, license, notices and changelog.
    - `SHA256SUMS.txt` — checksums for the other three downloads.
 
 The release notes come from the matching entry in `CHANGELOG.md`. Subsequent pushes using an already published version do not create duplicate tags or releases. Manually pushed stable version tags are still supported, but must match `app.config.json` and be included in `main`. If verification fails, the workflow does not create a new tag.
