@@ -12,10 +12,12 @@ test('mobile controls, preview transport, and Help have the v1.0.5 structure', (
   }
   assert.ok(source.includes('.preview-side{display:contents}'));
   assert.ok(source.includes('.preview-transport{order:1'));
-  assert.ok(source.includes("requestAnimationFrame(scrollToFrameImages)"));
-  assert.ok(source.includes("frameGrid.getBoundingClientRect().top - headerBottom - 104"));
-  assert.ok(source.includes("calc(136px + env(safe-area-inset-bottom) + var(--frame-scroll-space, 0px))"));
-  assert.ok(source.includes("main.style.setProperty('--frame-scroll-space'"));
+  assert.ok(source.includes("setMobilePage('frames', { scroll: true })"));
+  assert.ok(!source.includes('scrollToFrameImages'));
+  assert.ok(source.includes("$('#addImagesPanel').hidden = isMobile && hasFrames && state.ui.mobilePage !== 'frames'"));
+  assert.ok(source.includes('id="webpQualityRange"'));
+  assert.ok(source.includes('webpQualityRange.addEventListener'));
+  assert.ok(source.includes("webpEffort3:'3 · ふつう'"));
   assert.ok(!source.includes('id="helpOkButton"'));
   assert.ok(!source.includes('data-i18n="previewNote"'));
   assert.ok(source.includes('data-i18n="gifDitherHelp"'));
