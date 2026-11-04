@@ -23,6 +23,10 @@ test('mobile controls, preview transport, and Help have the v1.0.5 structure', (
   assert.ok(source.includes("$('.page-intro').hidden = !showEntry"));
   assert.ok(source.includes('id="webpQualityRange"'));
   assert.ok(source.includes('webpQualityRange.addEventListener'));
+  assert.ok(!source.includes('refreshWebpQualityCopy'));
+  assert.ok(!source.includes('webpQualityLosslessLabel'));
+  assert.ok(!source.includes('webpQualityLosslessHelp'));
+  assert.ok(source.includes('通常は画質、劣化なしでは圧縮を調整します。'));
   assert.ok(source.includes("webpEffort3:'3 · やや速い'"));
   assert.ok(!source.includes('id="helpOkButton"'));
   assert.ok(!source.includes('data-i18n="previewNote"'));
