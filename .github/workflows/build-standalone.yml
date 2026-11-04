@@ -19,6 +19,8 @@ on:
       - "scripts/verify-self-extract.ps1"
       - ".github/workflows/build-standalone.yml"
       - ".github/workflows/release.yml"
+      - ".github/scripts/**"
+      - ".github/workflows/preview-cleanup.yml"
 
 permissions:
   contents: read
@@ -35,9 +37,11 @@ jobs:
         shell: powershell
         run: .\scripts\check-powershell-syntax.ps1
 
-      - name: Verify release planner success and safety invariants
+      - name: Verify release and preview cleanup behavior
         shell: pwsh
-        run: node --test tests/release-workflow.test.cjs
+        run: |
+          node --test tests/release-workflow.test.cjs tests/preview-command.test.cjs tests/mobile-help-footer.test.cjs
+          if ($LASTEXITCODE -ne 0) { throw "Release/preview/mobile source regression failed." }
 
       - name: Build and verify standalone HTML
         shell: pwsh
