@@ -17,7 +17,7 @@ test('mobile controls, preview transport, and Help have the v1.0.5 structure', (
   assert.ok(source.includes("$('#addImagesPanel').hidden = isMobile && hasFrames && state.ui.mobilePage !== 'frames'"));
   assert.ok(source.includes('id="webpQualityRange"'));
   assert.ok(source.includes('webpQualityRange.addEventListener'));
-  assert.ok(source.includes("webpEffort3:'3 · やや速め'"));
+  assert.ok(source.includes("webpEffort3:'3 · やや速い'"));
   assert.ok(!source.includes('id="helpOkButton"'));
   assert.ok(!source.includes('data-i18n="previewNote"'));
   assert.ok(source.includes('data-i18n="gifDitherHelp"'));
