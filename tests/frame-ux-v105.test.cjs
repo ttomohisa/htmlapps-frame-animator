@@ -12,11 +12,15 @@ test('mobile controls, preview transport, and Help have the v1.0.5 structure', (
   }
   assert.ok(source.includes('.preview-side{display:contents}'));
   assert.ok(source.includes('.preview-transport{order:1'));
-  assert.ok(source.includes("alignFramesAfterFirstImport(importGeneration)"));
-  assert.ok(source.includes("window.scrollBy({ top: gap - 12, behavior: 'instant' })"));
+  assert.ok(!source.includes('alignFramesAfterFirstImport'));
+  assert.ok(source.includes("window.scrollTo({ top: 0, behavior: 'instant' })"));
+  assert.ok(source.includes("$('#mobileTabFrames').focus({ preventScroll: true })"));
+  assert.ok(source.includes(".page-intro[hidden],#addImagesPanel[hidden]{display:none!important}"));
+  assert.ok(source.includes("$('#quickAddButton').hidden = !isMobile || !hasFrames || state.ui.mobilePage !== 'frames'"));
   assert.ok(source.includes("setMobilePage('frames', { scroll: true })"));
   assert.ok(!source.includes('scrollToFrameImages'));
-  assert.ok(source.includes("$('#addImagesPanel').hidden = isMobile && hasFrames && state.ui.mobilePage !== 'frames'"));
+  assert.ok(source.includes("$('#addImagesPanel').hidden = !showEntry"));
+  assert.ok(source.includes("$('.page-intro').hidden = !showEntry"));
   assert.ok(source.includes('id="webpQualityRange"'));
   assert.ok(source.includes('webpQualityRange.addEventListener'));
   assert.ok(source.includes("webpEffort3:'3 · やや速い'"));
@@ -27,6 +31,7 @@ test('mobile controls, preview transport, and Help have the v1.0.5 structure', (
   assert.ok(source.includes('.timing-disclosure[open]>summary{border-bottom:1px solid var(--line)}'));
   assert.ok(source.includes('.timing-presets{display:none}'));
   assert.ok(!source.includes('.frame-tools #addMoreButton{display:none}'));
+  assert.ok(source.includes('id="quickAddButton"'));
 });
 
 test('preview switches images only after the next image is ready', () => {
