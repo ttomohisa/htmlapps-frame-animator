@@ -141,7 +141,7 @@ $notes = @(
   $notes + "`n",
   [System.Text.UTF8Encoding]::new($false)
 )
-Write-Host "[OK] Release assets for $Tag:"
+Write-Host "[OK] Release assets for ${Tag}:"
 foreach ($name in @($readableName, $selfExtractName, $archiveName, $checksumName, 'RELEASE_NOTES.md')) {
   $item = Get-Item -LiteralPath (Join-Path $releaseDir $name)
   Write-Host ("  {0} ({1} bytes)" -f $item.Name, $item.Length)
