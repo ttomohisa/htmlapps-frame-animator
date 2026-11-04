@@ -9,16 +9,16 @@
 ## v1.0.5 smartphone usability and timing update
 
 - On smartphone widths (640px and below), the frame area prioritizes image thumbnails. Secondary edit/manage actions and the all-frame timing form are collapsed by default; desktop keeps them expanded.
-- Selecting or adding images moves the smartphone viewport to just above the Frames panel (below the sticky header) once import completes. Even a single-image sequence must have enough scroll range to align the panel. Importing and error reporting remain unchanged.
+- Selecting or adding images moves the smartphone viewport to the first image in the frame grid, just below the sticky header, once import completes. Even a single-image sequence must have enough scroll range to align its thumbnails. Importing and error reporting remain unchanged.
 - All-frame timing supports both an identical per-frame duration (20–10,000 ms in 10 ms steps) and a target total duration in seconds for **one playback pass**. Ping-pong counts mirrored interior frames in that total; loop repetitions are not included.
 - Setting a total duration preserves existing per-frame timing ratios where feasible, enforces per-frame limits, uses 10 ms increments, and records a single Undo/Redo history entry. Requests outside the feasible range are rejected with an inline message rather than silently clamped.
 - On phones, remove the redundant preset button grid from view; keep 0.5× / 2× speed controls in the optional Speed disclosure. Desktop retains the preset buttons.
 - On phones, playback buttons are immediately below the animation preview, followed by the progress bar and frame/time statistics. Output size and playback settings remain accessible underneath.
-- The live preview draws the next decoded frame into a reusable offscreen buffer before swapping it onto the displayed canvas, avoiding a blank flash and per-frame canvas allocations. This is still a timing/geometry preview rather than an encoded-quality preview.
+- The live preview renders from original image data, with browser-supported high-quality downscaling to at most 1600 px on its long edge and a 4-image LRU decode cache. A reusable offscreen buffer avoids blank flashes and repeated canvas allocations; cards still use 360 px thumbnails. This is still a timing/geometry preview rather than an encoded-quality preview.
 - On phones, the bulk timing accordion is one bordered, rounded surface both open and closed; the secondary image-add action remains available via Edit and manage.
 - User-facing references to Canvas are replaced with image/output-size language. Japanese and English instructions and format notes reflect the revised controls; GIF Dithering has a short explanation.
 - The redundant bottom Help close button is removed; the top-right close control, Esc, and backdrop close remain.
-- Keep the current file limits, supported formats, export encoder settings, local-only policy, and standalone build behavior. CI and real-device verification are release gates.
+- Reserve enough scrollable space above the bottom dock for the last frame's actions, preview settings and export controls. Keep the current file limits, supported formats, export encoder settings, local-only policy, and standalone build behavior. CI and real-device verification are release gates.
 
 ## 1. Product identity
 
