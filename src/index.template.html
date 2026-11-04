@@ -974,6 +974,7 @@
       const dropZone = $('#dropZone');
       const mobileWorkflowNav = $('#mobileWorkflowNav');
       const mobileMedia = window.matchMedia('(max-width:640px)');
+      let pendingImportScroll = 0;
       const frameGrid = $('#frameGrid');
       const importReport = $('#importReport');
       const sortSelect = $('#sortSelect');
@@ -2722,7 +2723,13 @@
         updateBusy(false);
         fileInput.value = '';
         if (added.length && importGeneration === state.generation && typeof mobileMedia !== 'undefined' && mobileMedia.matches) {
-          requestAnimationFrame(() => setMobilePage('frames', { scroll: true }));
+          if (!before.length) {
+            // The first import reveals the navigation and collapses the drop area.
+            // Wait for those changes and Chrome's viewport to settle before aligning.
+            alignFramesAfterFirstImport(importGeneration);
+          } else {
+            setMobilePage('frames', { scroll: true });
+          }
         }
       }
 
@@ -3198,8 +3205,38 @@
         }
       }
 
+      function alignFramesAfterFirstImport(importGeneration) {
+        const token = ++pendingImportScroll;
+        setMobilePage('frames', { scroll: false });
+        const panel = $('#mobilePageFrames > .panel');
+        const header = $('.app-header');
+        const align = () => {
+          if (token !== pendingImportScroll || state.generation !== importGeneration ||
+              !mobileMedia.matches || state.ui.mobilePage !== 'frames') return;
+          // Use measured geometry rather than assuming a fixed header height.
+          // An initial native file-picker dismissal can change the visual viewport
+          // after scrollIntoView, especially with Chrome's address bar visible.
+          const gap = panel.getBoundingClientRect().top - header.getBoundingClientRect().bottom;
+          if (Math.abs(gap - 12) > 2) {
+            window.scrollBy({ top: gap - 12, behavior: 'instant' });
+          }
+        };
+        // Do not fight a user's own scroll or a later tab switch.
+        const cancel = () => { if (token === pendingImportScroll) pendingImportScroll++; };
+        window.addEventListener('touchstart', cancel, { passive: true, once: true });
+        window.addEventListener('wheel', cancel, { passive: true, once: true });
+        requestAnimationFrame(() => requestAnimationFrame(align));
+        setTimeout(align, 150);
+        setTimeout(() => {
+          align();
+          window.removeEventListener('touchstart', cancel);
+          window.removeEventListener('wheel', cancel);
+        }, 400);
+      }
+
       function setMobilePage(page, { scroll = true } = {}) {
         if (!['frames','preview','export'].includes(page)) return;
+        if (page !== 'frames') pendingImportScroll++;
         state.ui.mobilePage = page;
         applyMobileWorkflow({ scroll });
       }
