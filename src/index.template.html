@@ -147,6 +147,18 @@
     .gif-result-card{display:grid;gap:12px}.gif-result-card[hidden]{display:none}
     .gif-result-preview{display:grid;place-items:center;min-height:280px;overflow:hidden;padding:12px;border:1px solid var(--line);border-radius:12px;background-color:#fff;background-image:linear-gradient(45deg,#d8dad6 25%,transparent 25%),linear-gradient(-45deg,#d8dad6 25%,transparent 25%),linear-gradient(45deg,transparent 75%,#d8dad6 75%),linear-gradient(-45deg,transparent 75%,#d8dad6 75%);background-size:20px 20px;background-position:0 0,0 10px,10px -10px,-10px 0}
     .gif-result-preview img{display:block;max-width:100%;max-height:480px;width:auto;height:auto}
+
+    .webp-encoding-options{display:grid;gap:12px}
+    .webp-option-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+    .webp-option{display:flex;flex-direction:column;gap:6px;min-width:0}
+    .webp-option-label{font-size:12px;font-weight:750;color:var(--text)}
+    .webp-option>.size-input,.webp-option>.output-select{width:100%;height:44px;min-height:44px}
+    .webp-option-help{min-height:2.6em;font-size:11px;line-height:1.4;color:var(--muted)}
+    .webp-lossless{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0 3px;border-top:1px solid var(--line);cursor:pointer}
+    .webp-lossless-copy{display:grid;gap:3px;min-width:0}
+    .webp-lossless-copy strong{font-size:12px;font-weight:750}
+    .webp-lossless-copy span{font-size:11px;line-height:1.45;color:var(--muted)}
+    .webp-lossless input{width:20px;height:20px;flex:0 0 auto;accent-color:var(--accent)}
     .gif-result-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.gif-result-stat{padding:9px;border-radius:9px;background:var(--surface-muted)}.gif-result-stat span{display:block;color:var(--muted);font-size:10px}.gif-result-stat strong{display:block;margin-top:2px;font-size:12px;overflow-wrap:anywhere}
     .gif-result-actions{display:flex;justify-content:flex-end;gap:8px}.gif-note{margin:0;color:var(--muted);font-size:11px}
     .import-report{margin-top:14px;padding:12px;border:1px solid #ead18e;border-radius:11px;background:var(--warning-soft)}
@@ -612,8 +624,36 @@
       <div class="panel-body">
         <div class="gif-layout">
           <div class="gif-settings">
-            <div class="gif-option-grid">
-              <label class="output-field">
+            <div class="webp-encoding-options">
+              <div class="webp-option-grid">
+                <label class="webp-option">
+                  <span class="webp-option-label" id="webpQualityLabel" data-i18n="webpQualityLabel">画質</span>
+                  <input class="size-input" id="webpQuality" type="number" min="1" max="100" step="1" value="80" inputmode="numeric">
+                  <span class="webp-option-help" id="webpQualityHelp" data-i18n="webpQualityHelp">高いほど細部を残します。容量は増える傾向です。</span>
+                </label>
+                <label class="webp-option">
+                  <span class="webp-option-label" data-i18n="webpEffortLabel">圧縮の丁寧さ</span>
+                  <select class="output-select" id="webpEffort">
+                    <option value="0" data-i18n="webpEffort0">0 · 最速</option>
+                    <option value="1" data-i18n="webpEffort1">1 · 高速</option>
+                    <option value="2" data-i18n="webpEffort2">2 · 速め</option>
+                    <option value="3" data-i18n="webpEffort3">3 · 中速</option>
+                    <option value="4" data-i18n="webpEffort4" selected>4 · 標準</option>
+                    <option value="5" data-i18n="webpEffort5">5 · 丁寧</option>
+                    <option value="6" data-i18n="webpEffort6">6 · 最も丁寧</option>
+                  </select>
+                  <span class="webp-option-help" data-i18n="webpEffortHelp">高いほど処理に時間をかけます。</span>
+                </label>
+              </div>
+              <label class="webp-lossless" for="webpLossless">
+                <span class="webp-lossless-copy">
+                  <strong data-i18n="webpLosslessLabel">劣化なしで圧縮</strong>
+                  <span data-i18n="webpLosslessHelp">出力サイズの画像を追加の画質劣化なく圧縮。容量は増える場合があります。</span>
+                </span>
+                <input id="webpLossless" type="checkbox">
+              </label>
+            </div>
+            <label class="output-field">
                 <span class="output-label" data-i18n="webpQualityLabel">品質</span>
                 <input class="size-input" id="webpQuality" type="number" min="1" max="100" step="1" value="80" inputmode="numeric">
               </label>
@@ -832,7 +872,7 @@
           previewHeading:'アニメーションプレビュー', previewNote:'出力画像へFit / Fillした状態で、各フレームの表示時間どおりに確認します。', previewEmpty:'画像を追加すると、ここでアニメーションを確認できます。', previewFrameLabel:'フレーム', previewTimeLabel:'再生位置', previewRestart:'最初から', previewPrevious:'前のフレーム', previewPlay:'再生 / 一時停止', previewNext:'次のフレーム', previewHelp:'プレビューは元画像を縮小して表示します。書き出し結果の画質は、保存前に確認してください。', playbackSettingsTitle:'再生設定', playbackSettingsBody:'プレビュー・GIF・WebPで同じ再生順とループ設定を使います。', playbackOrderLabel:'再生順', playbackForward:'Forward', playbackReverse:'Reverse', playbackPingpong:'Ping-pong', playbackLoopLabel:'ループ', playbackLoopInfinite:'繰り返す', playbackLoopOnce:'1回だけ', playbackLoopCustom:'回数指定', playbackLoopCountLabel:'再生回数', playbackPassSummary:'1回分', framesUnit:'フレーム',
           outputSettingsTitle:'出力サイズ', outputSettingsBody:'1枚目の縦横比を基準にサイズをそろえます。カスタムでは幅・高さを個別指定できます。', canvasSizeLabel:'画像サイズ', canvasAuto:'自動（長辺最大720px）', canvas480:'長辺480px', canvas720:'長辺720px', canvas1080:'長辺1080px', canvasOriginal:'1枚目の元サイズ相当', canvasCustom:'カスタム', canvasWidthLabel:'画像の幅', canvasHeightLabel:'画像の高さ', placementLabel:'画像の配置', fit:'収める', fill:'切り抜く', backgroundLabel:'背景', backgroundTransparent:'透明', backgroundWhite:'白', backgroundBlack:'黒', backgroundCustom:'カスタム色', backgroundColorLabel:'背景色', previewCanvasLabel:'アニメーションのプレビュー', resolvedCanvas:'実際の出力サイズ',
           gifHeading:'Animated GIFを書き出す', gifHeadingNote:'設定したサイズと表示時間でGIFを作成します。', gifColorsLabel:'色数', gifLoopLabel:'ループ', gifLoopInfinite:'繰り返す', gifLoopOnce:'1回だけ', gifDitherLabel:'ディザリング', outputFilenameLabel:'出力ファイル名', gifLimitNote:'GIFは最大256色・1bit透明です。', createGif:'GIFを作成', cancelGif:'キャンセル', gifResultEmpty:'GIFを作成すると、ここで実際の生成ファイルを確認できます。', gifResultPreviewLabel:'生成したGIFのプレビュー', gifResultSizeLabel:'サイズ', gifResultFramesLabel:'フレーム', gifResultDurationLabel:'再生時間', gifResultBytesLabel:'ファイル容量', saveGif:'GIFを保存', gifPreparing:'フレーム {current} / {total} を準備しています…', gifEncoding:'フレーム {current} / {total} をGIFへ変換しています…', gifFinishing:'GIFを仕上げています…', gifDone:'GIFを作成しました', gifSaved:'GIFを保存しました', gifCancelled:'GIF作成をキャンセルしました', gifFailed:'GIFを作成できませんでした', gifFailedRecovery:'GIFを作成できませんでした。出力サイズやフレーム数を小さくするか、設定を変更してもう一度お試しください。', gifStale:'設定が変更されました。もう一度GIFを作成してください。', heavyJobTitle:'処理負荷の確認', heavyJobBody:'{format}を{frames}フレーム・{width}×{height}pxで作成します。端末のメモリを多く使用し、処理に時間がかかる可能性があります。続行しますか？', continueExport:'続行',
-          webpHeading:'Animated WebPを書き出す', webpHeadingNote:'品質や圧縮方法を調整してWebPを作成します。', webpQualityLabel:'品質', webpEffortLabel:'Effort', webpLosslessLabel:'Lossless', webpLoopLabel:'ループ', webpLoopInfinite:'繰り返す', webpLoopOnce:'1回だけ', webpNote:'Animated WebPは動画ではなく、動く画像です。画像ビューアーによっては静止画に見えるため、ブラウザで再生をご確認ください。Losslessや高いEffortは処理時間・容量が増えることがあります。', createWebp:'WebPを作成', cancelWebp:'キャンセル', webpResultEmpty:'WebPを作成すると、ここで実際の生成ファイルを確認できます。', webpResultPreviewLabel:'生成したAnimated WebPのプレビュー', saveWebp:'WebPを保存', webpPreparing:'フレーム {current} / {total} を準備しています…', webpEncoding:'フレーム {current} / {total} をWebPへ変換しています…', webpFinishing:'Animated WebPを仕上げています…', webpDone:'WebPを作成しました', webpSaved:'WebPを保存しました', webpCancelled:'WebP作成をキャンセルしました', webpFailed:'WebPを作成できませんでした', webpFailedRecovery:'WebPを作成できませんでした。出力サイズ・品質・Lossless・Effortなどを変更して、もう一度お試しください。', webpStale:'設定が変更されました。もう一度WebPを作成してください。',
+          webpHeading:'Animated WebPを書き出す', webpHeadingNote:'品質や圧縮方法を調整してWebPを作成します。', webpQualityLabel:'品質', webpEffortLabel:'圧縮の丁寧さ', webpLosslessLabel:'劣化なしで圧縮', webpLoopLabel:'ループ', webpLoopInfinite:'繰り返す', webpLoopOnce:'1回だけ', webpNote:'Animated WebPは動く画像です。対応ビューアやブラウザで再生をご確認ください。', webpQualityHelp:'高いほど細部を残します。容量は増える傾向です。', webpQualityLosslessLabel:'圧縮の強さ', webpQualityLosslessHelp:'高いほど圧縮に時間をかけ、容量を減らしやすくなります。', webpEffortHelp:'高いほど処理に時間をかけます。', webpLosslessHelp:'出力サイズの画像を追加の画質劣化なく圧縮。容量は増える場合があります。', webpEffort0:'0 · 最速', webpEffort1:'1 · 高速', webpEffort2:'2 · 速め', webpEffort3:'3 · 中速', webpEffort4:'4 · 標準', webpEffort5:'5 · 丁寧', webpEffort6:'6 · 最も丁寧', createWebp:'WebPを作成', cancelWebp:'キャンセル', webpResultEmpty:'WebPを作成すると、ここで実際の生成ファイルを確認できます。', webpResultPreviewLabel:'生成したAnimated WebPのプレビュー', saveWebp:'WebPを保存', webpPreparing:'フレーム {current} / {total} を準備しています…', webpEncoding:'フレーム {current} / {total} をWebPへ変換しています…', webpFinishing:'Animated WebPを仕上げています…', webpDone:'WebPを作成しました', webpSaved:'WebPを保存しました', webpCancelled:'WebP作成をキャンセルしました', webpFailed:'WebPを作成できませんでした', webpFailedRecovery:'WebPを作成できませんでした。出力サイズ・画質・圧縮の丁寧さなどを変更して、もう一度お試しください。', webpStale:'設定が変更されました。もう一度WebPを作成してください。',
           exportFormatLabel:'書き出す形式', exportGifOption:'GIF', exportWebpOption:'Animated WebP',
           buildInfo:'ビルド情報', appVersion:'アプリバージョン', builtAt:'生成日時', dependencies:'内包依存', footer:'画像はこの端末内で処理されます',
           help:'ヘルプ', close:'閉じる', helpTitle:'使い方と注意事項', helpHowTitle:'基本操作', helpHow1:'JPEG・PNG・静止WebPを複数選択、画面へドロップ、またはクリップボードから画像を貼り付けます。', helpHow2:'画像の順番と表示時間を調整します。再生1回分の長さを指定したり、0.5×／2×で各フレームの速度を変えたりできます（10 ms刻み・20〜10,000 ms）。元に戻す／やり直すにも対応します。', helpHow3:'画像サイズと配置を設定し、GIFまたはWebPを作成します。生成したファイルを確認して保存します。',
@@ -856,7 +896,7 @@
           previewHeading:'Animation preview', previewNote:'', previewEmpty:'Add images to preview the animation here.', previewFrameLabel:'Frame', previewTimeLabel:'Playback position', previewRestart:'Restart', previewPrevious:'Previous frame', previewPlay:'Play / pause', previewNext:'Next frame', previewHelp:'The preview uses resized source images. Review the generated file to check export quality.', playbackSettingsTitle:'Playback settings', playbackSettingsBody:'Preview, GIF, and WebP share the same playback order and loop settings.', playbackOrderLabel:'Playback order', playbackForward:'Forward', playbackReverse:'Reverse', playbackPingpong:'Ping-pong', playbackLoopLabel:'Loop', playbackLoopInfinite:'Repeat', playbackLoopOnce:'Play once', playbackLoopCustom:'Custom count', playbackLoopCountLabel:'Play count', playbackPassSummary:'One pass', framesUnit:'frames',
           outputSettingsTitle:'Image size and placement', outputSettingsBody:'Give every image the same output dimensions.', canvasSizeLabel:'Output size', canvasAuto:'Auto (long edge up to 720px)', canvas480:'480px long edge', canvas720:'720px long edge', canvas1080:'1080px long edge', canvasOriginal:'First frame original equivalent', canvasCustom:'Custom', canvasWidthLabel:'Image width', canvasHeightLabel:'Image height', placementLabel:'Image placement', fit:'Fit', fill:'Fill', backgroundLabel:'Background', backgroundTransparent:'Transparent', backgroundWhite:'White', backgroundBlack:'Black', backgroundCustom:'Custom color', backgroundColorLabel:'Background color', previewCanvasLabel:'Animation preview', resolvedCanvas:'Actual output size',
           gifHeading:'Export Animated GIF', gifHeadingNote:'Create a GIF using the selected size and frame durations.', gifColorsLabel:'Colors', gifLoopLabel:'Loop', gifLoopInfinite:'Repeat', gifLoopOnce:'Play once', gifDitherLabel:'Dithering', outputFilenameLabel:'Output filename', gifLimitNote:'GIF supports up to 256 colors and 1-bit transparency.', createGif:'Create GIF', cancelGif:'Cancel', gifResultEmpty:'Create a GIF to review the actual generated file here.', gifResultPreviewLabel:'Generated GIF preview', gifResultSizeLabel:'Size', gifResultFramesLabel:'Frames', gifResultDurationLabel:'Duration', gifResultBytesLabel:'File size', saveGif:'Save GIF', gifPreparing:'Preparing frame {current} / {total}…', gifEncoding:'Encoding frame {current} / {total}…', gifFinishing:'Finishing GIF…', gifDone:'GIF created', gifSaved:'GIF saved', gifCancelled:'GIF creation cancelled', gifFailed:'Could not create GIF', gifFailedRecovery:'Could not create the GIF. Reduce the output size or frame count, or change the settings and try again.', gifStale:'Settings changed. Create the GIF again.', heavyJobTitle:'Confirm processing load', heavyJobBody:'Create {format} with {frames} frames at {width}×{height}px. This may use substantial memory and take longer on this device. Continue?', continueExport:'Continue',
-          webpHeading:'Export Animated WebP', webpHeadingNote:'Create a WebP animation with adjustable quality and compression.', webpQualityLabel:'Quality', webpEffortLabel:'Effort', webpLosslessLabel:'Lossless', webpLoopLabel:'Loop', webpLoopInfinite:'Repeat', webpLoopOnce:'Play once', webpNote:'Animated WebP is an animated image, not an MP4 video. Some image viewers display only a still frame; check playback in your browser. Lossless and higher Effort may take longer or increase file size.', createWebp:'Create WebP', cancelWebp:'Cancel', webpResultEmpty:'Create a WebP to review the actual generated file here.', webpResultPreviewLabel:'Generated Animated WebP preview', saveWebp:'Save WebP', webpPreparing:'Preparing frame {current} / {total}…', webpEncoding:'Encoding frame {current} / {total}…', webpFinishing:'Finishing Animated WebP…', webpDone:'WebP created', webpSaved:'WebP saved', webpCancelled:'WebP creation cancelled', webpFailed:'Could not create WebP', webpFailedRecovery:'Could not create the WebP. Adjust output size, quality, Lossless, or Effort, then try again.', webpStale:'Settings changed. Create the WebP again.',
+          webpHeading:'Export Animated WebP', webpHeadingNote:'Create a WebP animation with adjustable quality and compression.', webpQualityLabel:'Quality', webpEffortLabel:'Compression effort', webpLosslessLabel:'Lossless compression', webpLoopLabel:'Loop', webpLoopInfinite:'Repeat', webpLoopOnce:'Play once', webpNote:'Animated WebP is an animated image. Check playback in a compatible viewer or browser.', webpQualityHelp:'Higher preserves more detail, usually with larger files.', webpQualityLosslessLabel:'Compression level', webpQualityLosslessHelp:'Higher spends more time compressing and may reduce file size.', webpEffortHelp:'Higher settings take more time to encode.', webpLosslessHelp:'Avoids added quality loss at the output size. May increase file size.', webpEffort0:'0 · Fastest', webpEffort1:'1 · Very fast', webpEffort2:'2 · Fast', webpEffort3:'3 · Moderate', webpEffort4:'4 · Balanced', webpEffort5:'5 · Thorough', webpEffort6:'6 · Most thorough', createWebp:'Create WebP', cancelWebp:'Cancel', webpResultEmpty:'Create a WebP to review the actual generated file here.', webpResultPreviewLabel:'Generated Animated WebP preview', saveWebp:'Save WebP', webpPreparing:'Preparing frame {current} / {total}…', webpEncoding:'Encoding frame {current} / {total}…', webpFinishing:'Finishing Animated WebP…', webpDone:'WebP created', webpSaved:'WebP saved', webpCancelled:'WebP creation cancelled', webpFailed:'Could not create WebP', webpFailedRecovery:'Could not create the WebP. Adjust output size, quality, compression effort or lossless compression, then try again.', webpStale:'Settings changed. Create the WebP again.',
           exportFormatLabel:'Export format', exportGifOption:'GIF', exportWebpOption:'Animated WebP',
           buildInfo:'Build information', appVersion:'App version', builtAt:'Built at', dependencies:'Embedded dependencies', footer:'Images are processed on this device',
           help:'Help', close:'Close', helpTitle:'How to use & notes', helpHowTitle:'Basic workflow', helpHow1:'Choose multiple JPEG, PNG, or still WebP images, drop them onto the page, or paste an image from the clipboard.', helpHow2:'Arrange frames and adjust timings. Set the length of one playback pass or scale each duration with 0.5× / 2× (10 ms steps, 20–10,000 ms). Undo/Redo restores previous values.', helpHow3:'Choose the image size and placement, create a GIF or WebP, then review the generated file before saving.',
@@ -3173,12 +3213,11 @@
       function scrollToFrameImages() {
         if (!mobileMedia.matches || !state.frames.length || frameGrid.hidden) return;
         const main = $('.main');
-        // Only add extra scroll range for short projects, then restore it on
-        // the next navigation. Without this a single thumbnail cannot align
-        // under the sticky header on taller phones.
+        // Leave the top of the timing controls visible above the first image.
+        // Add scroll room only when a short project needs it.
         main.style.removeProperty('--frame-scroll-space');
         const headerBottom = $('.app-header').getBoundingClientRect().bottom;
-        const y = Math.max(0, window.scrollY + frameGrid.getBoundingClientRect().top - headerBottom - 8);
+        const y = Math.max(0, window.scrollY + frameGrid.getBoundingClientRect().top - headerBottom - 104);
         const maxY = Math.max(0, document.documentElement.scrollHeight - window.innerHeight);
         const extra = Math.max(0, Math.ceil(y - maxY));
         if (extra) main.style.setProperty('--frame-scroll-space', `${extra + 4}px`);
@@ -3473,10 +3512,21 @@
       })();
       window.AppConfirm = AppConfirm;
 
+      function refreshWebpQualityCopy() {
+        const label = $('#webpQualityLabel');
+        const help = $('#webpQualityHelp');
+        const lossless = webpLossless.checked;
+        label.dataset.i18n = lossless ? 'webpQualityLosslessLabel' : 'webpQualityLabel';
+        help.dataset.i18n = lossless ? 'webpQualityLosslessHelp' : 'webpQualityHelp';
+        label.textContent = t(label.dataset.i18n);
+        help.textContent = t(help.dataset.i18n);
+      }
+
       function applyLanguage() {
         document.documentElement.lang = language;
         document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
         document.querySelectorAll('[data-i18n-aria-label]').forEach(el => el.setAttribute('aria-label', t(el.dataset.i18nAriaLabel)));
+        refreshWebpQualityCopy();
         $('#languageButton').textContent = language === 'ja' ? 'EN' : 'JA';
         const languageDestination = language === 'ja' ? '英語に切り替え' : 'Switch to Japanese';
         $('#languageButton').setAttribute('aria-label', languageDestination);
@@ -3665,6 +3715,7 @@
       for (const control of [webpQuality, webpEffort, webpLossless]) {
         control.addEventListener('change', () => {
           if (control === webpQuality) webpQuality.value = String(normalizeWebpQuality(webpQuality.value));
+          if (control === webpLossless) refreshWebpQualityCopy();
           invalidateWebpResult({ stale: true });
         });
       }
