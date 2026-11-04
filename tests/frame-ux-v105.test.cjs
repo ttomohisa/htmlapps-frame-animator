@@ -13,7 +13,7 @@ test('mobile controls, preview transport, and Help have the v1.0.5 structure', (
   assert.ok(source.includes('.preview-side{display:contents}'));
   assert.ok(source.includes('.preview-transport{order:1'));
   assert.ok(source.includes("requestAnimationFrame(scrollToFrameImages)"));
-  assert.ok(source.includes("frameGrid.getBoundingClientRect().top - headerBottom - 8"));
+  assert.ok(source.includes("frameGrid.getBoundingClientRect().top - headerBottom - 104"));
   assert.ok(source.includes("calc(136px + env(safe-area-inset-bottom) + var(--frame-scroll-space, 0px))"));
   assert.ok(source.includes("main.style.setProperty('--frame-scroll-space'"));
   assert.ok(!source.includes('id="helpOkButton"'));
@@ -39,6 +39,9 @@ test('preview switches images only after the next image is ready', () => {
   assert.ok(source.includes('createImageBitmap(frame.file, options)'));
   assert.ok(source.includes('PREVIEW_DECODE_MAX_EDGE = 1600'));
   assert.ok(!source.includes('frame.thumbnailBlob || frame.file'));
+  assert.ok(source.includes('webp-encoding-options'));
+  assert.ok(source.includes('refreshWebpQualityCopy()'));
+  assert.ok(source.includes("webpEffort6:'6 · 最も丁寧'"));
   assert.ok(source.includes('clearPreviewDecodeCache()'));
   assert.ok(body.includes('token !== state.canvas.renderToken'));
 });
