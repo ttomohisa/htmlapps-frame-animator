@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+## [1.0.6] - 2026-11-05
+
+### Fixed
+
+- Hide the "Fully local processing" badge in the smartphone layout (up to 640 px); keep the badge on desktop and keep browser-only data handling unchanged.
+- Treat Cloudflare's "Preview not found" (10025) during closed-PR preview cleanup as an already-complete deletion. Continue to fail for authentication, permission, network, or other Cloudflare errors.
+- Add cleanup regression tests for successful deletion, already-absent previews, genuine errors and preview creation.
+
+
 ## [1.0.5] - 2026-11-03
 
 ### Changed
