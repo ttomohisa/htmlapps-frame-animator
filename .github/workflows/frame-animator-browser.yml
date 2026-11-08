@@ -6,6 +6,8 @@ on:
       - 'src/index.template.html'
       - 'scripts/rc-browser-test.mjs'
       - 'scripts/timing-import-test.mjs'
+      - 'scripts/operate-ux.browser.mjs'
+      - 'tests/operate-workspace.test.cjs'
       - 'build-standalone.ps1'
       - '.github/workflows/frame-animator-browser.yml'
   push:
@@ -16,6 +18,8 @@ on:
       - 'app.config.json'
       - 'scripts/rc-browser-test.mjs'
       - 'scripts/timing-import-test.mjs'
+      - 'scripts/operate-ux.browser.mjs'
+      - 'tests/operate-workspace.test.cjs'
       - 'README.md'
       - 'README.ja.md'
       - '.github/workflows/frame-animator-browser.yml'
@@ -42,12 +46,15 @@ jobs:
           npm install --no-save --no-package-lock playwright@1.56.1
           npx playwright install chromium
       - name: Verify input and mixed-timing regressions
-        run: node --test scripts/timing-import-test.mjs tests/frame-ux-v105.test.cjs
+        run: node --test scripts/timing-import-test.mjs tests/frame-ux-v105.test.cjs tests/operate-workspace.test.cjs
       - name: Exercise drag, mobile, animation and offline regressions
         run: |
           node scripts/rc-browser-test.mjs
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           node scripts/v105-mobile-ux.browser.cjs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          node scripts/operate-ux.browser.mjs
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Attach screenshot evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -57,6 +64,7 @@ jobs:
             assets/screenshot.png
             assets/screenshot-en.png
             assets/screenshot-mobile.png
+            test-results/operate/*.png
           if-no-files-found: ignore
 
   release-assets:
