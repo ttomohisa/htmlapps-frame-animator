@@ -29,7 +29,7 @@
 - **Impact:** the user could be offered Save before seeing the encoded result, particularly problematic for color reduction or animated WebP quality.
 - **Remedy:** position the real result before settings on phones after generation, keep the Save action immediately below that output preview, and scroll to it when complete.
 - **Command:** `$impeccable layout`, then `$impeccable harden`.
-- **Status:** implemented; enforce with phone browser checks.
+- **Status:** implemented, verified by built-HTML mobile Chromium checks.
 
 ### [P2] Undersized phone header targets at 320px
 - **Location:** late `@media(max-width:360px)` override of `.header-actions .header-icon-button,.language-button`.
@@ -37,7 +37,7 @@
 - **Impact:** 40px wide language and Help actions do not meet the project's 44px touch floor (though WCAG 2.5.8 generally only requires 24px with exceptions); tight touch action under one-handed use.
 - **Remedy:** retain 44px width and height and verify title/version do not overlap at 320px.
 - **Command:** `$impeccable adapt`.
-- **Status:** implemented; browser geometry must pass.
+- **Status:** implemented; header touch bounds verified in Chromium at 320px.
 
 ### [P2] Screen reader and text scaling unverified
 - **Location:** dynamic result preview, native Help/confirmation modal, long file names.
@@ -75,3 +75,11 @@ Actual export is handled in Workers, with cancellation and worker/object-URL cle
 5. **[P3] `$impeccable polish`**: finish review after all fixes and real screenshots.
 
 **Interpretation:** This is a substantive, project-specific technical audit performed using the Impeccable playbook. It is **not** a claim that `$impeccable audit` ran in an independent Codex sub-agent, nor that the official launcher executed locally.
+
+## Post-fix verification
+
+- [Browser CI 42527895061](https://github.com/ttomohisa/htmlapps-frame-animator/actions/runs/42527895061): **success** for the generated standalone HTML, phone result preview → Save visibility, result-before-settings DOM and computed geometry, 44px phone header targets, GIF/WebP downloads, errors and bilingual behavior.
+- [Impeccable strict design scan 42527895009](https://github.com/ttomohisa/htmlapps-frame-animator/actions/runs/42527895009): **0 findings**, exit 0. This is separate from the report's accessibility and usability judgments.
+- [Standalone build 42527894998](https://github.com/ttomohisa/htmlapps-frame-animator/actions/runs/42527894998) and [Preview deployment 42527895005](https://github.com/ttomohisa/htmlapps-frame-animator/actions/runs/42527895005): **success**.
+
+The **15/20** remains the audit's initial baseline. We do not upgrade accessibility/performance scores without real-device, assistive technology and memory-stress evidence.
