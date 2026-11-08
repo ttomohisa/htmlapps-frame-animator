@@ -138,6 +138,7 @@ async function inspect(width, height) {
     await page.locator('#helpDialog .dialog-body').evaluate(el => el.scrollTop = el.scrollHeight);
     check(await page.locator('#helpDialog .help-license-links').isVisible(),
       width + ': full license disclosure must remain visible and scrollable');
+    await page.screenshot({path:`test-results/operate/${width}-help.png`});
     await page.keyboard.press('Escape');
     check(!(await page.locator('#helpDialog').isVisible()), width + ': Help closes');
 
