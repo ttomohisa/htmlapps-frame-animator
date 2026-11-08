@@ -393,9 +393,25 @@
       .frame-grid{grid-template-columns:1fr}
       .mobile-workflow-tab{font-size:11px}
       .brand-name{font-size:14px}
-      .header-actions .header-icon-button,.language-button{min-width:40px}
+      .header-actions .header-icon-button,.language-button{min-width:44px}
     }
 
+
+    /* Put a real encoded result before controls on phones, then keep Save with that result. */
+    .result-ready-heading{display:block;font-size:16px;line-height:1.45;color:var(--text)}
+    @media(max-width:640px){
+      #gifExportPanel.has-output .gif-layout,
+      #webpExportPanel.has-output .gif-layout{display:flex;flex-direction:column;gap:12px}
+      #gifExportPanel.has-output .gif-result,
+      #webpExportPanel.has-output .gif-result{order:-1}
+      #gifExportPanel.has-output .gif-result-actions,
+      #webpExportPanel.has-output .gif-result-actions{display:flex}
+      #gifExportPanel.has-output .mobile-save-button,
+      #webpExportPanel.has-output .mobile-save-button{display:none!important}
+      #gifResultCard,#webpResultCard{scroll-margin-top:calc(76px + env(safe-area-inset-top))}
+      #gifResultCard .gif-result-actions .button,
+      #webpResultCard .gif-result-actions .button{min-height:44px;width:100%}
+    }
     /* Operate / layout: keep the preview and transport as one contiguous working surface. */
     .preview-layout{align-items:start}
     .preview-player{display:grid;align-content:start;gap:8px;min-width:0}
@@ -757,6 +773,7 @@
           <div class="gif-result">
             <div class="gif-result-empty" id="gifResultEmpty" data-i18n="gifResultEmpty">GIFを作成すると、ここで実際の生成ファイルを確認できます。</div>
             <div class="gif-result-card" id="gifResultCard" hidden>
+              <strong class="result-ready-heading" data-i18n="resultReadyTitle">生成結果</strong>
               <div class="gif-result-preview" id="gifResultPreview"></div>
               <div class="gif-result-stats">
                 <div class="gif-result-stat"><span data-i18n="gifResultSizeLabel">サイズ</span><strong id="gifResultDimensions"></strong></div>
@@ -837,6 +854,7 @@
           <div class="gif-result">
             <div class="gif-result-empty" id="webpResultEmpty" data-i18n="webpResultEmpty">WebPを作成すると、ここで実際の生成ファイルを確認できます。</div>
             <div class="gif-result-card" id="webpResultCard" hidden>
+              <strong class="result-ready-heading" data-i18n="resultReadyTitle">生成結果</strong>
               <div class="gif-result-preview" id="webpResultPreview"></div>
               <div class="gif-result-stats">
                 <div class="gif-result-stat"><span data-i18n="gifResultSizeLabel">サイズ</span><strong id="webpResultDimensions"></strong></div>
@@ -1019,7 +1037,7 @@
           timingTitle:'全フレームの表示時間', timingBody:'各画像にも個別の時間を設定できます。', globalDurationLabel:'表示時間', applyAll:'適用', frameDuration:'表示時間', timingApplied:'全フレームの表示時間を変更しました', timingChanged:'表示時間を変更しました', frameToolsTitle:'編集・管理', timingModeLabel:'表示時間の指定方法', timingModeFrame:'1枚あたり', timingModeTotal:'1回分の長さ', timingExtrasLabel:'速度調整', timingTotalRange:'1回分の長さは{min}〜{max}秒にしてください。', timingTotalApplied:'1回分の長さを変更しました', timingTotalLabel:'1回分の長さ（秒）', gifDitherHelp:'色の境目を細かな点で目立ちにくくします。',
           previewHeading:'プレビューと設定', previewNote:'出力画像へFit / Fillした状態で、各フレームの表示時間どおりに確認します。', previewEmpty:'画像を追加すると、ここでアニメーションを確認できます。', previewFrameLabel:'フレーム', previewTimeLabel:'再生位置', previewRestart:'最初から', previewPrevious:'前のフレーム', previewPlay:'再生 / 一時停止', previewNext:'次のフレーム', previewHelp:'プレビューは元画像を縮小して表示します。書き出し結果の画質は、保存前に確認してください。', playbackSettingsTitle:'再生設定', playbackSettingsBody:'プレビュー・GIF・WebPで同じ再生順とループ設定を使います。', playbackOrderLabel:'再生順', playbackForward:'Forward', playbackReverse:'Reverse', playbackPingpong:'Ping-pong', playbackLoopLabel:'ループ', playbackLoopInfinite:'繰り返す', playbackLoopOnce:'1回だけ', playbackLoopCustom:'回数指定', playbackLoopCountLabel:'再生回数', playbackPassSummary:'1回分', framesUnit:'フレーム',
           outputSettingsTitle:'出力サイズ', outputSettingsBody:'1枚目の縦横比を基準にサイズをそろえます。カスタムでは幅・高さを個別指定できます。', canvasSizeLabel:'画像サイズ', canvasAuto:'自動（長辺最大720px）', canvas480:'長辺480px', canvas720:'長辺720px', canvas1080:'長辺1080px', canvasOriginal:'1枚目の元サイズ相当', canvasCustom:'カスタム', canvasWidthLabel:'画像の幅', canvasHeightLabel:'画像の高さ', placementLabel:'画像の配置', fit:'収める', fill:'切り抜く', backgroundLabel:'背景', backgroundTransparent:'透明', backgroundWhite:'白', backgroundBlack:'黒', backgroundCustom:'カスタム色', backgroundColorLabel:'背景色', previewCanvasLabel:'アニメーションのプレビュー', resolvedCanvas:'実際の出力サイズ',
-          gifHeading:'Animated GIFを書き出す', gifHeadingNote:'設定したサイズと表示時間でGIFを作成します。', gifColorsLabel:'色数', gifLoopLabel:'ループ', gifLoopInfinite:'繰り返す', gifLoopOnce:'1回だけ', gifDitherLabel:'ディザリング', outputFilenameLabel:'出力ファイル名', gifLimitNote:'GIFは最大256色・1bit透明です。', createGif:'GIFを作成', cancelGif:'キャンセル', gifResultEmpty:'GIFを作成すると、ここで実際の生成ファイルを確認できます。', gifResultPreviewLabel:'生成したGIFのプレビュー', gifResultSizeLabel:'サイズ', gifResultFramesLabel:'フレーム', gifResultDurationLabel:'再生時間', gifResultBytesLabel:'ファイル容量', saveGif:'GIFを保存', gifPreparing:'フレーム {current} / {total} を準備しています…', gifEncoding:'フレーム {current} / {total} をGIFへ変換しています…', gifFinishing:'GIFを仕上げています…', gifDone:'GIFを作成しました', gifSaved:'GIFを保存しました', gifCancelled:'GIF作成をキャンセルしました', gifFailed:'GIFを作成できませんでした', gifFailedRecovery:'GIFを作成できませんでした。出力サイズやフレーム数を小さくするか、設定を変更してもう一度お試しください。', gifStale:'設定が変更されました。もう一度GIFを作成してください。', heavyJobTitle:'処理負荷の確認', heavyJobBody:'{format}を{frames}フレーム・{width}×{height}pxで作成します。端末のメモリを多く使用し、処理に時間がかかる可能性があります。続行しますか？', continueExport:'続行',
+          gifHeading:'Animated GIFを書き出す', gifHeadingNote:'設定したサイズと表示時間でGIFを作成します。', gifColorsLabel:'色数', gifLoopLabel:'ループ', gifLoopInfinite:'繰り返す', gifLoopOnce:'1回だけ', gifDitherLabel:'ディザリング', outputFilenameLabel:'出力ファイル名', gifLimitNote:'GIFは最大256色・1bit透明です。', createGif:'GIFを作成', cancelGif:'キャンセル', gifResultEmpty:'GIFを作成すると、ここで実際の生成ファイルを確認できます。', gifResultPreviewLabel:'生成したGIFのプレビュー', resultReadyTitle:'生成結果', gifResultSizeLabel:'サイズ', gifResultFramesLabel:'フレーム', gifResultDurationLabel:'再生時間', gifResultBytesLabel:'ファイル容量', saveGif:'GIFを保存', gifPreparing:'フレーム {current} / {total} を準備しています…', gifEncoding:'フレーム {current} / {total} をGIFへ変換しています…', gifFinishing:'GIFを仕上げています…', gifDone:'GIFを作成しました', gifSaved:'GIFを保存しました', gifCancelled:'GIF作成をキャンセルしました', gifFailed:'GIFを作成できませんでした', gifFailedRecovery:'GIFを作成できませんでした。出力サイズやフレーム数を小さくするか、設定を変更してもう一度お試しください。', gifStale:'設定が変更されました。もう一度GIFを作成してください。', heavyJobTitle:'処理負荷の確認', heavyJobBody:'{format}を{frames}フレーム・{width}×{height}pxで作成します。端末のメモリを多く使用し、処理に時間がかかる可能性があります。続行しますか？', continueExport:'続行',
           webpHeading:'Animated WebPを書き出す', webpHeadingNote:'画質や圧縮方法を調整してWebPを作成します。', webpQualityLabel:'画質', webpEffortLabel:'圧縮の丁寧さ', webpLosslessLabel:'劣化なしで圧縮', webpLoopLabel:'ループ', webpLoopInfinite:'繰り返す', webpLoopOnce:'1回だけ', webpNote:'Animated WebPは動く画像です。対応ビューアやブラウザで再生をご確認ください。', webpQualityHelp:'通常は画質、劣化なしでは圧縮を調整します。', webpEffortHelp:'高いほど処理に時間をかけます。', webpLosslessHelp:'追加の画質劣化なし。容量は増える場合があります。', webpEffort0:'0 · 最速', webpEffort1:'1 · 高速', webpEffort2:'2 · 速め', webpEffort3:'3 · やや速い', webpEffort4:'4 · 標準', webpEffort5:'5 · 丁寧', webpEffort6:'6 · 最も丁寧', createWebp:'WebPを作成', cancelWebp:'キャンセル', webpResultEmpty:'WebPを作成すると、ここで実際の生成ファイルを確認できます。', webpResultPreviewLabel:'生成したAnimated WebPのプレビュー', saveWebp:'WebPを保存', webpPreparing:'フレーム {current} / {total} を準備しています…', webpEncoding:'フレーム {current} / {total} をWebPへ変換しています…', webpFinishing:'Animated WebPを仕上げています…', webpDone:'WebPを作成しました', webpSaved:'WebPを保存しました', webpCancelled:'WebP作成をキャンセルしました', webpFailed:'WebPを作成できませんでした', webpFailedRecovery:'WebPを作成できませんでした。出力サイズ・画質・圧縮の丁寧さなどを変更して、もう一度お試しください。', webpStale:'設定が変更されました。もう一度WebPを作成してください。',
           exportFormatLabel:'書き出す形式', exportGifOption:'GIF', exportWebpOption:'Animated WebP',
           buildInfo:'ビルド情報', appVersion:'アプリバージョン', builtAt:'生成日時', dependencies:'内包依存', footer:'画像はこの端末内で処理されます',
@@ -1043,7 +1061,7 @@
           timingTitle:'All frame durations', timingBody:'You can also adjust each image separately.', globalDurationLabel:'Duration', applyAll:'Apply', frameDuration:'Duration', timingApplied:'Updated all frame durations', timingChanged:'Frame duration updated', frameToolsTitle:'Edit and manage', timingModeLabel:'How to set duration', timingModeFrame:'Per frame', timingModeTotal:'One-pass length', timingExtrasLabel:'Speed', timingTotalRange:'One-pass length must be between {min} and {max} seconds.', timingTotalApplied:'Updated one-pass length', timingTotalLabel:'One-pass length (seconds)', gifDitherHelp:'Uses tiny dots to soften visible steps between colors.',
           previewHeading:'Preview & settings', previewNote:'', previewEmpty:'Add images to preview the animation here.', previewFrameLabel:'Frame', previewTimeLabel:'Playback position', previewRestart:'Restart', previewPrevious:'Previous frame', previewPlay:'Play / pause', previewNext:'Next frame', previewHelp:'The preview uses resized source images. Review the generated file to check export quality.', playbackSettingsTitle:'Playback settings', playbackSettingsBody:'Preview, GIF, and WebP share the same playback order and loop settings.', playbackOrderLabel:'Playback order', playbackForward:'Forward', playbackReverse:'Reverse', playbackPingpong:'Ping-pong', playbackLoopLabel:'Loop', playbackLoopInfinite:'Repeat', playbackLoopOnce:'Play once', playbackLoopCustom:'Custom count', playbackLoopCountLabel:'Play count', playbackPassSummary:'One pass', framesUnit:'frames',
           outputSettingsTitle:'Image size and placement', outputSettingsBody:'Give every image the same output dimensions.', canvasSizeLabel:'Output size', canvasAuto:'Auto (long edge up to 720px)', canvas480:'480px long edge', canvas720:'720px long edge', canvas1080:'1080px long edge', canvasOriginal:'First frame original equivalent', canvasCustom:'Custom', canvasWidthLabel:'Image width', canvasHeightLabel:'Image height', placementLabel:'Image placement', fit:'Fit', fill:'Fill', backgroundLabel:'Background', backgroundTransparent:'Transparent', backgroundWhite:'White', backgroundBlack:'Black', backgroundCustom:'Custom color', backgroundColorLabel:'Background color', previewCanvasLabel:'Preview & settings', resolvedCanvas:'Actual output size',
-          gifHeading:'Export Animated GIF', gifHeadingNote:'Create a GIF using the selected size and frame durations.', gifColorsLabel:'Colors', gifLoopLabel:'Loop', gifLoopInfinite:'Repeat', gifLoopOnce:'Play once', gifDitherLabel:'Dithering', outputFilenameLabel:'Output filename', gifLimitNote:'GIF supports up to 256 colors and 1-bit transparency.', createGif:'Create GIF', cancelGif:'Cancel', gifResultEmpty:'Create a GIF to review the actual generated file here.', gifResultPreviewLabel:'Generated GIF preview', gifResultSizeLabel:'Size', gifResultFramesLabel:'Frames', gifResultDurationLabel:'Duration', gifResultBytesLabel:'File size', saveGif:'Save GIF', gifPreparing:'Preparing frame {current} / {total}…', gifEncoding:'Encoding frame {current} / {total}…', gifFinishing:'Finishing GIF…', gifDone:'GIF created', gifSaved:'GIF saved', gifCancelled:'GIF creation cancelled', gifFailed:'Could not create GIF', gifFailedRecovery:'Could not create the GIF. Reduce the output size or frame count, or change the settings and try again.', gifStale:'Settings changed. Create the GIF again.', heavyJobTitle:'Confirm processing load', heavyJobBody:'Create {format} with {frames} frames at {width}×{height}px. This may use substantial memory and take longer on this device. Continue?', continueExport:'Continue',
+          gifHeading:'Export Animated GIF', gifHeadingNote:'Create a GIF using the selected size and frame durations.', gifColorsLabel:'Colors', gifLoopLabel:'Loop', gifLoopInfinite:'Repeat', gifLoopOnce:'Play once', gifDitherLabel:'Dithering', outputFilenameLabel:'Output filename', gifLimitNote:'GIF supports up to 256 colors and 1-bit transparency.', createGif:'Create GIF', cancelGif:'Cancel', gifResultEmpty:'Create a GIF to review the actual generated file here.', gifResultPreviewLabel:'Generated GIF preview', resultReadyTitle:'Generated result', gifResultSizeLabel:'Size', gifResultFramesLabel:'Frames', gifResultDurationLabel:'Duration', gifResultBytesLabel:'File size', saveGif:'Save GIF', gifPreparing:'Preparing frame {current} / {total}…', gifEncoding:'Encoding frame {current} / {total}…', gifFinishing:'Finishing GIF…', gifDone:'GIF created', gifSaved:'GIF saved', gifCancelled:'GIF creation cancelled', gifFailed:'Could not create GIF', gifFailedRecovery:'Could not create the GIF. Reduce the output size or frame count, or change the settings and try again.', gifStale:'Settings changed. Create the GIF again.', heavyJobTitle:'Confirm processing load', heavyJobBody:'Create {format} with {frames} frames at {width}×{height}px. This may use substantial memory and take longer on this device. Continue?', continueExport:'Continue',
           webpHeading:'Export Animated WebP', webpHeadingNote:'Create a WebP animation with adjustable quality and compression.', webpQualityLabel:'Quality', webpEffortLabel:'Compression effort', webpLosslessLabel:'Lossless compression', webpLoopLabel:'Loop', webpLoopInfinite:'Repeat', webpLoopOnce:'Play once', webpNote:'Animated WebP is an animated image. Check playback in a compatible viewer or browser.', webpQualityHelp:'Adjusts image quality normally, or compression in lossless mode.', webpEffortHelp:'Higher settings take more time to encode.', webpLosslessHelp:'No added quality loss; files may be larger.', webpEffort0:'0 · Fastest', webpEffort1:'1 · Very fast', webpEffort2:'2 · Fast', webpEffort3:'3 · Moderate', webpEffort4:'4 · Balanced', webpEffort5:'5 · Thorough', webpEffort6:'6 · Most thorough', createWebp:'Create WebP', cancelWebp:'Cancel', webpResultEmpty:'Create a WebP to review the actual generated file here.', webpResultPreviewLabel:'Generated Animated WebP preview', saveWebp:'Save WebP', webpPreparing:'Preparing frame {current} / {total}…', webpEncoding:'Encoding frame {current} / {total}…', webpFinishing:'Finishing Animated WebP…', webpDone:'WebP created', webpSaved:'WebP saved', webpCancelled:'WebP creation cancelled', webpFailed:'Could not create WebP', webpFailedRecovery:'Could not create the WebP. Adjust output size, quality, compression effort or lossless compression, then try again.', webpStale:'Settings changed. Create the WebP again.',
           exportFormatLabel:'Export format', exportGifOption:'GIF', exportWebpOption:'Animated WebP',
           buildInfo:'Build information', appVersion:'App version', builtAt:'Built at', dependencies:'Embedded dependencies', footer:'Images are processed on this device',
@@ -1888,6 +1906,16 @@
         }
       }
 
+      function revealMobileExportResult(format) {
+        if (!mobileMedia.matches || state.ui.mobilePage !== 'export') return;
+        const target = $('#' + (format === 'gif' ? 'gifResultCard' : 'webpResultCard'));
+        requestAnimationFrame(() => {
+          if (target && !target.hidden && mobileMedia.matches && state.ui.mobilePage === 'export') {
+            target.scrollIntoView({ block:'start', behavior:'instant' });
+          }
+        });
+      }
+
       function clearGifResult({ stale = false } = {}) {
         const hadResult = Boolean(state.gif.resultUrl);
         if (state.gif.resultUrl) URL.revokeObjectURL(state.gif.resultUrl);
@@ -1897,6 +1925,7 @@
         state.gif.stale = Boolean(stale && hadResult);
         state.gif.errorKey = '';
         $('#gifResultImage')?.remove();
+        $('#gifExportPanel').classList.remove('has-output');
         $('#gifResultCard').hidden = true;
         $('#gifResultEmpty').hidden = false;
         $('#saveGifButton').disabled = true;
@@ -1929,6 +1958,7 @@
         const meta = state.gif.resultMeta;
         if (!state.gif.resultUrl || !meta) {
           $('#gifResultCard').hidden = true;
+          $('#gifExportPanel').classList.remove('has-output');
           $('#gifResultEmpty').hidden = false;
           $('#gifResultEmpty').textContent = state.gif.stale ? t('gifStale') : state.gif.errorKey ? t(state.gif.errorKey) : t('gifResultEmpty');
           $('#saveGifButton').disabled = true;
@@ -1937,6 +1967,7 @@
         }
         $('#gifResultEmpty').hidden = true;
         $('#gifResultCard').hidden = false;
+        $('#gifExportPanel').classList.add('has-output');
         renderEncodedPreview('#gifResultPreview', 'gifResultImage', 'gifResultPreviewLabel', state.gif.resultUrl);
         $('#gifResultDimensions').textContent = `${meta.width} × ${meta.height} px`;
         $('#gifResultFrames').textContent = String(meta.frames);
@@ -2075,6 +2106,7 @@
             state.gif.busy = false;
             gifProgressWrap.hidden = true;
             render();
+            if (state.gif.resultUrl) revealMobileExportResult('gif');
           }
         }
       }
@@ -2392,6 +2424,7 @@
         state.webp.stale = Boolean(stale && hadResult);
         state.webp.errorKey = '';
         $('#webpResultImage')?.remove();
+        $('#webpExportPanel').classList.remove('has-output');
         $('#webpResultCard').hidden = true;
         $('#webpResultEmpty').hidden = false;
         $('#saveWebpButton').disabled = true;
@@ -2412,6 +2445,7 @@
         const meta = state.webp.resultMeta;
         if (!state.webp.resultUrl || !meta) {
           $('#webpResultCard').hidden = true;
+          $('#webpExportPanel').classList.remove('has-output');
           $('#webpResultEmpty').hidden = false;
           $('#webpResultEmpty').textContent = state.webp.stale ? t('webpStale') : state.webp.errorKey ? t(state.webp.errorKey) : t('webpResultEmpty');
           $('#saveWebpButton').disabled = true;
@@ -2420,6 +2454,7 @@
         }
         $('#webpResultEmpty').hidden = true;
         $('#webpResultCard').hidden = false;
+        $('#webpExportPanel').classList.add('has-output');
         renderEncodedPreview('#webpResultPreview', 'webpResultImage', 'webpResultPreviewLabel', state.webp.resultUrl);
         $('#webpResultDimensions').textContent = `${meta.width} × ${meta.height} px`;
         $('#webpResultFrames').textContent = String(meta.frames);
@@ -2556,6 +2591,7 @@
             state.webp.busy = false;
             webpProgressWrap.hidden = true;
             render();
+            if (state.webp.resultUrl) revealMobileExportResult('webp');
           }
         }
       }
