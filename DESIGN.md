@@ -9,12 +9,16 @@ White and warm-light-gray surfaces, clear boundaries, subtle radius (8–12px) a
 - **No images:** concise heading and a strong choose/drop area. Hide disabled frame controls, blank previews and empty export sections from the page.
 - **With images, desktop ≥901px:** frame editing rail on the left, animation preview and essential playback/output settings on the right, full-width format/output below. Same working width as the header.
 - **Tablet 641–900px:** vertical panels, without the initial picker after import.
-- **Phone ≤640px:** one real page at a time; fixed, low-height, safe-area-aware Frames / Preview / Export navigation. The source-picker disappears after a successful import; Add is available in Frames. Save stays beside Generate after a successful export.
+- **Phone ≤640px:** one real page at a time; fixed, low-height, safe-area-aware Frames / Preview / Export navigation. The source-picker disappears after a successful import; Add is available in Frames. After encoding, the actual generated GIF/WebP becomes the first item in Export and Save sits directly below that preview; encoding settings remain accessible below the result.
 - **Partial import failures:** the warning is shown inside the active frame-editing area after the picker disappears; it must not silently vanish.
 
 ## Preview-player layout rule
 
 The preview canvas, playback progress and four transport buttons form **one viewer unit**, never separated by output settings or playback configuration. DOM order is canvas → timeline → transport → frame/time readout → short explanatory note. Output sizing and loop/order controls belong in a separate configuration area after the viewer on phones, or in its own adjacent rail on tablets. This must be validated on the actual rendered HTML in both languages, not inferred from the DOM alone.
+
+## Completion-state contract
+
+The task ends by inspecting the actual encoded result and then saving it. On phones, the result card rises above the encoding settings only after success; the result's Save button is next to the visible preview rather than beside the Generate control. A completed export scrolls to the result. Changing encoding parameters invalidates the result and returns to configuration without a stale Save action.
 
 ## UI typography and interaction
 - 13–15px controls and body; 14px help body with 1.7 line-height.
