@@ -117,9 +117,13 @@ async function inspect(width, height) {
       check(await page.locator('#mobileWorkflowNav').isVisible(), width + ': mobile tabs visible');
       await page.locator('#mobileTabPreview').click();
       check(await page.locator('#mobilePagePreview').isVisible(), width + ': preview tab');
+      const mobileCanvas = await page.locator('#previewCanvas').boundingBox();
+      check(mobileCanvas && mobileCanvas.width >= 200, width + ': small source preview is legible');
       await page.locator('#mobileTabFrames').click();
     } else {
       check(await page.locator('#mobilePagePreview').isVisible(), width + ': desktop preview visible');
+      const desktopCanvas = await page.locator('#previewCanvas').boundingBox();
+      check(desktopCanvas && desktopCanvas.width >= 200, width + ': small source preview is legible');
       if (width >= 901) {
         const positions = await page.evaluate(() => ({
           frames:document.querySelector('#mobilePageFrames').getBoundingClientRect().toJSON(),
@@ -145,6 +149,9 @@ async function inspect(width, height) {
     if (width <= 640) await page.locator('#mobileTabExport').click();
     await page.locator('#createGifButton').click();
     await page.locator('#gifResultCard').waitFor({state:'visible',timeout:60000});
+    await page.waitForFunction(() => { const img = document.querySelector('#gifResultImage'); return img?.complete && img.naturalWidth > 0; });
+    const resultImage = await page.locator('#gifResultImage').boundingBox();
+    check(resultImage && resultImage.width >= 180, width + ': generated small GIF must be inspectable');
     await page.screenshot({path:`test-results/operate/${width}-result.png`,fullPage:true});
     const save = width <= 640 ? '#saveGifMobileButton' : '#saveGifButton';
     const downloadEvent=page.waitForEvent('download');
