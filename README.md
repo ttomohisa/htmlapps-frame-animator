@@ -54,6 +54,12 @@ GitHub Pages is enabled for this repository and the deployment workflow is confi
 
 [![Frame Animator mobile](assets/screenshot-mobile.png)](https://ttomohisa.github.io/htmlapps-frame-animator/)
 
+## Workspace and design checks
+
+The app now opens with just the image picker; frame editing, blank previews and export settings appear only after importing images. On wide desktops, frame editing and a large live preview sit alongside each other; on phones, the Frames / Preview / Export navigation keeps each step focused. A partial-import warning remains visible after the picker closes.
+
+Development-only Impeccable 4.8.1 is installed for Codex; its project context, automatic design detector and verification notes are in [docs/IMPECCABLE.md](docs/IMPECCABLE.md). The app's standalone HTML and local-processing behavior are unchanged.
+
 ## Features
 
 - Background scrolling pauses while a dialog is open and resumes after dismissal.
