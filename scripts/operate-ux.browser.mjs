@@ -73,7 +73,7 @@ mkdirSync('test-results/operate', { recursive: true });
 const check = (condition, message) => { if (!condition) throw new Error(message); };
 
 async function inspect(width, height) {
-  const context = await browser.newContext({ viewport: { width, height }, acceptDownloads: true });
+  const context = await browser.newContext({ viewport: { width, height }, locale: 'ja-JP', acceptDownloads: true });
   const page = await context.newPage();
   const errors = [];
   const externalRequests = [];
