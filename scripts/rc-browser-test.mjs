@@ -515,6 +515,7 @@ async function exerciseMobile(browser, baseUrl) {
       position: style.position,
       bottomGap: window.innerHeight - rect.bottom,
       top: rect.top,
+      background: style.backgroundColor,
       blurred: style.backdropFilter.includes('blur') || style.webkitBackdropFilter?.includes('blur'),
       buttons: buttons.map(button => ({
         height: button.getBoundingClientRect().height,
@@ -527,12 +528,13 @@ async function exerciseMobile(browser, baseUrl) {
   });
   assert(mobileNavGeometry.position === 'fixed' && Math.abs(mobileNavGeometry.bottomGap) <= 1 && mobileNavGeometry.top > 0,
     'Mobile workflow navigation must stay fixed at the bottom, not above the cards');
-  assert(mobileNavGeometry.blurred, 'Mobile nav must use the Signal Screen frosted full-width bottom bar');
+  assert(!mobileNavGeometry.blurred && mobileNavGeometry.background === 'rgb(255, 255, 255)',
+    'Mobile nav must be an opaque neutral surface without decorative blur');
   assert(mobileNavGeometry.buttons.length === 3
     && mobileNavGeometry.buttons.every(tab => tab.height >= 50 && tab.width > 74 && tab.icons === 1),
     'All three mobile tabs must provide large SVG-labeled tap targets');
-  assert(mobileNavGeometry.activeBg === 'rgb(22, 98, 79)' && mobileNavGeometry.inactiveBg !== mobileNavGeometry.activeBg,
-    'Signal Screen-style primary color must identify the selected workflow step');
+  assert(mobileNavGeometry.activeBg !== mobileNavGeometry.inactiveBg,
+    'Selected workflow step must be distinguishable from inactive steps');
   assert(await visible(page.locator('#mobilePageFrames')), 'Frames mobile page should be visible initially');
   assert(!(await visible(page.locator('#mobilePagePreview'))), 'Preview mobile page should be hidden initially');
 
