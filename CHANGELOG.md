@@ -2,6 +2,15 @@
 
 ## Unreleased
 
+### Changed
+
+- Use a task-first initial picker instead of showing empty frame, preview and export panels.
+- On wide desktop layouts, align frame editing and live preview as one workspace. Keep the three-page phone flow with a lower-profile safe-area-aware nav.
+- Make Help body, settings labels and import instructions easier to read in Japanese and English; use a neutral modal scrim and restrained panel treatments.
+- Keep partial-import failures visible in the Frames workspace after importing valid images.
+- Add project-scoped Impeccable 4.8.1, design context/hook, automated detector and built-HTML four-width Playwright regression coverage.
+
+
 ## [1.0.6] - 2026-11-05
 
 ### Fixed
