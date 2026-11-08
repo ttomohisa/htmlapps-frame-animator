@@ -149,8 +149,10 @@ async function inspect(width, height) {
       const mobileCanvas = await page.locator('#previewCanvas').boundingBox();
       check(mobileCanvas && mobileCanvas.width >= 200, width + ': small source preview is legible');
       await checkPreviewTransport(page, width, 'ja');
+      await page.screenshot({path:`test-results/operate/${width}-preview-ja.png`,fullPage: width > 640});
       await page.locator('#languageButton').click();
       await checkPreviewTransport(page, width, 'en');
+      await page.screenshot({path:`test-results/operate/${width}-preview-en.png`,fullPage: width > 640});
       await page.locator('#languageButton').click();
       await page.locator('#mobileTabFrames').click();
     } else {
@@ -158,8 +160,10 @@ async function inspect(width, height) {
       const desktopCanvas = await page.locator('#previewCanvas').boundingBox();
       check(desktopCanvas && desktopCanvas.width >= 200, width + ': small source preview is legible');
       await checkPreviewTransport(page, width, 'ja');
+      await page.screenshot({path:`test-results/operate/${width}-preview-ja.png`,fullPage: width > 640});
       await page.locator('#languageButton').click();
       await checkPreviewTransport(page, width, 'en');
+      await page.screenshot({path:`test-results/operate/${width}-preview-en.png`,fullPage: width > 640});
       await page.locator('#languageButton').click();
       if (width >= 901) {
         const positions = await page.evaluate(() => ({
