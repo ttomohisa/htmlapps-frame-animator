@@ -40,3 +40,15 @@ test('preview transport is in the same player as the canvas, ahead of settings',
   assert.match(preview, /id="previewProgress" data-i18n-aria-label="previewTimeLabel"/);
   assert.match(source, /\.preview-controls\{display:grid;gap:8px/);
 });
+
+test('Impeccable findings do not regress: images, dialog insets, type scale and placeholder copy', () => {
+  const sourceImages = [...source.matchAll(/<img\\b[^>]*>/g)].map(match => match[0]);
+  assert.ok(sourceImages.length > 0);
+  assert.ok(sourceImages.every(tag => /\\bsrc=/.test(tag)), 'never declare a broken empty-source image');
+  assert.match(source, /renderEncodedPreview\\('#gifResultPreview', 'gifResultImage'/);
+  assert.match(source, /renderEncodedPreview\\('#webpResultPreview', 'webpResultImage'/);
+  assert.match(source, /dialog\\{[^}]*padding:10px/);
+  assert.match(source, /\\.dialog-head h2\\{margin:0;font-size:22px/);
+  assert.match(source, /\\.panel-head h3\\{font-size:18px/);
+  assert.doesNotMatch(source, /—/, 'use meaningful localizable missing-value text, not dash placeholders');
+});
