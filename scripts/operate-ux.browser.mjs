@@ -217,7 +217,25 @@ async function inspect(width, height) {
     const resultImage = await page.locator('#gifResultImage').boundingBox();
     check(resultImage && resultImage.width >= 180, width + ': generated small GIF must be inspectable');
     await page.screenshot({path:`test-results/operate/${width}-result.png`,fullPage:true});
-    const save = width <= 640 ? '#saveGifMobileButton' : '#saveGifButton';
+    if (width <= 640) {
+      const resultFirst = await page.evaluate(() => {
+        const result = document.querySelector('#gifResultCard').getBoundingClientRect();
+        const settings = document.querySelector('#gifExportPanel .gif-settings').getBoundingClientRect();
+        const saveButton = document.querySelector('#saveGifButton').getBoundingClientRect();
+        const image = document.querySelector('#gifResultImage').getBoundingClientRect();
+        const headerButtons = [...document.querySelectorAll('.header-actions button')].map(button => {
+          const r = button.getBoundingClientRect();
+          return {width:r.width,height:r.height};
+        });
+        return {resultTop:result.top,settingsTop:settings.top,
+          imageBottom:image.bottom,saveTop:saveButton.top,headerButtons};
+      });
+      check(resultFirst.resultTop < resultFirst.settingsTop, width + ': actual GIF result before encoder form');
+      check(resultFirst.saveTop >= resultFirst.imageBottom, width + ': Save follows rendered GIF preview');
+      check(resultFirst.headerButtons.every(r => r.width >= 44 && r.height >= 44),
+        width + ': phone header touch targets must be at least 44px');
+    }
+    const save = '#saveGifButton';
     const downloadEvent=page.waitForEvent('download');
     await page.locator(save).click();
     const download=await downloadEvent;
