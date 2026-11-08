@@ -42,13 +42,13 @@ test('preview transport is in the same player as the canvas, ahead of settings',
 });
 
 test('Impeccable findings do not regress: images, dialog insets, type scale and placeholder copy', () => {
-  const sourceImages = [...source.matchAll(/<img\\b[^>]*>/g)].map(match => match[0]);
+  const sourceImages = source.match(/<img[^>]*>/g) || [];
   assert.ok(sourceImages.length > 0);
-  assert.ok(sourceImages.every(tag => /\\bsrc=/.test(tag)), 'never declare a broken empty-source image');
-  assert.match(source, /renderEncodedPreview\\('#gifResultPreview', 'gifResultImage'/);
-  assert.match(source, /renderEncodedPreview\\('#webpResultPreview', 'webpResultImage'/);
-  assert.match(source, /dialog\\{[^}]*padding:10px/);
-  assert.match(source, /\\.dialog-head h2\\{margin:0;font-size:22px/);
-  assert.match(source, /\\.panel-head h3\\{font-size:18px/);
-  assert.doesNotMatch(source, /—/, 'use meaningful localizable missing-value text, not dash placeholders');
+  assert.ok(sourceImages.every(tag => tag.includes('src=')), 'never declare a broken empty-source image');
+  assert.ok(source.includes("renderEncodedPreview('#gifResultPreview', 'gifResultImage'"));
+  assert.ok(source.includes("renderEncodedPreview('#webpResultPreview', 'webpResultImage'"));
+  assert.ok(source.includes('max-height:min(82vh,720px);padding:10px'), 'dialog content has a real inset');
+  assert.ok(source.includes('.dialog-head h2{margin:0;font-size:22px'));
+  assert.ok(source.includes('.panel-head h3{font-size:18px'));
+  assert.ok(!source.includes('—'), 'use meaningful localizable missing-value text, not dash placeholders');
 });
