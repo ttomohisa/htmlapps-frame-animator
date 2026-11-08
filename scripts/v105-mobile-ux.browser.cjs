@@ -118,9 +118,10 @@ async function runCase(browser, language, width, height) {
     const geometry = await page.evaluate(() => {
       const preview = document.querySelector('#previewStage').getBoundingClientRect();
       const timeline = document.querySelector('#previewProgress').getBoundingClientRect();
-      const transport = document.querySelector('.preview-transport').getBoundingClientRect();
+      const transportNode = document.querySelector('.preview-transport');
+      const transport = transportNode.getBoundingClientRect();
       return {timelineGap: timeline.top - preview.bottom, transportGap: transport.top - timeline.bottom,
-        width: transport.width, group: document.querySelector('.preview-player')?.contains(transport)};
+        width: transport.width, group: document.querySelector('.preview-player')?.contains(transportNode)};
     });
     assert.ok(geometry.group && geometry.timelineGap >= 0 && geometry.timelineGap <= 12
       && geometry.transportGap >= 0 && geometry.transportGap <= 12,
