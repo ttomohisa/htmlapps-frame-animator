@@ -4,6 +4,8 @@
 
 ### Fixed
 
+- Resolve all six original Impeccable findings rather than ignoring them: create GIF/WebP image elements only after valid output, inset Help/confirmation dialogs, improve heading hierarchy and replace ambiguous dash placeholders with meaningful localized/empty states.
+- Make the official Impeccable detector a strict CI gate: any finding fails the review. Add browser regressions for dynamic output-image creation, bilingual alt text and dialog padding.
 - Place the animation progress bar and playback buttons immediately below the displayed preview instead of after output-size and playback settings.
 - Keep the viewer controls together on phones, tablets and desktops; add bilingual browser geometry regression tests and actual Preview screenshots.
 
