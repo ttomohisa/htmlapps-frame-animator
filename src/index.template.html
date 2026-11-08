@@ -392,6 +392,26 @@
       .brand-name{font-size:14px}
       .header-actions .header-icon-button,.language-button{min-width:40px}
     }
+
+    /* Operate / layout: keep the preview and transport as one contiguous working surface. */
+    .preview-layout{align-items:start}
+    .preview-player{display:grid;align-content:start;gap:8px;min-width:0}
+    .preview-controls{display:grid;gap:8px;min-width:0}
+    .preview-stage{min-height:240px}
+    .preview-progress{display:block;width:100%;margin:0}
+    .preview-transport .button{min-height:44px}
+    .preview-stats{display:flex;flex-wrap:wrap;gap:8px}
+    .preview-stat{display:flex;flex:1 1 140px;align-items:baseline;justify-content:space-between;gap:8px;padding:8px 10px;border-radius:8px}
+    .preview-stat span,.preview-stat strong{display:inline;margin:0;font-size:12px;line-height:1.4}
+    .preview-stat strong{font-size:13px;font-variant-numeric:tabular-nums}
+    .preview-help{font-size:12px;line-height:1.5;margin:2px 1px 0}
+    @media(max-width:640px){
+      .preview-player{gap:7px}
+      .preview-stage{min-height:210px}
+      .preview-controls{gap:7px}
+      .preview-side{display:flex;flex-direction:column;gap:10px}
+      .preview-progress,.preview-transport,.preview-stats,.preview-help{order:initial}
+    }
   </style>
 </head>
 <body>
@@ -571,10 +591,35 @@
       </div>
       <div class="panel-body">
         <div class="preview-layout">
+          <div class="preview-player">
           <div class="preview-stage" id="previewStage">
             <p class="preview-placeholder" id="previewPlaceholder" data-i18n="previewEmpty">画像を追加すると、ここでアニメーションを確認できます。</p>
             <div class="preview-canvas-wrap" id="previewCanvasWrap" hidden>
               <canvas class="preview-canvas" id="previewCanvas" width="720" height="720" data-i18n-aria-label="previewCanvasLabel"></canvas>
+            </div>
+          </div>
+            <div class="preview-controls">
+            <progress class="preview-progress" id="previewProgress" data-i18n-aria-label="previewTimeLabel" max="1" value="0"></progress>
+            <div class="preview-transport">
+              <button class="button" id="previewRestartButton" type="button" disabled data-i18n-aria-label="previewRestart">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7v5h5M7.8 11A6 6 0 1 1 7 15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+              <button class="button" id="previewPreviousButton" type="button" disabled data-i18n-aria-label="previewPrevious">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 6v12m10-11-7 5 7 5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+              </button>
+              <button class="button primary" id="previewPlayButton" type="button" disabled data-i18n-aria-label="previewPlay">
+                <svg class="play-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 9 6-9 6Z" fill="currentColor"/></svg>
+                <svg class="pause-icon" viewBox="0 0 24 24" aria-hidden="true" hidden><path d="M8 6v12m8-12v12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+              </button>
+              <button class="button" id="previewNextButton" type="button" disabled data-i18n-aria-label="previewNext">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 6v12M7 7l7 5-7 5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+            <div class="preview-stats">
+              <div class="preview-stat"><span data-i18n="previewFrameLabel">フレーム</span><strong id="previewFrame">—</strong></div>
+              <div class="preview-stat"><span data-i18n="previewTimeLabel">再生位置</span><strong id="previewTime">0.0 / 0.0 s</strong></div>
+            </div>
+            <p class="preview-help" data-i18n="previewHelp">プレビューには軽量画像を使います。サイズ・配置・背景は書き出し時と同じ設定です。</p>
             </div>
           </div>
           <div class="preview-side">
@@ -651,27 +696,7 @@
               <div class="canvas-size-readout"><span data-i18n="playbackPassSummary">1回分</span>: <strong id="playbackSummary">—</strong></div>
             </div>
 
-            <div class="preview-stats">
-              <div class="preview-stat"><span data-i18n="previewFrameLabel">フレーム</span><strong id="previewFrame">—</strong></div>
-              <div class="preview-stat"><span data-i18n="previewTimeLabel">再生位置</span><strong id="previewTime">0.0 / 0.0 s</strong></div>
-            </div>
-            <progress class="preview-progress" id="previewProgress" max="1" value="0"></progress>
-            <div class="preview-transport">
-              <button class="button" id="previewRestartButton" type="button" disabled data-i18n-aria-label="previewRestart">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7v5h5M7.8 11A6 6 0 1 1 7 15" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </button>
-              <button class="button" id="previewPreviousButton" type="button" disabled data-i18n-aria-label="previewPrevious">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 6v12m10-11-7 5 7 5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-              </button>
-              <button class="button primary" id="previewPlayButton" type="button" disabled data-i18n-aria-label="previewPlay">
-                <svg class="play-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 6 9 6-9 6Z" fill="currentColor"/></svg>
-                <svg class="pause-icon" viewBox="0 0 24 24" aria-hidden="true" hidden><path d="M8 6v12m8-12v12" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
-              </button>
-              <button class="button" id="previewNextButton" type="button" disabled data-i18n-aria-label="previewNext">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 6v12M7 7l7 5-7 5Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/></svg>
-              </button>
-            </div>
-            <p class="preview-help" data-i18n="previewHelp">プレビューには軽量画像を使います。サイズ・配置・背景は書き出し時と同じ設定です。</p>
+
           </div>
         </div>
       </div>
