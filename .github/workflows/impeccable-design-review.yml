@@ -32,7 +32,10 @@ jobs:
           cat impeccable-detect.err
           cat impeccable-detect.json
           echo "Detector status: $exit_code (0: no findings; 2: findings)"
-          if [ "$exit_code" -ne 0 ] && [ "$exit_code" -ne 2 ]; then exit "$exit_code"; fi
+          if [ "$exit_code" -ne 0 ]; then
+            echo "::error::Impeccable found unresolved design issues (exit $exit_code). Resolve findings before merging."
+            exit "$exit_code"
+          fi
       - name: Archive detector evidence
         if: always()
         uses: actions/upload-artifact@v4
