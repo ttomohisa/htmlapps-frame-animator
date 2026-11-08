@@ -36,6 +36,10 @@ The user's request to resolve the original six detector findings is complete in 
 
 Automated findings being zero does not mean an agent-run `critique` or `audit` occurred; those agent passes remain **not executed**, and physical iOS/Android and Safari/Firefox remain **unverified**. Visual checks and detector checks are separate.
 
+## 2026-11-09 substantive `critique` and `audit` follow-up
+
+After the user asked for the actual evaluation playbooks rather than only the detector, the installed `critique.md` and `audit.md` procedures were followed. No sub-agent runner is exposed here, so the critique is **DEGRADED single-context** rather than the official dual-agent default; this is explicitly flagged in both reports. Assessments are archived separately in [CRITIQUE](IMPECCABLE-CRITIQUE.md) and [AUDIT](IMPECCABLE-AUDIT.md), with Nielsen **29/40** and technical **15/20** pre-follow-up scores, positive findings, ranked issues, personas, evidence and limitations. The design review uncovered a phone completion-state P1 not found by the zero-finding deterministic scan; its fix puts the actual encoded output and Save ahead of settings. A mobile header tap-size issue was also corrected.
+
 ## Preserved
 Reorder/drag/duplicate/delete, Undo/Redo, global and per-frame timing, preview playback, size/fit/fill/background, order/loops, GIF/WebP settings, local workers, progress/cancel/error, both output files, actual result previews and save, i18n, privacy, limits, native Help and confirmation.
 
