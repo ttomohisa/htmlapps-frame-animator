@@ -1,5 +1,15 @@
 # Frame Animator — APP_SPEC.md
 
+## Operate workspace UX redesign (Unreleased)
+
+- When no frames exist, show the image picker and a concise invitation. Do not display inactive frame-management UI, blank preview, or empty export panels on desktop or phone.
+- Once frames exist, hide the large entry picker and expose the Add action in Frames. On wide desktop (901px+), align frame editing with the actual animation preview side-by-side; export remains below. Tablet uses a vertical flow, and phones retain the existing three real page tabs.
+- Reparent partial-import failure messaging into the active Frames pane when valid images are already loaded so the warning stays visible after the picker hides. If all inputs are invalid, keep warnings under the initial picker.
+- Keep all existing sorting, timing, Undo/Redo, preview, encoding, result, saving, error/cancel, bilingual copy, limits, Help and privacy behavior.
+- Preserve the embedded assets, restrictive CSP, standalone/self-extract build, `file://` support and no runtime network dependency.
+- Enforce 14px Help body copy, a neutral backdrop, visible keyboard focus and safe-area-aware mobile navigation.
+- Test the built HTML at widths 320, 390, 768 and 1440 with real still PNG inputs, result download, errors, language switching, modal and no horizontal overflow. Additional existing CI covers GIF/WebP success/failure and `file://`.
+
 ## Phone footer and final Help metadata
 
 - Hide only the informational footer at the existing 640px phone breakpoint; preserve functional tabs/actions and header versions.
