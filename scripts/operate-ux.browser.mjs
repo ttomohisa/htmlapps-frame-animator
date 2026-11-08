@@ -232,6 +232,14 @@ async function inspect(width, height) {
       });
       check(resultFirst.resultTop < resultFirst.settingsTop, width + ': actual GIF result before encoder form');
       check(resultFirst.saveTop >= resultFirst.imageBottom, width + ': Save follows rendered GIF preview');
+      await page.waitForFunction(() => {
+        const save = document.querySelector('#saveGifButton')?.getBoundingClientRect();
+        const nav = document.querySelector('#mobileWorkflowNav')?.getBoundingClientRect();
+        const header = document.querySelector('.app-header')?.getBoundingClientRect();
+        const preview = document.querySelector('#gifResultImage')?.getBoundingClientRect();
+        return save && nav && header && preview && preview.top >= header.bottom - 2 &&
+          save.bottom <= nav.top - 4;
+      }, null, {timeout:5000});
       check(resultFirst.headerButtons.every(r => r.width >= 44 && r.height >= 44),
         width + ': phone header touch targets must be at least 44px');
     }
