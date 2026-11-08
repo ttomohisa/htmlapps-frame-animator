@@ -374,42 +374,48 @@ async function runMobileSaveCase(browser, language) {
     assert.equal(await page.locator('#saveGifButton').isVisible(),false,label + ': old GIF Save is not shown on phones');
     await page.locator('#createGifButton').click();
     await page.locator('#gifResultCard').waitFor({state:'visible',timeout:60_000});
-    await page.waitForFunction(() => {
-      const el = document.querySelector('#saveGifMobileButton');
-      return !el.hidden && !el.disabled;
-    });
-    assert.equal(await page.locator('#saveGifMobileButton').isVisible(),true,label + ': Save appears next to Create');
-    assert.equal(await page.locator('#saveGifButton').isVisible(),false,label + ': no duplicate lower GIF Save');
+    await page.waitForFunction(() => document.querySelector('#saveGifButton')?.disabled === false);
+    assert.equal(await page.locator('#saveGifMobileButton').isVisible(),false,label + ': do not place Save before the generated result');
+    assert.equal(await page.locator('#saveGifButton').isVisible(),true,label + ': GIF Save stays alongside generated preview');
     const gifPosition = await page.evaluate(() => {
-      const create = document.querySelector('#createGifButton').getBoundingClientRect();
-      const save = document.querySelector('#saveGifMobileButton').getBoundingClientRect();
-      return {createY:create.top,saveY:save.top,saveWidth:save.width};
+      const result = document.querySelector('#gifResultCard').getBoundingClientRect();
+      const settings = document.querySelector('#gifExportPanel .gif-settings').getBoundingClientRect();
+      const preview = document.querySelector('#gifResultPreview').getBoundingClientRect();
+      const save = document.querySelector('#saveGifButton').getBoundingClientRect();
+      const header = document.querySelector('.app-header').getBoundingClientRect();
+      return {resultTop:result.top,settingsTop:settings.top,previewBottom:preview.bottom,
+        saveTop:save.top,saveWidth:save.width,headerBottom:header.bottom};
     });
-    assert.ok(Math.abs(gifPosition.createY - gifPosition.saveY) <= 2 && gifPosition.saveWidth >= 80,
-      label + ': GIF Save must share the Create row '+JSON.stringify(gifPosition));
+    assert.ok(gifPosition.resultTop < gifPosition.settingsTop &&
+      gifPosition.saveTop >= gifPosition.previewBottom &&
+      gifPosition.saveWidth >= 80,
+      label + ': result then Save, ahead of encoder settings '+JSON.stringify(gifPosition));
+    await page.screenshot({path:path.resolve('test-results/mobile-layout','review-gif-' + language + '.png')});
     const [gifDownload] = await Promise.all([
-      page.waitForEvent('download'),page.locator('#saveGifMobileButton').click()
+      page.waitForEvent('download'),page.locator('#saveGifButton').click()
     ]);
     assert.ok(gifDownload.suggestedFilename().endsWith('.gif'),label + ': GIF download works');
     await page.screenshot({path:path.resolve('test-results/mobile-layout','save-gif-' + language + '.png')});
     await page.locator('#gifDither').uncheck();
-    assert.equal(await page.locator('#saveGifMobileButton').isVisible(),false,label + ': stale GIF result hides Save');
+    assert.equal(await page.locator('#saveGifButton').isVisible(),false,label + ': stale GIF result hides Save');
     await page.locator('#exportWebpTab').click();
     await page.locator('#createWebpButton').click();
     await page.locator('#webpResultCard').waitFor({state:'visible',timeout:60_000});
-    await page.waitForFunction(() => {
-      const el = document.querySelector('#saveWebpMobileButton');
-      return !el.hidden && !el.disabled;
-    });
-    assert.equal(await page.locator('#saveWebpMobileButton').isVisible(),true,label + ': WebP Save appears beside Create');
-    assert.equal(await page.locator('#saveWebpButton').isVisible(),false,label + ': no duplicate lower WebP Save');
+    await page.waitForFunction(() => document.querySelector('#saveWebpButton')?.disabled === false);
+    assert.equal(await page.locator('#saveWebpMobileButton').isVisible(),false,label + ': do not place WebP Save ahead of generated result');
+    assert.equal(await page.locator('#saveWebpButton').isVisible(),true,label + ': WebP Save is beside result');
+    const webpPosition = await page.evaluate(() => ({
+      result:document.querySelector('#webpResultCard').getBoundingClientRect().top,
+      settings:document.querySelector('#webpExportPanel .gif-settings').getBoundingClientRect().top
+    }));
+    assert.ok(webpPosition.result < webpPosition.settings,label+': WebP result precedes settings');
     const [webpDownload] = await Promise.all([
-      page.waitForEvent('download'),page.locator('#saveWebpMobileButton').click()
+      page.waitForEvent('download'),page.locator('#saveWebpButton').click()
     ]);
     assert.ok(webpDownload.suggestedFilename().endsWith('.webp'),label + ': WebP download works');
     await page.screenshot({path:path.resolve('test-results/mobile-layout','save-webp-' + language + '.png')});
     await page.locator('#webpLossless').check();
-    assert.equal(await page.locator('#saveWebpMobileButton').isVisible(),false,label + ': WebP Save hides when result is stale');
+    assert.equal(await page.locator('#saveWebpButton').isVisible(),false,label + ': WebP Save hides when result is stale');
     assert.deepEqual(errors,[],label + ': page errors');
     console.log('PASS '+label);
   } finally {await context.close();}
