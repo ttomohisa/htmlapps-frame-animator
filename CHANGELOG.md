@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Fixed
+
+- Place the animation progress bar and playback buttons immediately below the displayed preview instead of after output-size and playback settings.
+- Keep the viewer controls together on phones, tablets and desktops; add bilingual browser geometry regression tests and actual Preview screenshots.
+
 ### Changed
 
 - Use a task-first initial picker instead of showing empty frame, preview and export panels.
