@@ -116,10 +116,18 @@ async function inspect(width, height) {
     await page.goto(baseUrl, { waitUntil: 'load' });
     check(await page.locator('.main').getAttribute('data-workspace') === 'empty', width + ': initial workspace');
     check(await page.locator('#addImagesPanel').isVisible(), width + ': picker visible');
+    check(await page.locator('#gifResultPreview img, #webpResultPreview img').count() === 0,
+      width + ': no result images or broken image elements before export');
     for (const stage of ['#mobilePageFrames','#mobilePagePreview','#mobilePageExport']) {
       check(!(await page.locator(stage).isVisible()), width + ': empty stage hidden ' + stage);
     }
     await page.locator('#helpButton').click();
+    const inset = await page.locator('#helpDialog').evaluate(dialog => ({
+      help: Number.parseFloat(getComputedStyle(dialog).paddingTop),
+      confirm: Number.parseFloat(getComputedStyle(document.querySelector('#appConfirmDialog')).paddingTop)
+    }));
+    check(inset.help >= 8 && inset.confirm >= 8,
+      width + ': dialog contents need a real container inset');
     const help = await page.locator('#helpDialog').evaluate(dialog => {
       const r = dialog.getBoundingClientRect();
       const p = dialog.querySelector('.dialog-body p');
@@ -128,6 +136,8 @@ async function inspect(width, height) {
     check(help.top >= -1 && help.bottom <= height + 1 && help.font >= 14,
       width + ': Help geometry/readability ' + JSON.stringify(help));
     await page.locator('#helpDialog .dialog-body').evaluate(el => el.scrollTop = el.scrollHeight);
+    check(await page.locator('#helpDialog .help-license-links').isVisible(),
+      width + ': full license disclosure must remain visible and scrollable');
     await page.keyboard.press('Escape');
     check(!(await page.locator('#helpDialog').isVisible()), width + ': Help closes');
 
@@ -191,6 +201,14 @@ async function inspect(width, height) {
     await page.locator('#createGifButton').click();
     await page.locator('#gifResultCard').waitFor({state:'visible',timeout:60000});
     await page.waitForFunction(() => { const img = document.querySelector('#gifResultImage'); return img?.complete && img.naturalWidth > 0; });
+    check(await page.locator('#gifResultImage').getAttribute('src') !== null,
+      width + ': generated GIF image has a real source');
+    check((await page.locator('#gifResultImage').getAttribute('alt')) === '生成したGIFのプレビュー',
+      width + ': Japanese GIF image alt text');
+    await page.locator('#languageButton').click();
+    check((await page.locator('#gifResultImage').getAttribute('alt')) === 'Generated GIF preview',
+      width + ': English GIF image alt text');
+    await page.locator('#languageButton').click();
     const resultImage = await page.locator('#gifResultImage').boundingBox();
     check(resultImage && resultImage.width >= 180, width + ': generated small GIF must be inspectable');
     await page.screenshot({path:`test-results/operate/${width}-result.png`,fullPage:true});
