@@ -9,6 +9,16 @@
 - **P2 — text density:** small 10–12px help/setting labels were uncomfortable in Japanese and English. **Change:** increase text size and line height; retain exact constraints.
 - **P2 — phone navigation:** three oversized raised buttons consumed space. **Change:** lighter, persistent, clearly selected tab strip with safe-area padding.
 
+## 2026-11-09 follow-up: transport proximity missed by the first review
+
+The user supplied a screenshot showing a prominent usability problem: the preview canvas and transport controls were separated by entire configuration sections. This was a **P1 task-flow issue the first manual Operate review and deterministic Impeccable detector did not catch**. The prior claim of a completed, thoroughly evaluated UX was too strong.
+
+- **Root cause:** `.preview-stage` was the first child of `.preview-layout`, but `.preview-transport` and `#previewProgress` were children of `.preview-side` *after* both output-size and playback settings.
+- **Fix:** move the stage, timeline, transport and readout into a `.preview-player` unit. Settings remain separately accessible; no media-processing logic changes.
+- **Verification:** add real rendered-HTML geometry checks for the exact canvas→progress and progress→transport gaps at 320/390/768/1440px in Japanese and English. Screenshot the Preview view itself, rather than only the Frames/Export pages.
+- **Impeccable honesty:** project installation and automated `context`/`detect --json` are confirmed; a full official agent-run `critique` or `audit` was not executed. This follow-up is a source-guided Operate review with automated browser evidence, not a claimed complete Impeccable agent pass.
+- **Status:** CI screenshots and latest run must be inspected separately; successful detector exit does not imply acceptable interaction distance.
+
 ## Preserved
 Reorder/drag/duplicate/delete, Undo/Redo, global and per-frame timing, preview playback, size/fit/fill/background, order/loops, GIF/WebP settings, local workers, progress/cancel/error, both output files, actual result previews and save, i18n, privacy, limits, native Help and confirmation.
 
