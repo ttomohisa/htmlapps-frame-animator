@@ -38,7 +38,7 @@ The interface belongs to this product: image sequence management, frame duration
 
 | Severity | Issue and impact | Action | Status |
 | --- | --- | --- | --- |
-| **P1** | Generated GIF/WebP appears after the export form on phones; Save was offered before inspection | **`$impeccable layout` / `harden`**: when a valid result exists, place the actual result first, show Save immediately after its preview, retain settings underneath, and scroll result into view after completion | **Implemented; browser regression required** |
+| **P1** | Generated GIF/WebP appears after the export form on phones; Save was offered before inspection | **`$impeccable layout` / `harden`**: when a valid result exists, place the actual result first, show Save immediately after its preview, retain settings underneath, and scroll result into view after completion | **Implemented and verified in Chromium** |
 | **P2** | At ≤360px header controls had a late CSS override lowering tap width from 44 to 40px | **`$impeccable adapt`**: keep the 44px minimum for language and Help at 320px without covering the app/version | **Implemented; browser geometry required** |
 | **P2** | Dense frame metadata and output options may still require careful reading on small phones | **`$impeccable clarify` / `polish`**: retain the task-first grouping and test actual 200% text scaling | **Partially assessed; hardware/zoom unverified** |
 | **P3** | Multiple historical responsive CSS overrides complicate refinement | **`$impeccable polish`**: consolidate when semantics and browser tests can be held constant | **Deferred to avoid unrelated regressions** |
@@ -68,3 +68,7 @@ The installed `impeccable detect --json src/index.template.html` reported **0 so
 **Recommended sequence:** `$impeccable layout` → `$impeccable adapt` → `$impeccable audit` → `$impeccable polish`.
 
 **Questions skipped:** this was an explicit fix-and-verify request, so no further user input is needed for the two confirmed issues.
+
+## Post-fix rendered review
+
+The built result-first phone experience was re-inspected in the 320px and 390px output screenshots from [Chromium run 42527472882](https://github.com/ttomohisa/htmlapps-frame-animator/actions/runs/42527472882). The actual encoded preview, Save, result measurements and the encoding form now follow the intended visual priority. A further [strict regression run 42527895061](https://github.com/ttomohisa/htmlapps-frame-animator/actions/runs/42527895061) verified generated output and Save fit between the phone header and fixed bottom navigation at 320px and 390px. The review's 29/40 score is retained as the **pre-fix baseline** rather than retroactively inflated. Remaining device/zoom concerns are explicitly unverified.
