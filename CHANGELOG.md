@@ -4,6 +4,10 @@
 
 ### Fixed
 
+- After GIF/WebP encoding on phones, show the actual generated image and its Save action above encoding settings, then scroll to the result. Keep invalidation and retry workflows intact.
+- Preserve a 44px minimum touch width for language and Help controls at 320px.
+- Add Impeccable v4.8.1 playbook-based critique and audit reports (degraded single-context, distinguished from dual-subagent execution).
+
 - Resolve all six original Impeccable findings rather than ignoring them: create GIF/WebP image elements only after valid output, inset Help/confirmation dialogs, improve heading hierarchy and replace ambiguous dash placeholders with meaningful localized/empty states.
 - Make the official Impeccable detector a strict CI gate: any finding fails the review. Add browser regressions for dynamic output-image creation, bilingual alt text and dialog padding.
 - Place the animation progress bar and playback buttons immediately below the displayed preview instead of after output-size and playback settings.
