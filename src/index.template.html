@@ -3704,6 +3704,7 @@
       function applyLanguage() {
         document.documentElement.lang = language;
         document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+        document.querySelectorAll('[data-i18n-alt]').forEach(el => { el.alt = t(el.dataset.i18nAlt); });
         document.querySelectorAll('[data-i18n-aria-label]').forEach(el => el.setAttribute('aria-label', t(el.dataset.i18nAriaLabel)));
         $('#languageButton').textContent = language === 'ja' ? 'EN' : 'JA';
         const languageDestination = language === 'ja' ? '英語に切り替え' : 'Switch to Japanese';
