@@ -117,10 +117,14 @@ async function runCase(browser, language, width, height) {
     assert.equal(await page.locator('#quickAddButton').isVisible(), false, label + ': quick add hidden in Preview');
     const geometry = await page.evaluate(() => {
       const preview = document.querySelector('#previewStage').getBoundingClientRect();
+      const timeline = document.querySelector('#previewProgress').getBoundingClientRect();
       const transport = document.querySelector('.preview-transport').getBoundingClientRect();
-      return {delta: transport.top - preview.bottom, width: transport.width};
+      return {timelineGap: timeline.top - preview.bottom, transportGap: transport.top - timeline.bottom,
+        width: transport.width, group: document.querySelector('.preview-player')?.contains(transport)};
     });
-    assert.ok(geometry.delta >= -1 && geometry.delta <= 20, label + ': playback directly below preview ' + JSON.stringify(geometry));
+    assert.ok(geometry.group && geometry.timelineGap >= 0 && geometry.timelineGap <= 12
+      && geometry.transportGap >= 0 && geometry.transportGap <= 12,
+      label + ': timeline and playback must directly follow preview ' + JSON.stringify(geometry));
     assert.equal(await page.locator('#previewPlayButton').isEnabled(), true);
     if (width === 390) {
       await page.screenshot({path: path.resolve('test-results/mobile-layout', 'preview-' + language + '-' + width + '.png')});
