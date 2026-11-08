@@ -1,5 +1,12 @@
 # Frame Animator — APP_SPEC.md
 
+## Preview transport proximity correction (Unreleased)
+
+- Keep the preview canvas, progress bar, restart/previous/play/next controls, and current frame/time readout together as a single preview-player component.
+- Do not interleave output-size and playback-option settings between the displayed animation and transport buttons. Those settings appear after the player on phones and wide desktops, or in an adjacent rail on tablets.
+- Preserve playback state, progress reporting, keyboard operation and all export-affecting options. Never couple the preview display scaling to exported pixel dimensions.
+- Run geometry checks at 320/390/768/1440px with actual imported images: preview→timeline and timeline→transport gaps must each be no more than 12px; verify both Japanese and English. Capture screenshots of the actual Preview page at phone widths.
+
 ## Operate workspace UX redesign (Unreleased)
 
 - When no frames exist, show the image picker and a concise invitation. Do not display inactive frame-management UI, blank preview, or empty export panels on desktop or phone.
