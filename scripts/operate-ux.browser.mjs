@@ -72,6 +72,35 @@ const browser = await chromium.launch({ headless: true });
 mkdirSync('test-results/operate', { recursive: true });
 const check = (condition, message) => { if (!condition) throw new Error(message); };
 
+async function checkPreviewTransport(page, width, language) {
+  const geometry = await page.evaluate(() => {
+    const stage = document.querySelector('#previewStage');
+    const progress = document.querySelector('#previewProgress');
+    const transport = document.querySelector('.preview-transport');
+    const previewPlayer = document.querySelector('.preview-player');
+    const settings = document.querySelector('.preview-side');
+    const a = stage.getBoundingClientRect(), b = progress.getBoundingClientRect();
+    const c = transport.getBoundingClientRect(), d = settings.getBoundingClientRect();
+    return {
+      sameGroup: previewPlayer?.contains(stage) && previewPlayer?.contains(progress)
+        && previewPlayer?.contains(transport) && !previewPlayer?.contains(settings),
+      stageToProgress: b.top - a.bottom,
+      progressToTransport: c.top - b.bottom,
+      stageWidth: a.width, transportWidth: c.width,
+      transportHeight: c.height, settingsTop: d.top, stageTop: a.top,
+      enabledButtons: [...transport.querySelectorAll('button')].filter(button => !button.disabled).length
+    };
+  });
+  check(geometry.sameGroup, width + ' ' + language + ': preview and transport must share the same viewer');
+  check(geometry.stageToProgress >= 0 && geometry.stageToProgress <= 12,
+    width + ' ' + language + ': progress separated from preview ' + JSON.stringify(geometry));
+  check(geometry.progressToTransport >= 0 && geometry.progressToTransport <= 12,
+    width + ' ' + language + ': transport separated from timeline ' + JSON.stringify(geometry));
+  check(Math.abs(geometry.transportWidth - geometry.stageWidth) <= 3 && geometry.transportHeight >= 40,
+    width + ' ' + language + ': transport tap area / alignment ' + JSON.stringify(geometry));
+  check(geometry.enabledButtons >= 2, width + ' ' + language + ': transport should be usable after import');
+}
+
 async function inspect(width, height) {
   const context = await browser.newContext({ viewport: { width, height }, locale: 'ja-JP', acceptDownloads: true });
   const page = await context.newPage();
@@ -119,11 +148,19 @@ async function inspect(width, height) {
       check(await page.locator('#mobilePagePreview').isVisible(), width + ': preview tab');
       const mobileCanvas = await page.locator('#previewCanvas').boundingBox();
       check(mobileCanvas && mobileCanvas.width >= 200, width + ': small source preview is legible');
+      await checkPreviewTransport(page, width, 'ja');
+      await page.locator('#languageButton').click();
+      await checkPreviewTransport(page, width, 'en');
+      await page.locator('#languageButton').click();
       await page.locator('#mobileTabFrames').click();
     } else {
       check(await page.locator('#mobilePagePreview').isVisible(), width + ': desktop preview visible');
       const desktopCanvas = await page.locator('#previewCanvas').boundingBox();
       check(desktopCanvas && desktopCanvas.width >= 200, width + ': small source preview is legible');
+      await checkPreviewTransport(page, width, 'ja');
+      await page.locator('#languageButton').click();
+      await checkPreviewTransport(page, width, 'en');
+      await page.locator('#languageButton').click();
       if (width >= 901) {
         const positions = await page.evaluate(() => ({
           frames:document.querySelector('#mobilePageFrames').getBoundingClientRect().toJSON(),
