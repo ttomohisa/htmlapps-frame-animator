@@ -69,7 +69,7 @@
     .stat strong{display:block;font-size:15px}.stat span{display:block;color:var(--muted);font-size:10px}
     .summary-actions{display:flex;gap:8px;flex-wrap:wrap}
     .empty-state{display:grid;place-items:center;min-height:180px;padding:30px 18px;text-align:center;border:1px dashed var(--line);border-radius:12px}
-    .empty-state h4{margin:0 0 5px;font-size:15px}.empty-state p{margin:0;color:var(--muted);font-size:12px}
+    .empty-state h4{margin:0 0 5px;font-size:14px}.empty-state p{margin:0;color:var(--muted);font-size:12px}
     .frame-grid{position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
     .frame-card{min-width:0;border:1px solid var(--line);border-radius:13px;background:var(--surface);overflow:hidden;transition:border-color .14s ease,box-shadow .14s ease,opacity .14s ease}
     .frame-card.is-dragging{position:fixed;z-index:70;opacity:.98;border-color:var(--accent);box-shadow:0 20px 44px rgba(10,30,22,.28);cursor:grabbing;pointer-events:none;transform:scale(1.025);transform-origin:center;will-change:left,top} .frame-drag-placeholder{min-width:0;border:2px dashed var(--accent);border-radius:13px;background:var(--accent-soft)}
@@ -178,10 +178,10 @@
     .build-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:0 13px 13px}.build-item{padding:9px;border-radius:9px;background:var(--surface-muted)}
     .build-item span{display:block;color:var(--muted);font-size:10px}.build-item strong{display:block;overflow-wrap:anywhere;font-size:11px}
     footer{width:min(1180px,100%);margin:0 auto;padding:0 clamp(14px,2.8vw,30px) 30px;color:var(--muted);font-size:12px}
-    dialog{width:min(600px,calc(100vw - 28px));max-height:min(82vh,720px);padding:0;overflow:hidden;border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--text);box-shadow:var(--shadow-md)}
+    dialog{width:min(600px,calc(100vw - 28px));max-height:min(82vh,720px);padding:10px;overflow:hidden;border:1px solid var(--line);border-radius:16px;background:var(--surface-muted);color:var(--text);box-shadow:var(--shadow-md)}
     html:has(dialog:modal),body:has(dialog:modal){overflow:hidden}
-    dialog::backdrop{background:rgba(20,24,21,.34);backdrop-filter:blur(2px)}.dialog-shell{display:flex;flex-direction:column;max-height:min(82vh,720px)}
-    .dialog-head{display:flex;align-items:center;gap:12px;padding:15px 16px;border-bottom:1px solid var(--line)}.dialog-head h2{margin:0;font-size:17px}
+    dialog::backdrop{background:rgba(20,24,21,.34);backdrop-filter:blur(2px)}.dialog-shell{display:flex;flex-direction:column;max-height:calc(min(82vh,720px) - 20px);overflow:hidden;border-radius:10px;background:var(--surface)}
+    .dialog-head{display:flex;align-items:center;gap:12px;padding:15px 16px;border-bottom:1px solid var(--line)}.dialog-head h2{margin:0;font-size:22px}
     .dialog-close{margin-left:auto;width:38px;height:38px;display:grid;place-items:center;border:0;border-radius:9px;background:transparent;cursor:pointer}.dialog-close:hover{background:var(--surface-hover)}
     .dialog-body{overflow:auto;padding:16px;overscroll-behavior:contain}.dialog-body h3{margin:18px 0 6px;font-size:14px}.dialog-body h3:first-child{margin-top:0}
     .dialog-body p,.dialog-body li{color:var(--muted);font-size:12px}.dialog-body ul,.dialog-body ol{padding-left:20px}
@@ -292,16 +292,17 @@
       #mobilePageFrames .timing-copy span{margin-top:0}
       #mobilePageFrames .timing-controls{justify-content:flex-start}
     }
+    @media(max-width:640px){dialog{max-height:calc(100dvh - 16px)}.dialog-shell{max-height:calc(100dvh - 36px)}}
     /* Operate workspace: choose files first; editing, preview, and output follow the project state. */
     .app-header{background:#fff;backdrop-filter:none;-webkit-backdrop-filter:none;border-bottom:1px solid var(--line)}
     .header-inner{min-height:60px}
     .main{padding-top:20px}
     .panel{border-radius:12px;box-shadow:none}
     .panel-head{padding:15px 17px 12px}
-    .panel-head h3{font-size:16px}
+    .panel-head h3{font-size:18px}
     .panel-head p,.page-intro p{font-size:13px;line-height:1.65}
     .page-intro{padding-bottom:14px;align-items:center}
-    .page-intro h2{font-size:23px;font-weight:730;letter-spacing:-.025em}
+    .page-intro h2{font-size:24px;font-weight:730;letter-spacing:-.025em}
     .local-badge{display:none}
     .drop-zone{min-height:166px;border-radius:10px;padding:20px 16px;background:#fafaf8}
     .drop-icon{width:34px;height:34px;margin-bottom:6px}
@@ -329,12 +330,14 @@
     dialog::backdrop{background:rgba(18,20,18,.35);backdrop-filter:none}
     .dialog-body{line-height:1.7}
     .dialog-body p,.dialog-body li{font-size:14px;line-height:1.7}
-    .dialog-body h3{font-size:14px;margin:20px 0 6px}
+    .dialog-body h3{font-size:16px;margin:20px 0 6px}
     .help-license-links{margin:6px 0 0;overflow-wrap:anywhere}
     .help-license-links a{color:var(--accent);text-underline-offset:3px}
     .help-license-links a:hover{text-decoration-thickness:2px}
     .dialog-body .build-details summary,.dialog-body .build-item strong{font-size:12px}
     .dialog-body .build-item span{font-size:12px}
+    .dialog-body h3{color:var(--text);font-weight:700}
+    .dialog-head h2{font-weight:750;line-height:1.25}
     @media(min-width:901px){
       .main[data-workspace="empty"]{max-width:790px;padding-top:28px}
       .main[data-workspace="ready"]{display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);column-gap:16px;row-gap:16px;align-items:start}
@@ -616,7 +619,7 @@
               </button>
             </div>
             <div class="preview-stats">
-              <div class="preview-stat"><span data-i18n="previewFrameLabel">フレーム</span><strong id="previewFrame">—</strong></div>
+              <div class="preview-stat"><span data-i18n="previewFrameLabel">フレーム</span><strong id="previewFrame">0 / 0</strong></div>
               <div class="preview-stat"><span data-i18n="previewTimeLabel">再生位置</span><strong id="previewTime">0.0 / 0.0 s</strong></div>
             </div>
             <p class="preview-help" data-i18n="previewHelp">プレビューには軽量画像を使います。サイズ・配置・背景は書き出し時と同じ設定です。</p>
@@ -663,7 +666,7 @@
                   <input class="background-color" id="backgroundColor" type="color" value="#ffffff" disabled data-i18n-aria-label="backgroundColorLabel">
                 </span>
               </div>
-              <div class="canvas-size-readout"><span data-i18n="resolvedCanvas">実際の出力サイズ</span>: <strong id="resolvedCanvasSize">—</strong></div>
+              <div class="canvas-size-readout"><span data-i18n="resolvedCanvas">実際の出力サイズ</span>: <strong id="resolvedCanvasSize" data-i18n="unavailable">未設定</strong></div>
             </div>
 
             <div class="output-settings">
@@ -693,7 +696,7 @@
                 <span class="output-label" data-i18n="playbackLoopCountLabel">再生回数</span>
                 <input class="size-input" id="playbackLoopCount" type="number" min="2" max="100" step="1" value="2" inputmode="numeric">
               </label>
-              <div class="canvas-size-readout"><span data-i18n="playbackPassSummary">1回分</span>: <strong id="playbackSummary">—</strong></div>
+              <div class="canvas-size-readout"><span data-i18n="playbackPassSummary">1回分</span>: <strong id="playbackSummary">0</strong></div>
             </div>
 
 
@@ -754,12 +757,12 @@
           <div class="gif-result">
             <div class="gif-result-empty" id="gifResultEmpty" data-i18n="gifResultEmpty">GIFを作成すると、ここで実際の生成ファイルを確認できます。</div>
             <div class="gif-result-card" id="gifResultCard" hidden>
-              <div class="gif-result-preview"><img id="gifResultImage" alt="" data-i18n-aria-label="gifResultPreviewLabel"></div>
+              <div class="gif-result-preview" id="gifResultPreview"></div>
               <div class="gif-result-stats">
-                <div class="gif-result-stat"><span data-i18n="gifResultSizeLabel">サイズ</span><strong id="gifResultDimensions">—</strong></div>
-                <div class="gif-result-stat"><span data-i18n="gifResultFramesLabel">フレーム</span><strong id="gifResultFrames">—</strong></div>
-                <div class="gif-result-stat"><span data-i18n="gifResultDurationLabel">再生時間</span><strong id="gifResultDuration">—</strong></div>
-                <div class="gif-result-stat"><span data-i18n="gifResultBytesLabel">ファイル容量</span><strong id="gifResultBytes">—</strong></div>
+                <div class="gif-result-stat"><span data-i18n="gifResultSizeLabel">サイズ</span><strong id="gifResultDimensions"></strong></div>
+                <div class="gif-result-stat"><span data-i18n="gifResultFramesLabel">フレーム</span><strong id="gifResultFrames"></strong></div>
+                <div class="gif-result-stat"><span data-i18n="gifResultDurationLabel">再生時間</span><strong id="gifResultDuration"></strong></div>
+                <div class="gif-result-stat"><span data-i18n="gifResultBytesLabel">ファイル容量</span><strong id="gifResultBytes"></strong></div>
               </div>
               <div class="gif-result-actions">
                 <button class="button primary" id="saveGifButton" type="button" disabled data-i18n="saveGif">GIFを保存</button>
@@ -834,12 +837,12 @@
           <div class="gif-result">
             <div class="gif-result-empty" id="webpResultEmpty" data-i18n="webpResultEmpty">WebPを作成すると、ここで実際の生成ファイルを確認できます。</div>
             <div class="gif-result-card" id="webpResultCard" hidden>
-              <div class="gif-result-preview"><img id="webpResultImage" alt="" data-i18n-aria-label="webpResultPreviewLabel"></div>
+              <div class="gif-result-preview" id="webpResultPreview"></div>
               <div class="gif-result-stats">
-                <div class="gif-result-stat"><span data-i18n="gifResultSizeLabel">サイズ</span><strong id="webpResultDimensions">—</strong></div>
-                <div class="gif-result-stat"><span data-i18n="gifResultFramesLabel">フレーム</span><strong id="webpResultFrames">—</strong></div>
-                <div class="gif-result-stat"><span data-i18n="gifResultDurationLabel">再生時間</span><strong id="webpResultDuration">—</strong></div>
-                <div class="gif-result-stat"><span data-i18n="gifResultBytesLabel">ファイル容量</span><strong id="webpResultBytes">—</strong></div>
+                <div class="gif-result-stat"><span data-i18n="gifResultSizeLabel">サイズ</span><strong id="webpResultDimensions"></strong></div>
+                <div class="gif-result-stat"><span data-i18n="gifResultFramesLabel">フレーム</span><strong id="webpResultFrames"></strong></div>
+                <div class="gif-result-stat"><span data-i18n="gifResultDurationLabel">再生時間</span><strong id="webpResultDuration"></strong></div>
+                <div class="gif-result-stat"><span data-i18n="gifResultBytesLabel">ファイル容量</span><strong id="webpResultBytes"></strong></div>
               </div>
               <div class="gif-result-actions">
                 <button class="button primary" id="saveWebpButton" type="button" disabled data-i18n="saveWebp">WebPを保存</button>
@@ -887,8 +890,8 @@
         <section class="help-build"><details class="build-details">
       <summary data-i18n="buildInfo">ビルド情報</summary>
       <div class="build-grid">
-        <div class="build-item"><span data-i18n="appVersion">アプリバージョン</span><strong id="buildVersion">—</strong></div>
-        <div class="build-item"><span data-i18n="builtAt">生成日時</span><strong id="builtAt">—</strong></div>
+        <div class="build-item"><span data-i18n="appVersion">アプリバージョン</span><strong id="buildVersion" data-i18n="unavailable">未設定</strong></div>
+        <div class="build-item"><span data-i18n="builtAt">生成日時</span><strong id="builtAt" data-i18n="unavailable">未設定</strong></div>
         <div class="build-item"><span data-i18n="dependencies">内包依存</span><strong id="dependencyCount">0</strong></div>
       </div>
     </details></section>
@@ -1005,7 +1008,7 @@
 
       const translations = {
         ja: {
-          brandMeta:'複数画像からGIF / WebPを作成', mobileWorkflow:'作業ステップ', mobileFrames:'フレーム', mobilePreview:'プレビュー', mobileExport:'書き出し', introTitle:'画像からGIF / WebPを作成', introBody:'画像を選ぶと、並べ替えとプレビューが使えます。',
+          brandMeta:'複数画像からGIF / WebPを作成', unavailable:'未設定', unknownFile:'ファイル名不明', mobileWorkflow:'作業ステップ', mobileFrames:'フレーム', mobilePreview:'プレビュー', mobileExport:'書き出し', introTitle:'画像からGIF / WebPを作成', introBody:'画像を選ぶと、並べ替えとプレビューが使えます。',
           localProcessing:'完全ローカル処理', addHeading:'画像を追加', addNote:'複数選択・ドラッグ＆ドロップ・貼り付けに対応。画像は外部送信されません。', dropTitle:'画像をここにドロップ', dropNote:'JPEG・PNG・静止WebPに対応', chooseImages:'画像を選択',
           limitFrames:'最大200枚', limitFile:'1枚50 MiBまで', limitPixels:'1枚50 MPまで', framesHeading:'フレーム', framesNote:'画像の順番と表示時間を調整します。',
           images:'画像', totalDurationLabel:'1回分', sourceSize:'元ファイル合計', addMore:'画像を追加', clearAll:'すべて消去', emptyTitle:'まだ画像がありません', emptyBody:'画像を追加すると、ここにサムネイル一覧が表示されます。',
@@ -1029,7 +1032,7 @@
           frameAlt:'フレーム {number}: {name}', megapixels:'{value} MP'
         },
         en: {
-          brandMeta:'Create GIF / WebP from multiple images', mobileWorkflow:'Workflow steps', mobileFrames:'Frames', mobilePreview:'Preview', mobileExport:'Export', introTitle:'Make an animated GIF or WebP', introBody:'Choose images, arrange them, then preview the animation before exporting.',
+          brandMeta:'Create GIF / WebP from multiple images', unavailable:'Not set', unknownFile:'Unknown filename', mobileWorkflow:'Workflow steps', mobileFrames:'Frames', mobilePreview:'Preview', mobileExport:'Export', introTitle:'Make an animated GIF or WebP', introBody:'Choose images, arrange them, then preview the animation before exporting.',
           localProcessing:'Fully local processing', addHeading:'Add images', addNote:'Select, drop, or paste images. Your files are not uploaded.', dropTitle:'Drop images here', dropNote:'JPEG, PNG, and still WebP supported', chooseImages:'Choose images',
           limitFrames:'Up to 200 images', limitFile:'50 MiB per image', limitPixels:'50 MP per image', framesHeading:'Frames', framesNote:'Arrange images and set how long each one appears.',
           images:'Images', totalDurationLabel:'One pass', sourceSize:'Source total', addMore:'Add images', clearAll:'Clear all', emptyTitle:'No images yet', emptyBody:'Add images to see their thumbnails here.',
@@ -1162,7 +1165,6 @@
       const gifProgress = $('#gifProgress');
       const gifProgressWrap = $('#gifProgressWrap');
       const gifProgressText = $('#gifProgressText');
-      const gifResultImage = $('#gifResultImage');
       const outputFilename = $('#outputFilename');
       const webpQuality = $('#webpQuality');
       const webpQualityRange = $('#webpQualityRange');
@@ -1172,7 +1174,6 @@
       const webpProgress = $('#webpProgress');
       const webpProgressWrap = $('#webpProgressWrap');
       const webpProgressText = $('#webpProgressText');
-      const webpResultImage = $('#webpResultImage');
       const exportFormatSelector = $('#exportFormatSelector');
 
       function readStorage(key) { try { return localStorage.getItem(key); } catch { return null; } }
@@ -1871,6 +1872,22 @@
         $('#' + format + 'CreateRow').classList.toggle('has-result', ready);
       }
 
+      // Result images do not exist until a real encoded Blob URL is available.
+      // This avoids empty-src images and keeps failed/cleared results genuinely empty.
+      function renderEncodedPreview(containerId, imageId, labelKey, url) {
+        let image = document.getElementById(imageId);
+        if (!image) {
+          image = document.createElement('img');
+          image.id = imageId;
+          image.alt = t(labelKey);
+          image.dataset.i18nAlt = labelKey;
+          image.src = url;
+          $(containerId).replaceChildren(image);
+        } else if (image.getAttribute('src') !== url) {
+          image.src = url;
+        }
+      }
+
       function clearGifResult({ stale = false } = {}) {
         const hadResult = Boolean(state.gif.resultUrl);
         if (state.gif.resultUrl) URL.revokeObjectURL(state.gif.resultUrl);
@@ -1879,7 +1896,7 @@
         state.gif.resultMeta = null;
         state.gif.stale = Boolean(stale && hadResult);
         state.gif.errorKey = '';
-        gifResultImage.removeAttribute('src');
+        $('#gifResultImage')?.remove();
         $('#gifResultCard').hidden = true;
         $('#gifResultEmpty').hidden = false;
         $('#saveGifButton').disabled = true;
@@ -1920,7 +1937,7 @@
         }
         $('#gifResultEmpty').hidden = true;
         $('#gifResultCard').hidden = false;
-        gifResultImage.src = state.gif.resultUrl;
+        renderEncodedPreview('#gifResultPreview', 'gifResultImage', 'gifResultPreviewLabel', state.gif.resultUrl);
         $('#gifResultDimensions').textContent = `${meta.width} × ${meta.height} px`;
         $('#gifResultFrames').textContent = String(meta.frames);
         $('#gifResultDuration').textContent = formatSeconds(meta.duration);
@@ -2374,7 +2391,7 @@
         state.webp.resultMeta = null;
         state.webp.stale = Boolean(stale && hadResult);
         state.webp.errorKey = '';
-        webpResultImage.removeAttribute('src');
+        $('#webpResultImage')?.remove();
         $('#webpResultCard').hidden = true;
         $('#webpResultEmpty').hidden = false;
         $('#saveWebpButton').disabled = true;
@@ -2403,7 +2420,7 @@
         }
         $('#webpResultEmpty').hidden = true;
         $('#webpResultCard').hidden = false;
-        webpResultImage.src = state.webp.resultUrl;
+        renderEncodedPreview('#webpResultPreview', 'webpResultImage', 'webpResultPreviewLabel', state.webp.resultUrl);
         $('#webpResultDimensions').textContent = `${meta.width} × ${meta.height} px`;
         $('#webpResultFrames').textContent = String(meta.frames);
         $('#webpResultDuration').textContent = formatSeconds(meta.duration);
@@ -2838,7 +2855,7 @@
         for (const file of files) {
           if (importGeneration !== state.generation) break;
           if (state.frames.length + added.length >= LIMITS.frames) { failures.push(failure(file.name, 'reasonFrameLimit')); continue; }
-          if (!file || file.size === 0) { failures.push(failure(file?.name || '—', 'reasonEmpty')); continue; }
+          if (!file || file.size === 0) { failures.push(failure(file?.name || t('unknownFile'), 'reasonEmpty')); continue; }
           if (!isSupportedFile(file)) { failures.push(failure(file.name, 'reasonType')); continue; }
           if (file.size > LIMITS.perFileBytes) { failures.push(failure(file.name, 'reasonFileSize')); continue; }
           if (runningTotal + file.size > LIMITS.totalBytes) { failures.push(failure(file.name, 'reasonTotalSize')); continue; }
@@ -3164,7 +3181,7 @@
         const sequence = playbackSequence();
         const frame = sequence[state.preview.index];
         const size = resolvedCanvasSize();
-        $('#resolvedCanvasSize').textContent = frame ? `${size.width} × ${size.height} px` : '—';
+        $('#resolvedCanvasSize').textContent = frame ? `${size.width} × ${size.height} px` : t('unavailable');
         customSizeRow.hidden = state.canvas.sizeMode !== 'custom';
         backgroundColor.disabled = state.canvas.backgroundMode !== 'custom';
         document.querySelectorAll('[data-placement]').forEach(button => {
@@ -3174,7 +3191,7 @@
           state.canvas.renderToken += 1;
           previewCanvasWrap.hidden = true;
           previewPlaceholder.hidden = false;
-          $('#previewFrame').textContent = '—';
+          $('#previewFrame').textContent = '0 / 0';
         } else {
           previewPlaceholder.hidden = true;
           previewCanvasWrap.hidden = false;
@@ -3201,7 +3218,7 @@
         syncGlobalTimingInput();
         $('#totalDuration').textContent = formatSeconds(totalDurationMs());
         const sequence = playbackSequence();
-        $('#playbackSummary').textContent = sequence.length ? `${sequence.length} ${t('framesUnit')} · ${formatSeconds(totalDurationMs())}` : '—';
+        $('#playbackSummary').textContent = sequence.length ? `${sequence.length} ${t('framesUnit')} · ${formatSeconds(totalDurationMs())}` : t('unavailable');
         updateHistoryButtons();
         renderPreviewFrame();
         renderGifResult();
@@ -3449,7 +3466,7 @@
         $('#totalDuration').textContent = formatSeconds(totalDurationMs());
         $('#totalSize').textContent = formatBytes(totalSourceBytes());
         const sequence = playbackSequence();
-        $('#playbackSummary').textContent = sequence.length ? `${sequence.length} ${t('framesUnit')} · ${formatSeconds(totalDurationMs())}` : '—';
+        $('#playbackSummary').textContent = sequence.length ? `${sequence.length} ${t('framesUnit')} · ${formatSeconds(totalDurationMs())}` : t('unavailable');
         playbackLoopCountField.hidden = state.playback.loopMode !== 'custom';
         playbackLoopCount.value = String(state.playback.loopCount);
         $('#emptyState').hidden = state.frames.length > 0;
@@ -3988,7 +4005,7 @@
 
       $('#versionBadge').textContent = `v${APP_CONFIG.version}`;
       $('#buildVersion').textContent = APP_CONFIG.version;
-      $('#builtAt').textContent = BUILD_MANIFEST.generatedAtUtc || '—';
+      $('#builtAt').textContent = BUILD_MANIFEST.generatedAtUtc || t('unavailable');
       $('#dependencyCount').textContent = String(BUILD_MANIFEST.dependencies?.length || 0);
       outputFilename.value = 'frame-animation';
       webpOutputFilename.value = 'frame-animation';
