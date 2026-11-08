@@ -141,8 +141,12 @@ async function inspect(width, height) {
     await page.keyboard.press('Escape');
     check(!(await page.locator('#helpDialog').isVisible()), width + ': Help closes');
 
+    const buildVersionBefore = (await page.locator('#buildVersion').textContent()).trim();
+    check(buildVersionBefore.length > 0, width + ': build version should be available');
     await page.locator('#languageButton').click();
     check(await page.locator('html').getAttribute('lang') === 'en', width + ': English');
+    check((await page.locator('#buildVersion').textContent()).trim() === buildVersionBefore,
+      width + ': changing language must not overwrite build metadata');
     await page.locator('#languageButton').click();
     check(await page.locator('html').getAttribute('lang') === 'ja', width + ': Japanese');
     await page.locator('#fileInput').setInputFiles([
