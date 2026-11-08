@@ -12,6 +12,10 @@ White and warm-light-gray surfaces, clear boundaries, subtle radius (8–12px) a
 - **Phone ≤640px:** one real page at a time; fixed, low-height, safe-area-aware Frames / Preview / Export navigation. The source-picker disappears after a successful import; Add is available in Frames. Save stays beside Generate after a successful export.
 - **Partial import failures:** the warning is shown inside the active frame-editing area after the picker disappears; it must not silently vanish.
 
+## Preview-player layout rule
+
+The preview canvas, playback progress and four transport buttons form **one viewer unit**, never separated by output settings or playback configuration. DOM order is canvas → timeline → transport → frame/time readout → short explanatory note. Output sizing and loop/order controls belong in a separate configuration area after the viewer on phones, or in its own adjacent rail on tablets. This must be validated on the actual rendered HTML in both languages, not inferred from the DOM alone.
+
 ## UI typography and interaction
 - 13–15px controls and body; 14px help body with 1.7 line-height.
 - 44px tap targets for phone actions; visible focus and named controls.
