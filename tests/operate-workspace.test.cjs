@@ -25,3 +25,18 @@ test('Operate accessibility and restrained presentation remain explicit', () => 
   assert.ok(source.includes('id="saveGifMobileButton"'));
   assert.ok(source.includes('id="saveWebpMobileButton"'));
 });
+
+
+test('preview transport is in the same player as the canvas, ahead of settings', () => {
+  const preview = source.slice(source.indexOf('<div class="preview-layout">'),
+    source.indexOf('<div id="mobilePageExport"'));
+  const stage = preview.indexOf('id="previewStage"');
+  const progress = preview.indexOf('id="previewProgress"');
+  const transport = preview.indexOf('class="preview-transport"');
+  const settings = preview.indexOf('class="preview-side"');
+  assert.ok(stage >= 0 && stage < progress && progress < transport && transport < settings,
+    'preview stage -> timeline -> transport must precede output settings in DOM order');
+  assert.ok(preview.indexOf('class="preview-player"') < stage);
+  assert.match(preview, /id="previewProgress" data-i18n-aria-label="previewTimeLabel"/);
+  assert.match(source, /\.preview-controls\{display:grid;gap:8px/);
+});
