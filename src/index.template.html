@@ -330,6 +330,9 @@
     .dialog-body{line-height:1.7}
     .dialog-body p,.dialog-body li{font-size:14px;line-height:1.7}
     .dialog-body h3{font-size:14px;margin:20px 0 6px}
+    .help-license-links{margin:6px 0 0;overflow-wrap:anywhere}
+    .help-license-links a{color:var(--accent);text-underline-offset:3px}
+    .help-license-links a:hover{text-decoration-thickness:2px}
     .dialog-body .build-details summary,.dialog-body .build-item strong{font-size:12px}
     .dialog-body .build-item span{font-size:12px}
     @media(min-width:901px){
@@ -853,6 +856,9 @@
 
         <h3 data-i18n="helpStorageTitle">データ保持</h3>
         <p data-i18n="helpStorageBody">画像自体はブラウザストレージへ自動保存しません。ページを閉じると作業画像は破棄されます。</p>
+        <h3 data-i18n="helpLicensesTitle">ライセンス</h3>
+        <p data-i18n="helpLicensesBody">Frame AnimatorはMIT Licenseです。内包する@jsquash/webpはApache-2.0、libwebpには別途再配布条件があります。著作権表示と条件は以下の資料で確認できます。</p>
+        <p class="help-license-links"><a href="https://github.com/ttomohisa/htmlapps-frame-animator/blob/main/LICENSE" target="_blank" rel="noopener noreferrer">LICENSE</a> · <a href="https://github.com/ttomohisa/htmlapps-frame-animator/blob/main/THIRD_PARTY_NOTICES.md" target="_blank" rel="noopener noreferrer">THIRD_PARTY_NOTICES.md</a></p>
         <section class="help-build"><details class="build-details">
       <summary data-i18n="buildInfo">ビルド情報</summary>
       <div class="build-grid">
@@ -991,7 +997,7 @@
           buildInfo:'ビルド情報', appVersion:'アプリバージョン', builtAt:'生成日時', dependencies:'内包依存', footer:'画像はこの端末内で処理されます',
           help:'ヘルプ', close:'閉じる', helpTitle:'使い方と注意事項', helpHowTitle:'基本操作', helpHow1:'JPEG・PNG・静止WebPを複数選択、画面へドロップ、またはクリップボードから画像を貼り付けます。', helpHow2:'画像の順番と表示時間を調整します。再生1回分の長さを指定したり、0.5×／2×で各フレームの速度を変えたりできます（10 ms刻み・20〜10,000 ms）。元に戻す／やり直すにも対応します。', helpHow3:'画像サイズと配置を設定し、GIFまたはWebPを作成します。生成したファイルを確認して保存します。',
           helpFormatsTitle:'対応形式', helpFormatsBody:'JPEG / JPG、PNG、静止WebPに対応します。Animated WebP、APNG、GIF、動画、HEIC等は現在対象外です。', helpLimitsTitle:'上限', helpLimitsBody:'最大200枚、1ファイル50 MiB、元ファイル合計500 MiB、1画像50メガピクセルです。1枚の表示時間は20〜10,000 ms、出力サイズは幅・高さ16〜4096pxです。',
-          helpPrivacyTitle:'プライバシー', helpPrivacyBody:'選択した画像はブラウザ内だけで読み込みます。このアプリは画像を外部サーバーへ送信せず、Analyticsや外部APIも使用しません。',  helpStorageTitle:'データ保持', helpStorageBody:'画像自体はブラウザストレージへ自動保存しません。ページを閉じると作業画像は破棄されます。',
+          helpPrivacyTitle:'プライバシー', helpPrivacyBody:'選択した画像はブラウザ内だけで読み込みます。このアプリは画像を外部サーバーへ送信せず、Analyticsや外部APIも使用しません。',  helpStorageTitle:'データ保持', helpStorageBody:'画像自体はブラウザストレージへ自動保存しません。ページを閉じると作業画像は破棄されます。', helpLicensesTitle:'ライセンス', helpLicensesBody:'Frame AnimatorはMIT Licenseです。内包する@jsquash/webpはApache-2.0、libwebpには別途再配布条件があります。著作権表示と条件は以下の資料で確認できます。',
           confirmTitle:'確認', cancel:'キャンセル', clearConfirmTitle:'すべての画像を消去しますか？', clearConfirmBody:'追加した画像とサムネイルをこのページから消去します。元ファイルは変更されません。', clearConfirmAction:'すべて消去',
           importing:'画像を読み込んでいます…', importAdded:'{count}枚追加しました', importPartial:'{added}枚追加 · {failed}枚を読み込めませんでした', importFailed:'画像を追加できませんでした', cleared:'画像を消去しました',
           reportTitle:'読み込めなかった画像があります', reasonType:'対応していない形式です', reasonAnimated:'Animated WebPは入力できません', reasonAnimatedPng:'APNG（アニメーションPNG）は入力できません', reasonFileSize:'1ファイル50 MiBを超えています', reasonTotalSize:'元ファイル合計500 MiBを超えます', reasonFrameLimit:'最大200枚を超えます', reasonPixels:'画像が50メガピクセルを超えています', reasonDecode:'画像を読み込めませんでした', reasonEmpty:'空のファイルです',
@@ -1015,7 +1021,7 @@
           buildInfo:'Build information', appVersion:'App version', builtAt:'Built at', dependencies:'Embedded dependencies', footer:'Images are processed on this device',
           help:'Help', close:'Close', helpTitle:'How to use & notes', helpHowTitle:'Basic workflow', helpHow1:'Choose multiple JPEG, PNG, or still WebP images, drop them onto the page, or paste an image from the clipboard.', helpHow2:'Arrange frames and adjust timings. Set the length of one playback pass or scale each duration with 0.5× / 2× (10 ms steps, 20–10,000 ms). Undo/Redo restores previous values.', helpHow3:'Choose the image size and placement, create a GIF or WebP, then review the generated file before saving.',
           helpFormatsTitle:'Supported formats', helpFormatsBody:'JPEG / JPG, PNG, and still WebP are supported. Animated WebP, APNG, GIF, video, HEIC, and other formats are not supported yet.', helpLimitsTitle:'Limits', helpLimitsBody:'Up to 200 images, 50 MiB per file, 500 MiB total, 50 megapixels per image, 20–10,000 ms per frame, and output dimensions of 16–4096 px.',
-          helpPrivacyTitle:'Privacy', helpPrivacyBody:'Selected images are read only in your browser. This app does not upload images or use analytics or external APIs.',  helpStorageTitle:'Data retention', helpStorageBody:'Images are not automatically stored in browser storage. Closing the page discards the working images.',
+          helpPrivacyTitle:'Privacy', helpPrivacyBody:'Selected images are read only in your browser. This app does not upload images or use analytics or external APIs.',  helpStorageTitle:'Data retention', helpStorageBody:'Images are not automatically stored in browser storage. Closing the page discards the working images.', helpLicensesTitle:'Licenses', helpLicensesBody:'Frame Animator is MIT-licensed. The bundled @jsquash/webp uses Apache-2.0; libwebp has its own redistribution conditions. See the following files for copyright notices and full terms.',
           confirmTitle:'Confirm', cancel:'Cancel', clearConfirmTitle:'Clear all images?', clearConfirmBody:'This removes the imported images and thumbnails from this page. Your original files are not changed.', clearConfirmAction:'Clear all',
           importing:'Loading images…', importAdded:'Added {count} images', importPartial:'Added {added} · could not load {failed}', importFailed:'Could not add images', cleared:'Images cleared',
           reportTitle:'Some images could not be loaded', reasonType:'Unsupported file type', reasonAnimated:'Animated WebP is not supported', reasonAnimatedPng:'APNG (animated PNG) is not supported', reasonFileSize:'File exceeds 50 MiB', reasonTotalSize:'Source files would exceed 500 MiB total', reasonFrameLimit:'Maximum of 200 images reached', reasonPixels:'Image exceeds 50 megapixels', reasonDecode:'Could not decode image', reasonEmpty:'File is empty',
