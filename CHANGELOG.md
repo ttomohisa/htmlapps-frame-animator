@@ -2,6 +2,13 @@
 
 ## Unreleased
 
+### Reworked workbench
+
+- Place the actual animation preview and export together on the left of the desktop editor, with a compact scrollable frame rail on the right.
+- Change phone frame cards to readable thumbnail/filename/timing rows and keep controls within generous tap targets.
+- Let the preview and playback controls take priority; place sizing, background and playback settings behind a native, state-aware disclosure and provide an explicit Export next step.
+- Hide the unused result container until encoding succeeds, then show the real GIF/WebP and Save ahead of settings.
+
 ### Fixed
 
 - After GIF/WebP encoding on phones, show the actual generated image and its Save action above encoding settings, then scroll to the result. Keep invalidation and retry workflows intact.
