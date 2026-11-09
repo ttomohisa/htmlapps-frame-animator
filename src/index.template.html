@@ -3379,6 +3379,7 @@
         if (wasPlaying) playPreview();
       }
       function renderPreviewFrame() {
+        updatePreviewSettingsStatus();
         normalizePreviewIndex();
         const sequence = playbackSequence();
         const frame = sequence[state.preview.index];
@@ -3662,6 +3663,16 @@
         applyExportFormat();
       }
 
+      function updatePreviewSettingsStatus() {
+        const size = state.frames.length ? resolvedCanvasSize() : null;
+        const order = state.playback.order === 'reverse' ? t('previewOrderReverse')
+          : state.playback.order === 'pingpong' ? t('previewOrderPingpong') : t('previewOrderForward');
+        const loop = playbackLoopMode.selectedOptions[0]?.textContent || t('playbackLoopInfinite');
+        $('#previewSettingsStatus').textContent = size
+          ? `${size.width}×${size.height}px · ${order} · ${loop}`
+          : '';
+      }
+
       function render() {
         syncGlobalTimingInput();
         $('#frameCount').textContent = new Intl.NumberFormat(language).format(state.frames.length);
@@ -3669,13 +3680,7 @@
         $('#totalSize').textContent = formatBytes(totalSourceBytes());
         const sequence = playbackSequence();
         $('#playbackSummary').textContent = sequence.length ? `${sequence.length} ${t('framesUnit')} · ${formatSeconds(totalDurationMs())}` : t('unavailable');
-        const sizeForSummary = state.frames.length ? resolvedCanvasSize() : null;
-        const orderForSummary = state.playback.order === 'reverse' ? t('previewOrderReverse')
-          : state.playback.order === 'pingpong' ? t('previewOrderPingpong') : t('previewOrderForward');
-        const loopForSummary = playbackLoopMode.selectedOptions[0]?.textContent || t('playbackLoopInfinite');
-        $('#previewSettingsStatus').textContent = sizeForSummary
-          ? `${sizeForSummary.width}×${sizeForSummary.height}px · ${orderForSummary} · ${loopForSummary}`
-          : '';
+        updatePreviewSettingsStatus();
         playbackLoopCountField.hidden = state.playback.loopMode !== 'custom';
         playbackLoopCount.value = String(state.playback.loopCount);
         $('#emptyState').hidden = state.frames.length > 0;
