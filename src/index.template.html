@@ -589,6 +589,11 @@
       #mobilePageExport .gif-result-stat{min-width:0}
       #mobilePageExport .gif-result-stat strong{overflow-wrap:anywhere}
     }
+
+    /* The final decision is based on the real encoded image: Save follows it directly. */
+    #gifResultCard .gif-result-actions,#webpResultCard .gif-result-actions{order:1;display:flex}
+    #gifResultCard .gif-result-stats,#webpResultCard .gif-result-stats{order:2}
+    #gifResultCard .gif-result-actions .button,#webpResultCard .gif-result-actions .button{flex:1 1 auto;width:100%;min-height:44px}
   </style>
 </head>
 <body>
