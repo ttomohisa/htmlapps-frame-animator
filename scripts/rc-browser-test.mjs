@@ -423,6 +423,9 @@ async function exerciseTimingAndSafeImports(browser, baseUrl) {
   const timings = () => page.locator('.frame-duration-input').evaluateAll(inputs => inputs.map(input => Number(input.value)));
   const expected = [50, 130, 500];
   for (const [index, value] of [100, 250, 1000].entries()) await setNumber(page.locator('.frame-duration-input').nth(index), value);
+  if (!(await page.locator('#timingExtras').evaluate(el => el.open))) {
+    await page.locator('#timingExtras > summary').click();
+  }
   await page.locator('[data-speed="2"]').click();
   assert(JSON.stringify(await timings()) === JSON.stringify(expected), 'Double speed must scale and round each original timing');
   await page.locator('#undoButton').click();
