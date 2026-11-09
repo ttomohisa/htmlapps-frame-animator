@@ -215,6 +215,9 @@ async function inspect(width, height) {
         check(Math.abs(positions.preview.top - positions.frames.top) <= 2,
           width + ': desktop working areas share the same top edge');
         if (width >= 1260) {
+          const firstFrame = await page.locator('.frame-card').first().boundingBox();
+          check(firstFrame && firstFrame.y + firstFrame.height <= height - 8,
+            width + ': at least one complete frame must be visible above the fold');
           check(!(await page.locator('#timingExtras').evaluate(el => el.open)),
             width + ': advanced speed/preset controls should start collapsed in the frame rail');
           await page.locator('#timingExtras > summary').click();
