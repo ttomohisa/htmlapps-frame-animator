@@ -262,6 +262,15 @@ async function inspect(width, height) {
     await page.locator('#languageButton').click();
     const resultImage = await page.locator('#gifResultImage').boundingBox();
     check(resultImage && resultImage.width >= 180, width + ': generated small GIF must be inspectable');
+    if (width >= 1260) {
+      await page.waitForFunction(() => {
+        const rail = document.querySelector('#mobilePageExport');
+        const result = document.querySelector('#gifResultCard')?.getBoundingClientRect();
+        const viewport = rail?.getBoundingClientRect();
+        return rail && result && viewport && rail.scrollTop <= 1 &&
+          result.top >= viewport.top - 1 && result.top < viewport.bottom;
+      }, null, { timeout:5000 });
+    }
     await page.screenshot({path:`test-results/operate/${width}-result.png`,fullPage:true});
     if (width <= 640) {
       const resultFirst = await page.evaluate(() => {
