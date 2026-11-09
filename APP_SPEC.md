@@ -3,7 +3,9 @@
 ## Preview-first workbench (Unreleased)
 
 - Empty stage: only the image picker is shown.
-- With frames on desktop (≥901px): preview on the left; export format/controls directly below it, not in a distant full-width section; sticky, scrollable frame-editing rail on the right. On the right, compact horizontal thumbnail+filename+duration rows replace large two-column cards.
+- With frames on wide desktops (≥1260px): task order becomes three side-by-side panes — Frames on the left, dominant Preview in the center, GIF/WebP Export on the right — with Generate visible in the first viewport. Frames and Export are constrained to the viewport and independently scrollable.
+- On medium desktops (901–1259px): preview remains in the left working column with Export underneath; the right rail contains compact horizontal frame rows.
+- On both desktop configurations, frame items show a readable thumbnail, filename and duration in single rows rather than four-column cards.
 - On phones (≤640px): frame editor uses one-column horizontal rows. The Preview page displays the canvas, adjacent transport, frame/time info and a next-step Export button before any configuration; a native details disclosure keeps all output size, placement/background, playback order and looping controls available without dominating the first viewport.
 - The settings disclosure shows a live current-output summary, remains closed by default, and reopens when asked. Switching language keeps it accurate.
 - Before encoding, do not show a large empty output-result panel. After encoding, show the actual generated GIF/WebP, its Save control and measurements before the encoder settings on phones (and inside the export section on desktop).
