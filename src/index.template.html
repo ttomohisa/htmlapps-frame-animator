@@ -513,6 +513,24 @@
       #mobilePageFrames .frame-card .frame-info{padding:7px 9px}
       #mobilePageFrames .frame-card .frame-duration .duration-control{min-width:94px;width:108px}
     }
+
+    /* Start with the task, not a second heading above the same picker. */
+    .main[data-workspace="empty"] .page-intro{display:none}
+    .main[data-workspace="empty"] #addImagesPanel{margin:10px auto 0}
+    .main[data-workspace="empty"] #addImagesPanel .panel-head{border-bottom:0;padding:22px 24px 4px}
+    .main[data-workspace="empty"] #addImagesPanel .panel-head h3{font-size:20px}
+    .main[data-workspace="empty"] #addImagesPanel .panel-head p{font-size:13px;line-height:1.6;max-width:60ch}
+    .main[data-workspace="empty"] #addImagesPanel .panel-body{padding:12px 24px 24px}
+    .main[data-workspace="empty"] .drop-zone{min-height:212px;border-color:var(--line-strong);background:#fafbf9}
+    .main[data-workspace="empty"] .drop-title{font-size:15px}
+    .main[data-workspace="empty"] .drop-note{font-size:12px}
+    @media(max-width:640px){
+      .main[data-workspace="empty"] #addImagesPanel{margin-top:6px}
+      .main[data-workspace="empty"] #addImagesPanel .panel-head{padding:17px 16px 2px}
+      .main[data-workspace="empty"] #addImagesPanel .panel-head h3{font-size:18px}
+      .main[data-workspace="empty"] #addImagesPanel .panel-body{padding:10px 15px 16px}
+      .main[data-workspace="empty"] .drop-zone{min-height:205px;padding:20px 14px}
+    }
   </style>
 </head>
 <body>
@@ -551,7 +569,7 @@
       <div class="panel-head">
         <div>
           <h3 id="addHeading" data-i18n="addHeading">画像を追加</h3>
-          <p data-i18n="addNote">複数選択・ドラッグ＆ドロップ・貼り付けに対応。画像は外部送信されません。</p>
+          <p data-i18n="addNote">JPEG・PNG・静止WebPを選択。追加後に順番や表示時間を調整できます。</p>
         </div>
       </div>
       <div class="panel-body">
@@ -564,7 +582,7 @@
               <path d="M37 21v16m-6-6 6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
             <p class="drop-title" data-i18n="dropTitle">画像をここにドロップ</p>
-            <p class="drop-note" data-i18n="dropNote">JPEG・PNG・静止WebPに対応</p>
+            <p class="drop-note" data-i18n="dropNote">複数選択や画像の貼り付けにも対応</p>
             <button class="button primary" id="chooseButton" type="button" data-i18n="chooseImages">画像を選択</button>
             <input class="file-input" id="fileInput" type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" multiple>
             <div class="limits" aria-label="Input limits">
@@ -1117,7 +1135,7 @@
       const translations = {
         ja: {
           brandMeta:'複数画像からGIF / WebPを作成', unavailable:'未設定', unknownFile:'ファイル名不明', mobileWorkflow:'作業ステップ', mobileFrames:'フレーム', mobilePreview:'プレビュー', mobileExport:'書き出し', introTitle:'画像からGIF / WebPを作成', introBody:'画像を選ぶと、並べ替えとプレビューが使えます。',
-          localProcessing:'完全ローカル処理', addHeading:'画像を追加', addNote:'複数選択・ドラッグ＆ドロップ・貼り付けに対応。画像は外部送信されません。', dropTitle:'画像をここにドロップ', dropNote:'JPEG・PNG・静止WebPに対応', chooseImages:'画像を選択',
+          localProcessing:'完全ローカル処理', addHeading:'画像を追加', addNote:'JPEG・PNG・静止WebPを選択。追加後に順番や表示時間を調整できます。', dropTitle:'画像をここにドロップ', dropNote:'複数選択や画像の貼り付けにも対応', chooseImages:'画像を選択',
           limitFrames:'最大200枚', limitFile:'1枚50 MiBまで', limitPixels:'1枚50 MPまで', framesHeading:'フレーム', framesNote:'画像の順番と表示時間を調整します。',
           images:'画像', totalDurationLabel:'1回分', sourceSize:'元ファイル合計', addMore:'画像を追加', clearAll:'すべて消去', emptyTitle:'まだ画像がありません', emptyBody:'画像を追加すると、ここにサムネイル一覧が表示されます。',
           undo:'元に戻す', redo:'やり直す', sortLabel:'フレームを並べ替え', sortChoose:'並べ替え', sortAsc:'ファイル名 昇順', sortDesc:'ファイル名 降順',
@@ -1141,7 +1159,7 @@
         },
         en: {
           brandMeta:'Create GIF / WebP from multiple images', unavailable:'Not set', unknownFile:'Unknown filename', mobileWorkflow:'Workflow steps', mobileFrames:'Frames', mobilePreview:'Preview', mobileExport:'Export', introTitle:'Make an animated GIF or WebP', introBody:'Choose images, arrange them, then preview the animation before exporting.',
-          localProcessing:'Fully local processing', addHeading:'Add images', addNote:'Select, drop, or paste images. Your files are not uploaded.', dropTitle:'Drop images here', dropNote:'JPEG, PNG, and still WebP supported', chooseImages:'Choose images',
+          localProcessing:'Fully local processing', addHeading:'Add images', addNote:'Choose JPEG, PNG or still WebP images, then arrange frames and adjust timing.', dropTitle:'Drop images here', dropNote:'You can also select multiple files or paste an image.', chooseImages:'Choose images',
           limitFrames:'Up to 200 images', limitFile:'50 MiB per image', limitPixels:'50 MP per image', framesHeading:'Frames', framesNote:'Arrange images and set how long each one appears.',
           images:'Images', totalDurationLabel:'One pass', sourceSize:'Source total', addMore:'Add images', clearAll:'Clear all', emptyTitle:'No images yet', emptyBody:'Add images to see their thumbnails here.',
           undo:'Undo', redo:'Redo', sortLabel:'Sort frames', sortChoose:'Sort', sortAsc:'Filename ascending', sortDesc:'Filename descending',
