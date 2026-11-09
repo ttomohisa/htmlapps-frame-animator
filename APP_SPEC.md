@@ -1,5 +1,15 @@
 # Frame Animator — APP_SPEC.md
 
+## Preview-first workbench (Unreleased)
+
+- Empty stage: only the image picker is shown.
+- With frames on desktop (≥901px): preview on the left; export format/controls directly below it, not in a distant full-width section; sticky, scrollable frame-editing rail on the right. On the right, compact horizontal thumbnail+filename+duration rows replace large two-column cards.
+- On phones (≤640px): frame editor uses one-column horizontal rows. The Preview page displays the canvas, adjacent transport, frame/time info and a next-step Export button before any configuration; a native details disclosure keeps all output size, placement/background, playback order and looping controls available without dominating the first viewport.
+- The settings disclosure shows a live current-output summary, remains closed by default, and reopens when asked. Switching language keeps it accurate.
+- Before encoding, do not show a large empty output-result panel. After encoding, show the actual generated GIF/WebP, its Save control and measurements before the encoder settings on phones (and inside the export section on desktop).
+- Preserve every existing import/timing/order/Undo/Redo/GIF/WebP/playback/cancellation/worker/network/Help function and both languages. Do not change the actual output dimensions just to enlarge on-screen previews.
+
+
 ## Preview transport proximity correction (Unreleased)
 
 - Keep the preview canvas, progress bar, restart/previous/play/next controls, and current frame/time readout together as a single preview-player component.
