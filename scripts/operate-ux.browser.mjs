@@ -212,12 +212,24 @@ async function inspect(width, height) {
           preview:document.querySelector('#mobilePagePreview').getBoundingClientRect().toJSON(),
           export:document.querySelector('#mobilePageExport').getBoundingClientRect().toJSON()
         }));
-        check(positions.frames.left > positions.preview.right - 1,
-          width + ': preview-first desktop workbench places frame rail on the right');
         check(Math.abs(positions.preview.top - positions.frames.top) <= 2,
-          width + ': desktop columns aligned');
-        check(positions.export.left < positions.frames.left && positions.export.top >= positions.preview.bottom - 1,
-          width + ': export follows preview in same desktop column');
+          width + ': desktop working areas share the same top edge');
+        if (width >= 1260) {
+          check(positions.frames.right <= positions.preview.left + 1 &&
+            positions.preview.right <= positions.export.left + 1,
+            width + ': desktop editor, preview and export follow left-to-right task order');
+          check(Math.abs(positions.export.top - positions.preview.top) <= 2,
+            width + ': export form is visible beside canvas, without page scrolling');
+          const primaryAction = await page.locator('#createGifButton').boundingBox();
+          check(primaryAction && primaryAction.y + primaryAction.height < height,
+            width + ': Generate is visible in the first desktop viewport');
+        } else {
+          check(positions.frames.left > positions.preview.right - 1,
+            width + ': compact desktop retains the two-column layout');
+          check(positions.export.left < positions.frames.left &&
+            positions.export.top >= positions.preview.bottom - 1,
+            width + ': compact desktop export follows the preview');
+        }
       }
       await page.locator('#previewSettingsDisclosure > summary').click();
       check(await page.locator('#canvasSizeMode').isVisible(), width + ': advanced controls can be opened');
@@ -290,7 +302,7 @@ async function inspect(width, height) {
   } finally { await context.close(); }
 }
 try {
-  for(const [w,h] of [[320,700],[390,844],[768,960],[1440,900]]) await inspect(w,h);
+  for(const [w,h] of [[320,700],[390,844],[768,960],[1024,768],[1280,800],[1440,900]]) await inspect(w,h);
 } finally {
   await browser.close();
   await new Promise(done => server.close(done));
