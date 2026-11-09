@@ -588,6 +588,20 @@
       #mobilePageExport .gif-result-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
       #mobilePageExport .gif-result-stat{min-width:0}
       #mobilePageExport .gif-result-stat strong{overflow-wrap:anywhere}
+      #mobilePageFrames .stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%;gap:5px}
+      #mobilePageFrames .stats .stat{flex:none;min-width:0;width:100%;padding:7px 4px}
+      #mobilePageFrames .stats .stat strong{font-size:13px}
+      #mobilePageFrames .stats .stat span{font-size:11px;white-space:normal;text-align:center}
+      #mobilePageFrames .timing-disclosure{margin-bottom:9px}
+      #mobilePageFrames .timing-toolbar{display:grid;grid-template-columns:minmax(0,1fr);gap:8px;padding:10px;border-radius:10px}
+      #mobilePageFrames .timing-copy{display:none}
+      #mobilePageFrames .timing-controls{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.9fr) auto;gap:6px;align-items:center}
+      #mobilePageFrames .timing-controls .duration-control,#mobilePageFrames .timing-controls .timing-mode-field{min-width:0;width:100%}
+      #mobilePageFrames .timing-controls .duration-apply{min-height:40px;padding:8px 9px}
+      #mobilePageFrames .timing-extras>summary{display:flex;align-items:center;justify-content:space-between;min-height:38px;padding:7px 4px;border-top:1px solid var(--line);font-size:12px}
+      #mobilePageFrames .timing-extras>summary::after{content:"+";font-size:17px;color:var(--muted);font-weight:500}
+      #mobilePageFrames .timing-extras[open]>summary::after{content:"−"}
+      #mobilePageFrames .timing-extras-content{padding-top:8px}
     }
 
     /* The final decision is based on the real encoded image: Save follows it directly. */
@@ -1323,6 +1337,7 @@
       const dropZone = $('#dropZone');
       const mobileWorkflowNav = $('#mobileWorkflowNav');
       const mobileMedia = window.matchMedia('(max-width:640px)');
+      const wideWorkbenchMedia = window.matchMedia('(min-width:1260px)');
        const frameGrid = $('#frameGrid');
       const importReport = $('#importReport');
       const sortSelect = $('#sortSelect');
@@ -3979,7 +3994,11 @@
       });
       function syncResponsiveDisclosures() {
         const expanded = !mobileMedia.matches;
-        responsiveDisclosures.forEach(disclosure => { disclosure.open = expanded; });
+        responsiveDisclosures.forEach(disclosure => {
+          // Preserve quick edit actions and per-frame duration controls.
+          // Only secondary speed/preset options start collapsed in the wide editing rail.
+          disclosure.open = disclosure.id === 'timingExtras' ? expanded && !wideWorkbenchMedia.matches : expanded;
+        });
       }
       const onMobileMediaChange = () => {
         syncResponsiveDisclosures();
@@ -3987,6 +4006,8 @@
       };
       if (typeof mobileMedia.addEventListener === 'function') mobileMedia.addEventListener('change', onMobileMediaChange);
       else mobileMedia.addListener?.(onMobileMediaChange);
+      if (typeof wideWorkbenchMedia.addEventListener === 'function') wideWorkbenchMedia.addEventListener('change', syncResponsiveDisclosures);
+      else wideWorkbenchMedia.addListener?.(syncResponsiveDisclosures);
 
       $('#chooseButton').addEventListener('click', () => fileInput.click());
       $('#addMoreButton').addEventListener('click', () => fileInput.click());
