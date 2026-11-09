@@ -157,6 +157,11 @@ async function inspect(width, height) {
     await page.waitForFunction(() => document.querySelectorAll('.frame-card').length === 2);
     check(await page.locator('.main').getAttribute('data-workspace') === 'ready', width + ': ready workspace');
     check(!(await page.locator('#addImagesPanel').isVisible()), width + ': picker recedes after import');
+    check(!(await page.locator('#gifResultEmpty').isVisible()), width + ': blank output placeholder must not consume space');
+    check(!(await page.locator('#previewSettingsDisclosure').evaluate(el => el.open)),
+      width + ': preview options are initially collapsed');
+    check((await page.locator('#previewSettingsStatus').textContent()).includes('×'),
+      width + ': compact settings summary shows the actual output size');
     if (width <= 640) {
       check(await page.locator('#mobileWorkflowNav').isVisible(), width + ': mobile tabs visible');
       await page.locator('#mobileTabPreview').click();
@@ -169,7 +174,21 @@ async function inspect(width, height) {
       await checkPreviewTransport(page, width, 'en');
       await page.screenshot({path:`test-results/operate/${width}-preview-en.png`,fullPage: width > 640});
       await page.locator('#languageButton').click();
+      check(!(await page.locator('#canvasSizeMode').isVisible()), width + ': settings hidden until requested');
+      await page.locator('#previewSettingsDisclosure > summary').click();
+      check(await page.locator('#canvasSizeMode').isVisible(), width + ': optional output controls reveal on request');
+      await page.locator('#previewSettingsDisclosure > summary').click();
+      await page.locator('#goToExportButton').click();
+      check(await page.locator('#mobilePageExport').isVisible(), width + ': direct Export next action works');
+      check(await page.locator('#mobileTabExport').getAttribute('aria-selected') === 'true', width + ': export tab selected');
       await page.locator('#mobileTabFrames').click();
+      const cardShape = await page.locator('.frame-card').first().evaluate(card => {
+        const thumb = card.querySelector('.thumb-wrap').getBoundingClientRect();
+        const info = card.querySelector('.frame-info').getBoundingClientRect();
+        return {thumbRight:thumb.right, infoLeft:info.left};
+      });
+      check(cardShape.infoLeft >= cardShape.thumbRight - 1,
+        width + ': horizontal frame rows leave room for filenames and duration');
     } else {
       check(await page.locator('#mobilePagePreview').isVisible(), width + ': desktop preview visible');
       const desktopCanvas = await page.locator('#previewCanvas').boundingBox();
@@ -183,11 +202,19 @@ async function inspect(width, height) {
       if (width >= 901) {
         const positions = await page.evaluate(() => ({
           frames:document.querySelector('#mobilePageFrames').getBoundingClientRect().toJSON(),
-          preview:document.querySelector('#mobilePagePreview').getBoundingClientRect().toJSON()
+          preview:document.querySelector('#mobilePagePreview').getBoundingClientRect().toJSON(),
+          export:document.querySelector('#mobilePageExport').getBoundingClientRect().toJSON()
         }));
-        check(positions.preview.left > positions.frames.right - 1, width + ': desktop workspace side-by-side');
-        check(Math.abs(positions.preview.top - positions.frames.top) <= 2, width + ': desktop columns aligned');
+        check(positions.frames.left > positions.preview.right - 1,
+          width + ': preview-first desktop workbench places frame rail on the right');
+        check(Math.abs(positions.preview.top - positions.frames.top) <= 2,
+          width + ': desktop columns aligned');
+        check(positions.export.left < positions.frames.left && positions.export.top >= positions.preview.bottom - 1,
+          width + ': export follows preview in same desktop column');
       }
+      await page.locator('#previewSettingsDisclosure > summary').click();
+      check(await page.locator('#canvasSizeMode').isVisible(), width + ': advanced controls can be opened');
+      await page.locator('#previewSettingsDisclosure > summary').click();
     }
     // The partial-import notice must remain visible even after the picker has closed.
     await page.locator('#fileInput').setInputFiles([{name:'not-an-image.txt',mimeType:'text/plain',buffer:Buffer.from('invalid image')}]);
