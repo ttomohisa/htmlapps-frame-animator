@@ -55,6 +55,14 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           node scripts/operate-ux.browser.mjs
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Attach built standalone HTML for visual review
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: frame-animator-built-html
+          path: dist/index.html
+          if-no-files-found: error
+          retention-days: 5
       - name: Attach screenshot evidence
         if: always()
         uses: actions/upload-artifact@v4
