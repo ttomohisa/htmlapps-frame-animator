@@ -116,6 +116,8 @@ async function inspect(width, height) {
     await page.goto(baseUrl, { waitUntil: 'load' });
     check(await page.locator('.main').getAttribute('data-workspace') === 'empty', width + ': initial workspace');
     check(await page.locator('#addImagesPanel').isVisible(), width + ': picker visible');
+    check(!(await page.locator('.page-intro').isVisible()), width + ': no duplicated introductory hero');
+    await page.screenshot({path:`test-results/operate/${width}-empty-ja.png`});
     check(await page.locator('#gifResultPreview img, #webpResultPreview img').count() === 0,
       width + ': no result images or broken image elements before export');
     for (const stage of ['#mobilePageFrames','#mobilePagePreview','#mobilePageExport']) {
@@ -146,6 +148,7 @@ async function inspect(width, height) {
     check(buildVersionBefore.length > 0, width + ': build version should be available');
     await page.locator('#languageButton').click();
     check(await page.locator('html').getAttribute('lang') === 'en', width + ': English');
+    await page.screenshot({path:`test-results/operate/${width}-empty-en.png`});
     check((await page.locator('#buildVersion').textContent()).trim() === buildVersionBefore,
       width + ': changing language must not overwrite build metadata');
     await page.locator('#languageButton').click();
@@ -177,6 +180,10 @@ async function inspect(width, height) {
       check(!(await page.locator('#canvasSizeMode').isVisible()), width + ': settings hidden until requested');
       await page.locator('#previewSettingsDisclosure > summary').click();
       check(await page.locator('#canvasSizeMode').isVisible(), width + ': optional output controls reveal on request');
+      await page.locator('#canvasSizeMode').selectOption('480');
+      check((await page.locator('#previewSettingsStatus').textContent()).includes('480'),
+        width + ': settings disclosure summarizes the actual selected output size');
+      await page.locator('#canvasSizeMode').selectOption('auto');
       await page.locator('#previewSettingsDisclosure > summary').click();
       await page.locator('#goToExportButton').click();
       check(await page.locator('#mobilePageExport').isVisible(), width + ': direct Export next action works');
