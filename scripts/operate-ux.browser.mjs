@@ -215,6 +215,12 @@ async function inspect(width, height) {
         check(Math.abs(positions.preview.top - positions.frames.top) <= 2,
           width + ': desktop working areas share the same top edge');
         if (width >= 1260) {
+          check(!(await page.locator('#timingExtras').evaluate(el => el.open)),
+            width + ': advanced speed/preset controls should start collapsed in the frame rail');
+          await page.locator('#timingExtras > summary').click();
+          check(await page.locator('[data-speed="2"]').isVisible(),
+            width + ': advanced speed remains discoverable');
+          await page.locator('#timingExtras > summary').click();
           check(positions.frames.right <= positions.preview.left + 1 &&
             positions.preview.right <= positions.export.left + 1,
             width + ': desktop editor, preview and export follow left-to-right task order');
