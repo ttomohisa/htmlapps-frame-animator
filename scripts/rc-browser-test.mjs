@@ -322,7 +322,13 @@ async function exerciseDesktop(browser, baseUrl) {
   }));
   assert(initialFormat.gifVisible && initialFormat.webpHidden, 'Export format did not default to GIF');
 
+  if (!(await page.locator('#previewSettingsDisclosure').evaluate(el => el.open))) {
+    await page.locator('#previewSettingsDisclosure > summary').click();
+  }
   await page.locator('#playbackOrder').selectOption('pingpong');
+  if (!(await page.locator('#previewSettingsDisclosure').evaluate(el => el.open))) {
+    await page.locator('#previewSettingsDisclosure > summary').click();
+  }
   await page.locator('#playbackLoopMode').selectOption('custom');
   await setNumber(page.locator('#playbackLoopCount'), 3);
   assert((await page.locator('#playbackSummary').textContent()).trim().startsWith('8 '), '5-frame Ping-pong should derive 8 playback frames');
@@ -378,6 +384,9 @@ async function exerciseDesktop(browser, baseUrl) {
 
   await page.locator('#exportGifTab').click();
   assert(await visible(page.locator('#gifExportPanel')) && !(await visible(page.locator('#webpExportPanel'))), 'GIF format selection did not restore GIF settings');
+  if (!(await page.locator('#previewSettingsDisclosure').evaluate(el => el.open))) {
+    await page.locator('#previewSettingsDisclosure > summary').click();
+  }
   await page.locator('#playbackOrder').selectOption('forward');
   await page.waitForFunction(() => {
     const gifCard = document.querySelector('#gifResultCard');
@@ -420,6 +429,9 @@ async function exerciseTimingAndSafeImports(browser, baseUrl) {
   assert(JSON.stringify(await timings()) === '[100,250,1000]', 'Speed Undo must restore exact mixed timings');
   await page.locator('#redoButton').click();
   assert(JSON.stringify(await timings()) === JSON.stringify(expected), 'Speed Redo must restore scaled timings');
+  if (!(await page.locator('#previewSettingsDisclosure').evaluate(el => el.open))) {
+    await page.locator('#previewSettingsDisclosure > summary').click();
+  }
   await page.locator('#playbackLoopMode').selectOption('once');
   await page.locator('#outputFilename').fill('scaled-gif.gif');
   await page.locator('#createGifButton').click();
