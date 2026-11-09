@@ -2073,10 +2073,15 @@
       }
 
       function revealMobileExportResult(format) {
-        if (!mobileMedia.matches || state.ui.mobilePage !== 'export') return;
         const target = $('#' + (format === 'gif' ? 'gifResultCard' : 'webpResultCard'));
         requestAnimationFrame(() => {
-          if (target && !target.hidden && mobileMedia.matches && state.ui.mobilePage === 'export') {
+          if (!target || target.hidden) return;
+          // On wide screens the Export inspector scrolls independently of the canvas.
+          // Return to its first item (the encoded result) rather than keeping the form scrolled down.
+          if (window.matchMedia('(min-width:1260px)').matches) {
+            $('#mobilePageExport').scrollTop = 0;
+          } else if (!mobileMedia.matches || state.ui.mobilePage === 'export') {
+            // On phones and compact desktops make the real output visible before Save.
             target.scrollIntoView({ block:'start', behavior:'instant' });
           }
         });
