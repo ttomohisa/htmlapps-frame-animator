@@ -433,6 +433,85 @@
       .preview-side{display:flex;flex-direction:column;gap:10px}
       .preview-progress,.preview-transport,.preview-stats,.preview-help{order:initial}
     }
+
+    /* Workbench v2: canvas first, frames as an editing rail, advanced controls on demand. */
+    .preview-settings-disclosure{min-width:0;border:1px solid var(--line);border-radius:11px;background:#f8f9f7;overflow:hidden}
+    .preview-settings-disclosure>summary{display:grid;grid-template-columns:minmax(0,1fr) 12px;gap:2px 12px;align-items:center;min-height:51px;padding:12px 14px;cursor:pointer;list-style:none;font-size:13px;font-weight:700;color:var(--text)}
+    .preview-settings-disclosure>summary::-webkit-details-marker{display:none}
+    .preview-settings-disclosure>summary::after{content:"";grid-column:2;grid-row:1/span 2;width:8px;height:8px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);transition:transform .15s ease}
+    .preview-settings-disclosure[open]>summary::after{transform:rotate(225deg)}
+    .preview-settings-disclosure[open]>summary{border-bottom:1px solid var(--line)}
+    .preview-settings-disclosure>summary small{display:block;grid-column:1;font-size:12px;font-weight:500;color:var(--muted);white-space:normal;line-height:1.45}
+    .preview-settings-disclosure>.preview-help{padding:12px 14px 0;margin:0;font-size:12px;line-height:1.5}
+    .preview-settings-disclosure .preview-side{padding:12px;gap:10px;min-width:0}
+    .preview-settings-disclosure .output-settings{background:var(--surface);padding:12px}
+    .preview-next-action{justify-content:space-between;width:100%;border-color:var(--line-strong);color:var(--accent);background:var(--surface);font-size:13px;font-weight:750;padding-inline:15px;min-height:44px}
+    .preview-next-action svg{flex:0 0 auto}
+    #mobilePagePreview .preview-layout{grid-template-columns:minmax(0,1fr);gap:12px}
+    .preview-stage{min-height:300px}
+    .preview-player{gap:10px}
+    /* No empty dashed preview consuming half the workbench before encoding. */
+    #gifExportPanel:not(.has-output) .gif-result,
+    #webpExportPanel:not(.has-output) .gif-result{display:none}
+    #gifExportPanel:not(.has-output) .gif-layout,
+    #webpExportPanel:not(.has-output) .gif-layout{display:block}
+    #gifExportPanel.has-output .gif-layout,
+    #webpExportPanel.has-output .gif-layout{display:flex;flex-direction:column;gap:14px}
+    #gifExportPanel.has-output .gif-result,
+    #webpExportPanel.has-output .gif-result{order:-1}
+    .gif-layout .gif-settings{max-width:none}
+    #mobilePageExport{min-width:0}
+    .export-format{margin-bottom:10px}
+    .gif-result-card{gap:10px}
+    .gif-result-preview{min-height:200px;max-height:380px}
+    .gif-result-preview img{max-height:340px}
+    .gif-result-actions .button{min-height:44px}
+    @media(min-width:901px){
+      .main[data-workspace="ready"]{display:grid;grid-template-columns:minmax(0,1.14fr) minmax(350px,.86fr);align-items:start;column-gap:16px;row-gap:14px;padding-top:16px}
+      .main[data-workspace="ready"]>#mobilePagePreview{grid-column:1;grid-row:1;min-width:0}
+      .main[data-workspace="ready"]>#mobilePageExport{grid-column:1;grid-row:2;min-width:0}
+      .main[data-workspace="ready"]>#mobilePageFrames{grid-column:2;grid-row:1/span 2;position:sticky;top:calc(var(--header-height) + 12px);max-height:calc(100dvh - var(--header-height) - 28px);overflow:auto;overscroll-behavior:contain;scrollbar-gutter:stable;min-width:0}
+      .main[data-workspace="ready"]>#mobilePageFrames .panel,
+      .main[data-workspace="ready"]>#mobilePagePreview .panel{margin-bottom:0}
+      #mobilePageFrames .frame-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:9px}
+      #mobilePageFrames .panel-head p{font-size:12px}
+      #mobilePagePreview .preview-stage{min-height:315px}
+      #mobilePagePreview .preview-canvas{min-width:min(300px,70%)}
+      #mobilePagePreview .preview-side{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+      #mobilePageExport .panel{margin-bottom:0}
+      #mobilePageExport .panel-head{padding-block:12px}
+      #mobilePageExport .panel-body{padding:14px}
+    }
+    @media(max-width:640px){
+      #mobilePagePreview .panel-body{padding:12px}
+      #mobilePagePreview .preview-stage{min-height:205px;padding:9px}
+      #mobilePagePreview .preview-player{gap:8px}
+      #mobilePagePreview .preview-controls{gap:7px}
+      #mobilePagePreview .preview-settings-disclosure{margin-top:2px}
+      #mobilePagePreview .preview-settings-disclosure .preview-side{display:flex;flex-direction:column}
+      #mobilePagePreview .preview-next-action{background:var(--accent);color:#fff;border-color:var(--accent)}
+      #mobilePagePreview .preview-next-action:hover:not(:disabled){background:var(--accent-hover);color:#fff}
+      #mobilePageFrames .frame-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:9px}
+      .gif-result-preview{min-height:190px}
+    }
+    @media(min-width:901px), (max-width:640px){
+      #mobilePageFrames .frame-card{display:grid;grid-template-columns:96px minmax(0,1fr);grid-template-rows:minmax(96px,auto) 44px;align-items:stretch}
+      #mobilePageFrames .frame-card .thumb-wrap{grid-column:1;grid-row:1;aspect-ratio:auto;min-height:96px;height:100%}
+      #mobilePageFrames .frame-card .frame-info{grid-column:2;grid-row:1;padding:9px 11px;min-width:0;align-self:center}
+      #mobilePageFrames .frame-card .frame-name{font-size:13px;margin-bottom:5px}
+      #mobilePageFrames .frame-card .frame-meta{font-size:11px}
+      #mobilePageFrames .frame-card .frame-duration{display:flex;justify-content:space-between;gap:5px;margin-top:7px}
+      #mobilePageFrames .frame-card .frame-duration-label{font-size:11px}
+      #mobilePageFrames .frame-card .frame-duration .duration-control{min-width:102px;max-width:130px}
+      #mobilePageFrames .frame-card .frame-actions{grid-column:1/-1;grid-row:2}
+      #mobilePageFrames .frame-card .frame-action{height:44px}
+    }
+    @media(max-width:360px){
+      #mobilePageFrames .frame-card{grid-template-columns:86px minmax(0,1fr);grid-template-rows:minmax(86px,auto) 44px}
+      #mobilePageFrames .frame-card .thumb-wrap{min-height:86px}
+      #mobilePageFrames .frame-card .frame-info{padding:7px 9px}
+      #mobilePageFrames .frame-card .frame-duration .duration-control{min-width:94px;width:108px}
+    }
   </style>
 </head>
 <body>
