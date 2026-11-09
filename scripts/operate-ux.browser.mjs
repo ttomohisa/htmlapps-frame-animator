@@ -262,6 +262,17 @@ async function inspect(width, height) {
     await page.locator('#languageButton').click();
     const resultImage = await page.locator('#gifResultImage').boundingBox();
     check(resultImage && resultImage.width >= 180, width + ': generated small GIF must be inspectable');
+    const resultActions = await page.locator('#gifResultCard').evaluate(card => {
+      const preview = card.querySelector('.gif-result-preview').getBoundingClientRect();
+      const save = card.querySelector('.gif-result-actions .button').getBoundingClientRect();
+      const stats = card.querySelector('.gif-result-stats').getBoundingClientRect();
+      return {previewBottom:preview.bottom,previewWidth:preview.width,saveTop:save.top,
+        saveBottom:save.bottom,saveWidth:save.width,statsTop:stats.top};
+    });
+    check(resultActions.saveTop >= resultActions.previewBottom - 1 &&
+      resultActions.saveBottom <= resultActions.statsTop + 1 &&
+      resultActions.saveWidth >= resultActions.previewWidth - 2,
+      width + ': Save must directly follow the actual encoded preview at full width ' + JSON.stringify(resultActions));
     if (width >= 1260) {
       await page.waitForFunction(() => {
         const rail = document.querySelector('#mobilePageExport');
