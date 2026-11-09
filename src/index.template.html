@@ -476,7 +476,7 @@
       #mobilePageFrames .frame-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:9px}
       #mobilePageFrames .panel-head p{font-size:12px}
       #mobilePagePreview .preview-stage{min-height:315px}
-      #mobilePagePreview .preview-canvas{min-width:min(300px,70%)}
+      #mobilePagePreview .preview-canvas{min-width:min(300px,80vw)}
       #mobilePagePreview .preview-side{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
       #mobilePageExport .panel{margin-bottom:0}
       #mobilePageExport .panel-head{padding-block:12px}
@@ -484,8 +484,9 @@
     }
     @media(max-width:640px){
       #mobilePagePreview .panel-body{padding:12px}
-      #mobilePagePreview .preview-stage{min-height:205px;padding:9px}
+      #mobilePagePreview .preview-stage{min-height:clamp(235px,38dvh,340px);padding:9px}
       #mobilePagePreview .preview-player{gap:8px}
+      #mobilePagePreview .preview-canvas{min-width:min(300px,80vw)}
       #mobilePagePreview .preview-controls{gap:7px}
       #mobilePagePreview .preview-settings-disclosure{margin-top:2px}
       #mobilePagePreview .preview-settings-disclosure .preview-side{display:flex;flex-direction:column}
