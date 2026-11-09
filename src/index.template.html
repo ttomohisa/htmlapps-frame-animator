@@ -607,7 +607,7 @@
     <div id="mobilePagePreview" data-mobile-page="preview" role="tabpanel" aria-labelledby="mobileTabPreview"><section class="panel" aria-labelledby="previewHeading">
       <div class="panel-head">
         <div>
-          <h3 id="previewHeading" data-i18n="previewHeading">プレビューと設定</h3>
+          <h3 id="previewHeading" data-i18n="previewHeading">プレビュー</h3>
         </div>
       </div>
       <div class="panel-body">
@@ -640,10 +640,19 @@
               <div class="preview-stat"><span data-i18n="previewFrameLabel">フレーム</span><strong id="previewFrame">0 / 0</strong></div>
               <div class="preview-stat"><span data-i18n="previewTimeLabel">再生位置</span><strong id="previewTime">0.0 / 0.0 s</strong></div>
             </div>
-            <p class="preview-help" data-i18n="previewHelp">プレビューには軽量画像を使います。サイズ・配置・背景は書き出し時と同じ設定です。</p>
             </div>
+            <button class="button preview-next-action" id="goToExportButton" type="button">
+              <span data-i18n="goToExport">GIF / WebPを書き出す</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+            </button>
           </div>
-          <div class="preview-side">
+          <details class="preview-settings-disclosure" id="previewSettingsDisclosure">
+            <summary>
+              <span data-i18n="previewSettingsTitle">サイズ・再生の設定</span>
+              <small id="previewSettingsStatus"></small>
+            </summary>
+            <p class="preview-help" data-i18n="previewHelp">プレビューには軽量画像を使います。サイズ・配置・背景は書き出し時と同じ設定です。</p>
+            <div class="preview-side">
             <div class="output-settings">
               <div class="output-settings-head">
                 <strong data-i18n="outputSettingsTitle">出力サイズ</strong>
@@ -716,9 +725,8 @@
               </label>
               <div class="canvas-size-readout"><span data-i18n="playbackPassSummary">1回分</span>: <strong id="playbackSummary">0</strong></div>
             </div>
-
-
-          </div>
+            </div>
+          </details>
         </div>
       </div>
     </section></div>
@@ -1037,7 +1045,7 @@
           duplicated:'フレームを複製しました', deleted:'フレームを削除しました', reordered:'フレーム順を変更しました', sortedAsc:'ファイル名の昇順に並べ替えました', sortedDesc:'ファイル名の降順に並べ替えました', undone:'元に戻しました', redone:'やり直しました', duplicateLimit:'最大200枚までです',
           durationPresets:'表示時間のプリセット', speedSlower:'0.5× ゆっくり', speedFaster:'2× はやく', speedNote:'各フレームの時間を2倍／半分にします。', speedApplied:'全フレームの再生速度を変更しました',
           timingTitle:'全フレームの表示時間', timingBody:'各画像にも個別の時間を設定できます。', globalDurationLabel:'表示時間', applyAll:'適用', frameDuration:'表示時間', timingApplied:'全フレームの表示時間を変更しました', timingChanged:'表示時間を変更しました', frameToolsTitle:'編集・管理', timingModeLabel:'表示時間の指定方法', timingModeFrame:'1枚あたり', timingModeTotal:'1回分の長さ', timingExtrasLabel:'速度調整', timingTotalRange:'1回分の長さは{min}〜{max}秒にしてください。', timingTotalApplied:'1回分の長さを変更しました', timingTotalLabel:'1回分の長さ（秒）', gifDitherHelp:'色の境目を細かな点で目立ちにくくします。',
-          previewHeading:'プレビューと設定', previewNote:'出力画像へFit / Fillした状態で、各フレームの表示時間どおりに確認します。', previewEmpty:'画像を追加すると、ここでアニメーションを確認できます。', previewFrameLabel:'フレーム', previewTimeLabel:'再生位置', previewRestart:'最初から', previewPrevious:'前のフレーム', previewPlay:'再生 / 一時停止', previewNext:'次のフレーム', previewHelp:'プレビューは元画像を縮小して表示します。書き出し結果の画質は、保存前に確認してください。', playbackSettingsTitle:'再生設定', playbackSettingsBody:'プレビュー・GIF・WebPで同じ再生順とループ設定を使います。', playbackOrderLabel:'再生順', playbackForward:'Forward', playbackReverse:'Reverse', playbackPingpong:'Ping-pong', playbackLoopLabel:'ループ', playbackLoopInfinite:'繰り返す', playbackLoopOnce:'1回だけ', playbackLoopCustom:'回数指定', playbackLoopCountLabel:'再生回数', playbackPassSummary:'1回分', framesUnit:'フレーム',
+          previewHeading:'プレビュー', previewSettingsTitle:'サイズ・再生の設定', previewOrderForward:'順再生', previewOrderReverse:'逆再生', previewOrderPingpong:'往復', goToExport:'GIF / WebPを書き出す', previewNote:'出力画像へFit / Fillした状態で、各フレームの表示時間どおりに確認します。', previewEmpty:'画像を追加すると、ここでアニメーションを確認できます。', previewFrameLabel:'フレーム', previewTimeLabel:'再生位置', previewRestart:'最初から', previewPrevious:'前のフレーム', previewPlay:'再生 / 一時停止', previewNext:'次のフレーム', previewHelp:'プレビューは元画像を縮小して表示します。書き出し結果の画質は、保存前に確認してください。', playbackSettingsTitle:'再生設定', playbackSettingsBody:'プレビュー・GIF・WebPで同じ再生順とループ設定を使います。', playbackOrderLabel:'再生順', playbackForward:'Forward', playbackReverse:'Reverse', playbackPingpong:'Ping-pong', playbackLoopLabel:'ループ', playbackLoopInfinite:'繰り返す', playbackLoopOnce:'1回だけ', playbackLoopCustom:'回数指定', playbackLoopCountLabel:'再生回数', playbackPassSummary:'1回分', framesUnit:'フレーム',
           outputSettingsTitle:'出力サイズ', outputSettingsBody:'1枚目の縦横比を基準にサイズをそろえます。カスタムでは幅・高さを個別指定できます。', canvasSizeLabel:'画像サイズ', canvasAuto:'自動（長辺最大720px）', canvas480:'長辺480px', canvas720:'長辺720px', canvas1080:'長辺1080px', canvasOriginal:'1枚目の元サイズ相当', canvasCustom:'カスタム', canvasWidthLabel:'画像の幅', canvasHeightLabel:'画像の高さ', placementLabel:'画像の配置', fit:'収める', fill:'切り抜く', backgroundLabel:'背景', backgroundTransparent:'透明', backgroundWhite:'白', backgroundBlack:'黒', backgroundCustom:'カスタム色', backgroundColorLabel:'背景色', previewCanvasLabel:'アニメーションのプレビュー', resolvedCanvas:'実際の出力サイズ',
           gifHeading:'Animated GIFを書き出す', gifHeadingNote:'設定したサイズと表示時間でGIFを作成します。', gifColorsLabel:'色数', gifLoopLabel:'ループ', gifLoopInfinite:'繰り返す', gifLoopOnce:'1回だけ', gifDitherLabel:'ディザリング', outputFilenameLabel:'出力ファイル名', gifLimitNote:'GIFは最大256色・1bit透明です。', createGif:'GIFを作成', cancelGif:'キャンセル', gifResultEmpty:'GIFを作成すると、ここで実際の生成ファイルを確認できます。', gifResultPreviewLabel:'生成したGIFのプレビュー', resultReadyTitle:'生成結果', gifResultSizeLabel:'サイズ', gifResultFramesLabel:'フレーム', gifResultDurationLabel:'再生時間', gifResultBytesLabel:'ファイル容量', saveGif:'GIFを保存', gifPreparing:'フレーム {current} / {total} を準備しています…', gifEncoding:'フレーム {current} / {total} をGIFへ変換しています…', gifFinishing:'GIFを仕上げています…', gifDone:'GIFを作成しました', gifSaved:'GIFを保存しました', gifCancelled:'GIF作成をキャンセルしました', gifFailed:'GIFを作成できませんでした', gifFailedRecovery:'GIFを作成できませんでした。出力サイズやフレーム数を小さくするか、設定を変更してもう一度お試しください。', gifStale:'設定が変更されました。もう一度GIFを作成してください。', heavyJobTitle:'処理負荷の確認', heavyJobBody:'{format}を{frames}フレーム・{width}×{height}pxで作成します。端末のメモリを多く使用し、処理に時間がかかる可能性があります。続行しますか？', continueExport:'続行',
           webpHeading:'Animated WebPを書き出す', webpHeadingNote:'画質や圧縮方法を調整してWebPを作成します。', webpQualityLabel:'画質', webpEffortLabel:'圧縮の丁寧さ', webpLosslessLabel:'劣化なしで圧縮', webpLoopLabel:'ループ', webpLoopInfinite:'繰り返す', webpLoopOnce:'1回だけ', webpNote:'Animated WebPは動く画像です。対応ビューアやブラウザで再生をご確認ください。', webpQualityHelp:'通常は画質、劣化なしでは圧縮を調整します。', webpEffortHelp:'高いほど処理に時間をかけます。', webpLosslessHelp:'追加の画質劣化なし。容量は増える場合があります。', webpEffort0:'0 · 最速', webpEffort1:'1 · 高速', webpEffort2:'2 · 速め', webpEffort3:'3 · やや速い', webpEffort4:'4 · 標準', webpEffort5:'5 · 丁寧', webpEffort6:'6 · 最も丁寧', createWebp:'WebPを作成', cancelWebp:'キャンセル', webpResultEmpty:'WebPを作成すると、ここで実際の生成ファイルを確認できます。', webpResultPreviewLabel:'生成したAnimated WebPのプレビュー', saveWebp:'WebPを保存', webpPreparing:'フレーム {current} / {total} を準備しています…', webpEncoding:'フレーム {current} / {total} をWebPへ変換しています…', webpFinishing:'Animated WebPを仕上げています…', webpDone:'WebPを作成しました', webpSaved:'WebPを保存しました', webpCancelled:'WebP作成をキャンセルしました', webpFailed:'WebPを作成できませんでした', webpFailedRecovery:'WebPを作成できませんでした。出力サイズ・画質・圧縮の丁寧さなどを変更して、もう一度お試しください。', webpStale:'設定が変更されました。もう一度WebPを作成してください。',
@@ -1061,7 +1069,7 @@
           duplicated:'Frame duplicated', deleted:'Frame deleted', reordered:'Frame order changed', sortedAsc:'Sorted by filename ascending', sortedDesc:'Sorted by filename descending', undone:'Undone', redone:'Redone', duplicateLimit:'Maximum of 200 frames reached',
           durationPresets:'Frame duration presets', speedSlower:'0.5× Slower', speedFaster:'2× Faster', speedNote:'Double or halve each frame duration.', speedApplied:'Updated all frame speeds',
           timingTitle:'All frame durations', timingBody:'You can also adjust each image separately.', globalDurationLabel:'Duration', applyAll:'Apply', frameDuration:'Duration', timingApplied:'Updated all frame durations', timingChanged:'Frame duration updated', frameToolsTitle:'Edit and manage', timingModeLabel:'How to set duration', timingModeFrame:'Per frame', timingModeTotal:'One-pass length', timingExtrasLabel:'Speed', timingTotalRange:'One-pass length must be between {min} and {max} seconds.', timingTotalApplied:'Updated one-pass length', timingTotalLabel:'One-pass length (seconds)', gifDitherHelp:'Uses tiny dots to soften visible steps between colors.',
-          previewHeading:'Preview & settings', previewNote:'', previewEmpty:'Add images to preview the animation here.', previewFrameLabel:'Frame', previewTimeLabel:'Playback position', previewRestart:'Restart', previewPrevious:'Previous frame', previewPlay:'Play / pause', previewNext:'Next frame', previewHelp:'The preview uses resized source images. Review the generated file to check export quality.', playbackSettingsTitle:'Playback settings', playbackSettingsBody:'Preview, GIF, and WebP share the same playback order and loop settings.', playbackOrderLabel:'Playback order', playbackForward:'Forward', playbackReverse:'Reverse', playbackPingpong:'Ping-pong', playbackLoopLabel:'Loop', playbackLoopInfinite:'Repeat', playbackLoopOnce:'Play once', playbackLoopCustom:'Custom count', playbackLoopCountLabel:'Play count', playbackPassSummary:'One pass', framesUnit:'frames',
+          previewHeading:'Preview', previewSettingsTitle:'Size & playback', previewOrderForward:'Forward', previewOrderReverse:'Reverse', previewOrderPingpong:'Ping-pong', goToExport:'Export GIF / WebP', previewNote:'', previewEmpty:'Add images to preview the animation here.', previewFrameLabel:'Frame', previewTimeLabel:'Playback position', previewRestart:'Restart', previewPrevious:'Previous frame', previewPlay:'Play / pause', previewNext:'Next frame', previewHelp:'The preview uses resized source images. Review the generated file to check export quality.', playbackSettingsTitle:'Playback settings', playbackSettingsBody:'Preview, GIF, and WebP share the same playback order and loop settings.', playbackOrderLabel:'Playback order', playbackForward:'Forward', playbackReverse:'Reverse', playbackPingpong:'Ping-pong', playbackLoopLabel:'Loop', playbackLoopInfinite:'Repeat', playbackLoopOnce:'Play once', playbackLoopCustom:'Custom count', playbackLoopCountLabel:'Play count', playbackPassSummary:'One pass', framesUnit:'frames',
           outputSettingsTitle:'Image size and placement', outputSettingsBody:'Give every image the same output dimensions.', canvasSizeLabel:'Output size', canvasAuto:'Auto (long edge up to 720px)', canvas480:'480px long edge', canvas720:'720px long edge', canvas1080:'1080px long edge', canvasOriginal:'First frame original equivalent', canvasCustom:'Custom', canvasWidthLabel:'Image width', canvasHeightLabel:'Image height', placementLabel:'Image placement', fit:'Fit', fill:'Fill', backgroundLabel:'Background', backgroundTransparent:'Transparent', backgroundWhite:'White', backgroundBlack:'Black', backgroundCustom:'Custom color', backgroundColorLabel:'Background color', previewCanvasLabel:'Preview & settings', resolvedCanvas:'Actual output size',
           gifHeading:'Export Animated GIF', gifHeadingNote:'Create a GIF using the selected size and frame durations.', gifColorsLabel:'Colors', gifLoopLabel:'Loop', gifLoopInfinite:'Repeat', gifLoopOnce:'Play once', gifDitherLabel:'Dithering', outputFilenameLabel:'Output filename', gifLimitNote:'GIF supports up to 256 colors and 1-bit transparency.', createGif:'Create GIF', cancelGif:'Cancel', gifResultEmpty:'Create a GIF to review the actual generated file here.', gifResultPreviewLabel:'Generated GIF preview', resultReadyTitle:'Generated result', gifResultSizeLabel:'Size', gifResultFramesLabel:'Frames', gifResultDurationLabel:'Duration', gifResultBytesLabel:'File size', saveGif:'Save GIF', gifPreparing:'Preparing frame {current} / {total}…', gifEncoding:'Encoding frame {current} / {total}…', gifFinishing:'Finishing GIF…', gifDone:'GIF created', gifSaved:'GIF saved', gifCancelled:'GIF creation cancelled', gifFailed:'Could not create GIF', gifFailedRecovery:'Could not create the GIF. Reduce the output size or frame count, or change the settings and try again.', gifStale:'Settings changed. Create the GIF again.', heavyJobTitle:'Confirm processing load', heavyJobBody:'Create {format} with {frames} frames at {width}×{height}px. This may use substantial memory and take longer on this device. Continue?', continueExport:'Continue',
           webpHeading:'Export Animated WebP', webpHeadingNote:'Create a WebP animation with adjustable quality and compression.', webpQualityLabel:'Quality', webpEffortLabel:'Compression effort', webpLosslessLabel:'Lossless compression', webpLoopLabel:'Loop', webpLoopInfinite:'Repeat', webpLoopOnce:'Play once', webpNote:'Animated WebP is an animated image. Check playback in a compatible viewer or browser.', webpQualityHelp:'Adjusts image quality normally, or compression in lossless mode.', webpEffortHelp:'Higher settings take more time to encode.', webpLosslessHelp:'No added quality loss; files may be larger.', webpEffort0:'0 · Fastest', webpEffort1:'1 · Very fast', webpEffort2:'2 · Fast', webpEffort3:'3 · Moderate', webpEffort4:'4 · Balanced', webpEffort5:'5 · Thorough', webpEffort6:'6 · Most thorough', createWebp:'Create WebP', cancelWebp:'Cancel', webpResultEmpty:'Create a WebP to review the actual generated file here.', webpResultPreviewLabel:'Generated Animated WebP preview', saveWebp:'Save WebP', webpPreparing:'Preparing frame {current} / {total}…', webpEncoding:'Encoding frame {current} / {total}…', webpFinishing:'Finishing Animated WebP…', webpDone:'WebP created', webpSaved:'WebP saved', webpCancelled:'WebP creation cancelled', webpFailed:'Could not create WebP', webpFailedRecovery:'Could not create the WebP. Adjust output size, quality, compression effort or lossless compression, then try again.', webpStale:'Settings changed. Create the WebP again.',
@@ -3505,6 +3513,13 @@
         $('#totalSize').textContent = formatBytes(totalSourceBytes());
         const sequence = playbackSequence();
         $('#playbackSummary').textContent = sequence.length ? `${sequence.length} ${t('framesUnit')} · ${formatSeconds(totalDurationMs())}` : t('unavailable');
+        const sizeForSummary = state.frames.length ? resolvedCanvasSize() : null;
+        const orderForSummary = state.playback.order === 'reverse' ? t('previewOrderReverse')
+          : state.playback.order === 'pingpong' ? t('previewOrderPingpong') : t('previewOrderForward');
+        const loopForSummary = playbackLoopMode.selectedOptions[0]?.textContent || t('playbackLoopInfinite');
+        $('#previewSettingsStatus').textContent = sizeForSummary
+          ? `${sizeForSummary.width}×${sizeForSummary.height}px · ${orderForSummary} · ${loopForSummary}`
+          : '';
         playbackLoopCountField.hidden = state.playback.loopMode !== 'custom';
         playbackLoopCount.value = String(state.playback.loopCount);
         $('#emptyState').hidden = state.frames.length > 0;
@@ -3769,6 +3784,10 @@
         tabs[next].focus();
       });
 
+      $('#goToExportButton').addEventListener('click', () => {
+        if (mobileMedia.matches) setMobilePage('export');
+        else $('#mobilePageExport').scrollIntoView({ block:'start', behavior:'smooth' });
+      });
       mobileWorkflowNav.addEventListener('click', event => {
         const tab = event.target.closest('[data-mobile-target]');
         if (tab) setMobilePage(tab.dataset.mobileTarget);
