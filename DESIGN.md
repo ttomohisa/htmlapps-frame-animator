@@ -7,7 +7,8 @@ White and warm-light-gray surfaces, clear boundaries, subtle radius (8–12px) a
 
 ## Information architecture
 - **No images:** concise heading and a strong choose/drop area. Hide disabled frame controls, blank previews and empty export sections from the page.
-- **With images, desktop ≥901px:** the animation preview is the left-hand primary workspace, with export immediately beneath it; the frame editor is a scrollable, sticky rail on the right. The preview remains reachable while editing long sequences.
+- **With images, wide desktop ≥1260px:** three work areas share the first viewport: Frames on the left, the animation Preview in the largest central pane, and GIF/WebP Export on the right. The frame and export rails scroll independently when needed, leaving the actual animation visible.
+- **With images, compact desktop 901–1259px:** the preview and export share the left work column; frames form a sticky, scrollable rail to the right.
 - **Tablet 641–900px:** vertical panels, without the initial picker after import.
 - **Phone ≤640px:** one real page at a time; fixed, low-height, safe-area-aware Frames / Preview / Export navigation. Frame items use horizontal thumbnail + filename + duration rows instead of cramped two-column cards. The source-picker disappears after a successful import; Add is available in Frames. After encoding, the actual generated GIF/WebP becomes the first item in Export and Save sits directly below that preview; encoding settings remain accessible below the result.
 - **Partial import failures:** the warning is shown inside the active frame-editing area after the picker disappears; it must not silently vanish.
