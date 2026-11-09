@@ -40,7 +40,7 @@ async function runCase(browser, language, width, height) {
     await page.locator('#chooseButton').waitFor();
     assert.equal(await page.locator('html').getAttribute('lang'), language);
     assert.equal(await page.locator('#addImagesPanel').isVisible(), true, label + ': entry picker visible before images');
-    assert.equal(await page.locator('.page-intro').isVisible(), true, label + ': intro visible before images');
+    assert.equal(await page.locator('.page-intro').isVisible(), false, label + ': task-first picker avoids duplicative intro');
     assert.equal(await page.locator('.local-badge').isVisible(), false, label + ': local processing badge hidden on phones');
 
     const first = await sampleImage(page, '#16624f');
@@ -339,7 +339,7 @@ async function runFirstBatchCase(browser, language, width, height) {
     await page.locator('#appConfirmDialog').waitFor({ state: 'visible' });
     await page.locator('#appConfirmOk').click();
     await page.waitForFunction(() => document.querySelector('#frameCount').textContent === '0');
-    assert.equal(await page.locator('.page-intro').isVisible(), true, label + ': reset restores intro');
+    assert.equal(await page.locator('.page-intro').isVisible(), false, label + ': reset returns to single-picker introduction');
     assert.equal(await page.locator('#addImagesPanel').isVisible(), true, label + ': reset restores initial image picker');
     assert.deepEqual(pageErrors, [], label + ': no page errors');
     console.log('PASS ' + label);
