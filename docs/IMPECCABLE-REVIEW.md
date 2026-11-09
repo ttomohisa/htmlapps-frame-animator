@@ -40,6 +40,24 @@ Automated findings being zero does not mean an agent-run `critique` or `audit` o
 
 After the user asked for the actual evaluation playbooks rather than only the detector, the installed `critique.md` and `audit.md` procedures were followed. No sub-agent runner is exposed here, so the critique is **DEGRADED single-context** rather than the official dual-agent default; this is explicitly flagged in both reports. Assessments are archived separately in [CRITIQUE](IMPECCABLE-CRITIQUE.md) and [AUDIT](IMPECCABLE-AUDIT.md), with Nielsen **29/40** and technical **15/20** pre-follow-up scores, positive findings, ranked issues, personas, evidence and limitations. The design review uncovered a phone completion-state P1 not found by the zero-finding deterministic scan; its fix puts the actual encoded output and Save ahead of settings. A mobile header tap-size issue was also corrected.
 
+## 2026-11-09: preview-first workbench follow-up (reviewed in Chromium)
+
+The previous critique/audit scores describe a **pre-redesign baseline** and are not automatically upgraded because the source scanner returned 0. A separate screenshot-backed UI review of actual generated HTML exposed workflow-level issues not detected by the CLI. This revision addresses them structurally rather than by adding more decorative CSS:
+
+| Current issue found in real render | Implemented resolution | How verified |
+| --- | --- | --- |
+| Desktop preview, frames, and export were separated into large stacked panels | At ≥1260px display Frames / Preview / Export as a single left-to-right workbench, with the preview widest and both editing/encoding rails scrollable independently; 901–1259px uses a two-column layout | Chromium screenshots and computed layout checks at 1024/1280/1440px; desktop Generate is visible in the initial viewport |
+| Phone Preview contained more configuration than animation | Collapse output size, fit/fill, background, playback order/loop into a native `details`, exposing live dimension/order/loop summary; keep the actual large animation, progress, transport and next-step Export action visible first | Screenshots and toggle/selection tests at 320/390px in Japanese and English |
+| Two-column phone frame cards made filename and per-frame duration hard to scan | Use a single horizontal thumbnail + two-line filename + duration row followed by 44px action targets; apply compact editing rail to desktop | Actual frame-state screenshots and computed thumbnail/info geometry; 44px targets |
+| Unneeded introduction and placeholder result took up the first screen | Present one picker with concise copy when empty; omit large dashed export result until encoding completes | Empty ja/en screenshots at six widths and real generated-result checks |
+| Result metadata separated Save from the actual output | Put Save directly beneath the generated GIF/WebP, before measurements; retain filename/options and invalidation on changes | Real GIF/WebP encoding, localized result preview, Save/download and layout regression tests |
+
+**Current substantive checklist:** initial picker; frame edit; output-size/loop disclosure; preview and playback; format switch; progress/cancel/error; generated result; download; Help/licenses; no unexpected external requests; CSP and offline single-HTML behavior. Existing logic remains; no new CDN/font/API. On large desktops the Export rail scrolls back to its real encoded result at completion.
+
+**Impeccable provenance:** project-scope Codex skill and hook (v4.8.1) installed; official `context`/`detect --json` runs in Actions as a strict check. This is **not** a two-subagent `critique` run; the separate critique/audit reports are explicitly **DEGRADED single-context**, using the official evaluation playbooks and actual screenshots. No source warnings suppressed. A detector result of zero does not guarantee good UX.
+
+**Remaining independent verification:** physical Android/iPhone, Safari/Firefox, assistive technology, 200% browser zoom and maximum-data memory stress. Preview deployment and browser CI evidence are linked in PR #19. No merge, tag or release.
+
 ## Preserved
 Reorder/drag/duplicate/delete, Undo/Redo, global and per-frame timing, preview playback, size/fit/fill/background, order/loops, GIF/WebP settings, local workers, progress/cancel/error, both output files, actual result previews and save, i18n, privacy, limits, native Help and confirmation.
 
