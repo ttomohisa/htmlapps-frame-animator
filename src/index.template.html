@@ -535,6 +535,60 @@
       /* More of a long filename remains readable without widening frame rows. */
       #mobilePageFrames .frame-card .frame-name{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;white-space:normal;overflow:hidden;overflow-wrap:anywhere;line-height:1.45}
     }
+
+    /* Impeccable Operate: full desktop workbench with all three jobs visible at once. */
+    @media(min-width:1260px){
+      .header-inner,.main{width:min(1480px,100%)}
+      .main[data-workspace="ready"]{
+        grid-template-columns:minmax(258px,.84fr) minmax(385px,1.59fr) minmax(295px,.94fr);
+        gap:14px;align-items:start;padding:16px clamp(18px,2.1vw,32px) 40px
+      }
+      .main[data-workspace="ready"]>#mobilePageFrames{
+        grid-column:1;grid-row:1;position:sticky;top:calc(var(--header-height) + 12px);
+        max-height:calc(100dvh - var(--header-height) - 28px);overflow:auto;overscroll-behavior:contain;
+        scrollbar-gutter:auto;min-width:0
+      }
+      .main[data-workspace="ready"]>#mobilePagePreview{
+        grid-column:2;grid-row:1;position:sticky;top:calc(var(--header-height) + 12px);min-width:0
+      }
+      .main[data-workspace="ready"]>#mobilePageExport{
+        grid-column:3;grid-row:1;position:sticky;top:calc(var(--header-height) + 12px);
+        max-height:calc(100dvh - var(--header-height) - 28px);overflow:auto;overscroll-behavior:contain;min-width:0
+      }
+      #mobilePageFrames .panel-head,#mobilePagePreview .panel-head{padding:14px 15px 12px}
+      #mobilePageFrames .panel-body{padding:12px}
+      #mobilePageFrames .summary-bar{gap:8px}
+      #mobilePageFrames .stats{gap:5px;min-width:0;flex-wrap:wrap}
+      #mobilePageFrames .stats .stat{min-width:0;flex:1 1 65px;padding:7px 5px}
+      #mobilePageFrames .stats .stat strong{font-size:13px}
+      #mobilePageFrames .stats .stat span{font-size:10px}
+      #mobilePageFrames .summary-actions{gap:5px}
+      #mobilePageFrames .summary-actions .button{min-height:38px;padding-inline:7px;font-size:11px}
+      #mobilePageFrames .frame-grid{gap:7px}
+      #mobilePageFrames .frame-card{grid-template-columns:72px minmax(0,1fr);grid-template-rows:minmax(78px,auto) 38px}
+      #mobilePageFrames .frame-card .thumb-wrap{min-height:78px}
+      #mobilePageFrames .frame-card .frame-info{padding:7px 8px}
+      #mobilePageFrames .frame-card .frame-name{font-size:12px}
+      #mobilePageFrames .frame-card .frame-meta{font-size:10px}
+      #mobilePageFrames .frame-card .frame-duration .duration-control{min-width:95px;max-width:110px}
+      #mobilePageFrames .frame-card .frame-action{height:38px;min-height:38px}
+      #mobilePagePreview .panel-body{padding:14px}
+      #mobilePagePreview .preview-stage{min-height:clamp(310px,48dvh,540px)}
+      #mobilePagePreview .preview-canvas-wrap{max-height:clamp(310px,48dvh,500px)}
+      #mobilePagePreview .preview-player{gap:9px}
+      #mobilePageExport{border:1px solid var(--line);border-radius:12px;background:var(--surface);padding:11px}
+      #mobilePageExport .export-format{margin-bottom:8px;background:var(--surface-muted)}
+      #mobilePageExport .panel{border:0;border-radius:0;box-shadow:none;background:transparent}
+      #mobilePageExport .panel-head{padding:11px 4px 12px;border-bottom:1px solid var(--line)}
+      #mobilePageExport .panel-head h3{font-size:16px}
+      #mobilePageExport .panel-head p{font-size:12px;line-height:1.5}
+      #mobilePageExport .panel-body{padding:12px 4px 4px}
+      #mobilePageExport .gif-settings{gap:12px}
+      #mobilePageExport .gif-result-preview{min-height:170px}
+      #mobilePageExport .gif-result-stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+      #mobilePageExport .gif-result-stat{min-width:0}
+      #mobilePageExport .gif-result-stat strong{overflow-wrap:anywhere}
+    }
   </style>
 </head>
 <body>
