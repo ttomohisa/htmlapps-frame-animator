@@ -56,7 +56,7 @@ GitHub Pages is enabled for this repository and the deployment workflow is confi
 
 ## Workspace and design checks
 
-The app now opens with just the image picker; frame editing, blank previews and export settings appear only after importing images. On wide desktops, frame editing and a large live preview sit alongside each other; on phones, the Frames / Preview / Export navigation keeps each step focused. A partial-import warning remains visible after the picker closes.
+The app opens with just the image picker. Once images are loaded, desktops put the live preview and export on the left and a compact, scrollable frame-editing rail on the right. Phones show readable frame rows and focus on the preview with its playback controls and an Export action. Output size and playback options remain available behind a native disclosure. Empty result placeholders do not consume workspace; a generated GIF/WebP is shown before its Save action. A partial-import warning remains visible after the picker closes.
 
 Development-only Impeccable 4.8.1 is installed for Codex; its project context, automatic design detector and verification notes are in [docs/IMPECCABLE.md](docs/IMPECCABLE.md). The app's standalone HTML and local-processing behavior are unchanged.
 
