@@ -30,7 +30,7 @@
     .brand-mark{display:block;width:38px;height:38px;flex:0 0 auto;border-radius:11px;overflow:hidden;box-shadow:var(--shadow-sm)}
     .brand-mark img{width:100%;height:100%;display:block}
     .brand-copy{min-width:0}.brand-name{margin:0;font-size:17px;line-height:1.2;letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-    .version-badge{display:inline-flex;align-items:center;margin-left:7px;padding:1px 6px;border:1px solid var(--line);border-radius:999px;color:var(--muted);background:var(--surface-muted);font-size:10px;font-weight:650;vertical-align:2px}
+    .version-badge{display:inline-flex;align-items:center;margin-left:7px;padding:1px 6px;border:1px solid var(--line);border-radius:999px;color:var(--muted);background:var(--surface-muted);font-size:11px;font-weight:650;vertical-align:2px}
     .brand-meta{margin:2px 0 0;color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
     .header-actions{margin-left:auto;display:flex;align-items:center;gap:10px}
     .language-button,.header-icon-button{border:0;background:transparent;color:var(--muted);cursor:pointer;font-weight:750}
@@ -41,7 +41,7 @@
     .page-intro{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;padding:0 2px 18px}
     .page-intro h2{margin:0;font-size:clamp(22px,3vw,28px);line-height:1.25;letter-spacing:-.025em}
     .page-intro p{margin:6px 0 0;max-width:760px;color:var(--muted);font-size:13px}
-    .local-badge{display:inline-flex;align-items:center;gap:7px;flex:0 0 auto;margin-top:3px;padding:7px 10px;border:1px solid color-mix(in srgb,var(--accent) 24%,var(--line));border-radius:999px;color:var(--accent);background:var(--accent-soft);font-size:12px;font-weight:700;white-space:nowrap}
+    .local-badge{display:inline-flex;align-items:center;gap:7px;flex:0 0 auto;margin-top:3px;padding:7px 0;border:0;border-radius:0;color:var(--accent);background:transparent;font-size:12px;font-weight:500;white-space:nowrap}.file-fallback-button{display:none;width:100%;margin-top:10px;padding:11px 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface);color:var(--text);font:inherit;font-size:13px;font-weight:600;cursor:pointer}@media (max-width:767px),(pointer:coarse) and (max-height:600px){.file-fallback-button{display:block}}
     .local-badge svg{width:15px;height:15px}
     .panel{margin-bottom:16px;border:1px solid var(--line);border-radius:16px;background:var(--surface);box-shadow:var(--shadow-sm);overflow:hidden}
     .panel-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:16px 18px 12px;border-bottom:1px solid var(--line)}
@@ -182,7 +182,7 @@
     html:has(dialog:modal),body:has(dialog:modal){overflow:hidden}
     dialog::backdrop{background:rgba(20,24,21,.34);backdrop-filter:blur(2px)}.dialog-shell{display:flex;flex-direction:column;max-height:min(82vh,720px)}
     .dialog-head{display:flex;align-items:center;gap:12px;padding:15px 16px;border-bottom:1px solid var(--line)}.dialog-head h2{margin:0;font-size:17px}
-    .dialog-close{margin-left:auto;width:38px;height:38px;display:grid;place-items:center;border:0;border-radius:9px;background:transparent;cursor:pointer}.dialog-close:hover{background:var(--surface-hover)}
+    .dialog-close{margin-left:auto;width:34px;height:34px;display:grid;place-items:center;border:0;border-radius:9px;background:transparent;cursor:pointer}.dialog-close:hover{background:var(--surface-hover)}
     .dialog-body{overflow:auto;padding:16px;overscroll-behavior:contain}.dialog-body h3{margin:18px 0 6px;font-size:14px}.dialog-body h3:first-child{margin-top:0}
     .dialog-body p,.dialog-body li{color:var(--muted);font-size:12px}.dialog-body ul,.dialog-body ol{padding-left:20px}
     .dialog-actions{display:flex;justify-content:flex-end;gap:8px;padding:13px 16px calc(13px + env(safe-area-inset-bottom));border-top:1px solid var(--line)}
@@ -334,7 +334,7 @@
             <p class="drop-title" data-i18n="dropTitle">JPEG / PNG / WebPをここにドロップ</p>
             <p class="drop-note" data-i18n="dropNote">または端末から画像を選択します</p>
             <button class="button primary" id="chooseButton" type="button" data-i18n="chooseImages">画像を選択</button>
-            <input class="file-input" id="fileInput" type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" multiple>
+            <input class="file-input" id="fileInput" type="file" accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp" multiple><button class="file-fallback-button" id="fileFallbackButton" type="button" data-i18n="fileFallback">ファイルから選択</button><input class="file-input" id="fileFallbackInput" type="file" multiple hidden>
             <div class="limits" aria-label="Input limits">
               <span class="limit-chip" data-i18n="limitFrames">最大200枚</span>
               <span class="limit-chip" data-i18n="limitFile">1枚50 MiBまで</span>
@@ -718,14 +718,14 @@
   </main>
   <!-- APP:END -->
 
-  <footer><span id="footerName">Frame Animator</span> · <span data-i18n="footer">画像はこの端末内で処理されます</span></footer>
+  <footer><span id="footerName">Frame Animator</span> · MIT License · <span data-i18n="footer">画像はこの端末内で処理されます</span></footer>
 
   <dialog id="helpDialog">
     <div class="dialog-shell">
       <div class="dialog-head">
         <h2 data-i18n="helpTitle">使い方と注意事項</h2>
         <button class="dialog-close" id="closeHelpButton" type="button" data-i18n-aria-label="close">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 10 10M17 7 7 17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12"/><path d="M18 6 6 18"/></svg>
         </button>
       </div>
       <!-- APP:HELP:BEGIN -->
@@ -763,7 +763,7 @@
       <div class="dialog-head">
         <h2 id="appConfirmTitle" data-i18n="confirmTitle">確認</h2>
         <button class="dialog-close" id="appConfirmClose" type="button" data-i18n-aria-label="close">
-          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 10 10M17 7 7 17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12"/><path d="M18 6 6 18"/></svg>
         </button>
       </div>
       <div class="dialog-body"><p class="confirm-message" id="appConfirmMessage"></p></div>
@@ -867,7 +867,7 @@
       const translations = {
         ja: {
           brandMeta:'複数画像からGIF / WebPを作成', mobileWorkflow:'作業ステップ', mobileFrames:'フレーム', mobilePreview:'プレビュー', mobileExport:'書き出し', introTitle:'画像を並べてGIF / WebPを作る', introBody:'画像の順番や表示時間を決め、サイズをそろえてアニメーションを書き出せます。',
-          localProcessing:'完全ローカル処理', addHeading:'画像を追加', addNote:'複数選択・ドラッグ＆ドロップ・クリップボード画像の貼り付けに対応しています。', dropTitle:'JPEG / PNG / WebPをここにドロップ', dropNote:'または端末から画像を選択します', chooseImages:'画像を選択',
+          localProcessing:'完全ローカル処理',fileFallback:'ファイルから選択', addHeading:'画像を追加', addNote:'複数選択・ドラッグ＆ドロップ・クリップボード画像の貼り付けに対応しています。', dropTitle:'JPEG / PNG / WebPをここにドロップ', dropNote:'または端末から画像を選択します', chooseImages:'画像を選択',
           limitFrames:'最大200枚', limitFile:'1枚50 MiBまで', limitPixels:'1枚50 MPまで', framesHeading:'フレーム', framesNote:'画像の順番と表示時間を調整します。',
           images:'画像', totalDurationLabel:'1回分', sourceSize:'元ファイル合計', addMore:'画像を追加', clearAll:'すべて消去', emptyTitle:'まだ画像がありません', emptyBody:'画像を追加すると、ここにサムネイル一覧が表示されます。',
           undo:'元に戻す', redo:'やり直す', sortLabel:'フレームを並べ替え', sortChoose:'並べ替え', sortAsc:'ファイル名 昇順', sortDesc:'ファイル名 降順',
@@ -891,7 +891,7 @@
         },
         en: {
           brandMeta:'Create GIF / WebP from multiple images', mobileWorkflow:'Workflow steps', mobileFrames:'Frames', mobilePreview:'Preview', mobileExport:'Export', introTitle:'Turn images into GIF or WebP animations', introBody:'Arrange images, set frame durations, and export an animation at a consistent size.',
-          localProcessing:'Fully local processing', addHeading:'Add images', addNote:'Select multiple files, drag and drop, or paste an image from the clipboard.', dropTitle:'Drop JPEG / PNG / WebP images here', dropNote:'or choose images from your device', chooseImages:'Choose images',
+          localProcessing:'Fully local processing',fileFallback:'Choose from files', addHeading:'Add images', addNote:'Select multiple files, drag and drop, or paste an image from the clipboard.', dropTitle:'Drop JPEG / PNG / WebP images here', dropNote:'or choose images from your device', chooseImages:'Choose images',
           limitFrames:'Up to 200 images', limitFile:'50 MiB per image', limitPixels:'50 MP per image', framesHeading:'Frames', framesNote:'Arrange images and set how long each one appears.',
           images:'Images', totalDurationLabel:'One pass', sourceSize:'Source total', addMore:'Add images', clearAll:'Clear all', emptyTitle:'No images yet', emptyBody:'Add images to see their thumbnails here.',
           undo:'Undo', redo:'Redo', sortLabel:'Sort frames', sortChoose:'Sort', sortAsc:'Filename ascending', sortDesc:'Filename descending',
@@ -3601,7 +3601,7 @@
       $('#chooseButton').addEventListener('click', () => fileInput.click());
       $('#addMoreButton').addEventListener('click', () => fileInput.click());
       $('#quickAddButton').addEventListener('click', () => fileInput.click());
-      fileInput.addEventListener('change', () => importFiles(fileInput.files));
+      fileInput.addEventListener('change', () => importFiles(fileInput.files));const fileFallbackButton=document.getElementById('fileFallbackButton'),fileFallbackInput=document.getElementById('fileFallbackInput');fileFallbackButton.addEventListener('click',()=>fileFallbackInput.click());fileFallbackInput.addEventListener('change',()=>{importFiles(fileFallbackInput.files);fileFallbackInput.value='';});
       for (const eventName of ['dragenter','dragover']) {
         dropZone.addEventListener(eventName, event => { event.preventDefault(); if (!isBusy()) dropZone.classList.add('is-dragging'); });
       }
